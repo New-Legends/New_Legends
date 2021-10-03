@@ -42,8 +42,6 @@ extern CAN_HandleTypeDef hcan2;
     }
     
 
-//测试
-
 
 /*
 电机数据, 
@@ -303,6 +301,3 @@ const motor_measure_t *get_chassis_motor_measure_point(uint8_t i)
 {
     return &motor_chassis[(i & 0x03)];
 }
-
-
-
