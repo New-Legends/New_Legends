@@ -42,8 +42,6 @@ extern CAN_HandleTypeDef hcan2;
     }
     
 
-//测试
-
 
 /*
 电机数据, 
@@ -141,6 +139,9 @@ void CAN_cmd_gimbal(int16_t yaw, int16_t pitch, int16_t rev1, int16_t rev2)
     gimbal_can_send_data[5] = rev1;
     gimbal_can_send_data[6] = (rev2 >> 8);
     gimbal_can_send_data[7] = rev2;
+	
+
+	
     HAL_CAN_AddTxMessage(&GIMBAL_CAN, &gimbal_tx_message, gimbal_can_send_data, &send_mail_box);
 }
 
@@ -165,7 +166,9 @@ void CAN_cmd_chassis_reset_ID(void)
     chassis_can_send_data[5] = 0;
     chassis_can_send_data[6] = 0;
     chassis_can_send_data[7] = 0;
+		
 
+	
     HAL_CAN_AddTxMessage(&CHASSIS_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
 }
 
@@ -194,6 +197,8 @@ void CAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int16_t mot
     chassis_can_send_data[6] = motor4 >> 8;
     chassis_can_send_data[7] = motor4;
 
+
+
     HAL_CAN_AddTxMessage(&CHASSIS_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
 }
 
@@ -221,6 +226,9 @@ void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger, int16
     shoot_can_send_data[5] = trigger;
     shoot_can_send_data[6] = (rev >> 8);
     shoot_can_send_data[7] = rev;
+	
+
+	
     HAL_CAN_AddTxMessage(&SHOOT_CAN, &shoot_tx_message, shoot_can_send_data, &send_mail_box);
 
 }
@@ -246,6 +254,7 @@ void CAN_cmd_super_cap(int16_t temPower)
     super_cap_can_send_data[6] = 0;
     super_cap_can_send_data[7] = 0;
 
+	
     HAL_CAN_AddTxMessage(&SUPER_CAP_CAN, &super_cap_tx_message, super_cap_can_send_data, &send_mail_box);
 
 }
@@ -303,6 +312,3 @@ const motor_measure_t *get_chassis_motor_measure_point(uint8_t i)
 {
     return &motor_chassis[(i & 0x03)];
 }
-
-
-
