@@ -97,7 +97,7 @@ void MX_FREERTOS_Init(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 *
+  /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
 
@@ -112,7 +112,6 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
-
 
   /* USER CODE BEGIN SysInit */
 	
