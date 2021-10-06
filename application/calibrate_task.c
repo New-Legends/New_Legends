@@ -269,6 +269,7 @@ void calibrate_task(void const *pvParameters)
     while (1)
     {
 
+      
         RC_cmd_to_calibrate();
 
         for (i = 0; i < CALI_LIST_LENGHT; i++)
