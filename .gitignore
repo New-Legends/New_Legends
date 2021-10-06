@@ -17,7 +17,6 @@
 *.pch
 
 # Libraries
-*.lib
 *.a
 *.la
 *.lo
@@ -76,7 +75,6 @@ JLinkSettings.ini
 *.sct
 *.Bak
 *.a
-*.lib
 !arm_cortexM4lf_math.lib
 
 #Keil工程记录和DeBug配置
