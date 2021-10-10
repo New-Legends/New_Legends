@@ -36,7 +36,7 @@
 //射击发射开关通道数据
 #define SHOOT_RC_MODE_CHANNEL       1
 //云台模式使用的开关通道
-
+#define shoot_MODE_CHANNEL 0
 
 
 //开启摩擦轮的斜坡
@@ -156,7 +156,7 @@ typedef struct
 {
     shoot_mode_e shoot_mode;
     const RC_ctrl_t *shoot_rc;
-    uint16_t shoot_last_key_v;;
+    uint16_t shoot_last_key_v;
 
     //拨弹电机数据
     const motor_measure_t *trigger_motor_measure;
@@ -194,6 +194,8 @@ typedef struct
     //微动开关
     bool_t key;              
     uint8_t key_time;
+
+    bool_t shoot_control_way; //射击控制方式
 
  
 } shoot_control_t;
