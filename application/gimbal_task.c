@@ -273,7 +273,7 @@ void gimbal_task(void const *pvParameters)
             else
             {
                 //CAN_cmd_gimbal(0, 0, 0, 0);  //pitch轴有问题,未修复
-                CAN_cmd_gimbal(0,pitch_can_set_current,0,0);//CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current, 0, 0);
+                CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current, 0, 0);//CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current, 0, 0);
             }
         }
 
@@ -764,7 +764,7 @@ static void gimbal_set_control(gimbal_control_t *set_control)
     else if (set_control->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO)
     {
         //gyro模式下，陀螺仪角度控制
-        gimbal_relative_angle_limit(&set_control->gimbal_pitch_motor, add_pitch_angle);//gimbal_absolute_angle_limit(&set_control->gimbal_pitch_motor, add_pitch_angle);
+        gimbal_absolute_angle_limit(&set_control->gimbal_pitch_motor, add_pitch_angle);
     }
     else if (set_control->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_ENCONDE)
     {
@@ -876,7 +876,7 @@ static void gimbal_control_loop(gimbal_control_t *control_loop)
     }
     else if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO)
     {
-        gimbal_motor_relative_angle_control(&control_loop->gimbal_pitch_motor);      //gimbal_motor_absolute_angle_control(&control_loop->gimbal_pitch_motor);
+        gimbal_motor_absolute_angle_control(&control_loop->gimbal_pitch_motor);
     }
     else if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_ENCONDE)
     {
@@ -910,7 +910,7 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
   * @param[out]     gimbal_motor:yaw电机或者pitch电机   注意此处陀螺仪校准有问题，角速度有波动，故将角速度/100 !!!
   * @retval         none
   */
-static void gimbal_motor_relative_angle_control(gimbal_motor_t *gimbal_motor)
+static void  gimbal_motor_relative_angle_control(gimbal_motor_t *gimbal_motor)
 {
     if (gimbal_motor == NULL)
     {
