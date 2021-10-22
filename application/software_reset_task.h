@@ -15,7 +15,7 @@
   ****************************(C) COPYRIGHT 2019 DJI****************************
   */
 
-//软件复位 用于紧急情况重启单片机
+//软件重启 用于紧急情况重启单片机
 
 #ifndef SOFTWARE_REST_TASK_H
 #define SOFTWARE_REST_TASK_H

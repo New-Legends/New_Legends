@@ -15,7 +15,7 @@
   ****************************(C) COPYRIGHT 2019 DJI****************************
   */
 
-//软件复位 用于紧急情况重启单片机
+//软件重启 用于紧急情况重启单片机
 
 #include "software_reset_task.h"
 
@@ -29,7 +29,7 @@
 uint8_t software_reset_key_delay_time = 0;
 
 /**
-  * @brief          软件复位任务，间隔 SOFTWARE_RESET_CONTROL_TIME 2ms
+  * @brief          软件重启任务，间隔 SOFTWARE_RESET_CONTROL_TIME 2ms
   * @param[in]      pvParameters: 空
   * @retval         none
   */
