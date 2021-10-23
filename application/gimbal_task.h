@@ -157,7 +157,7 @@
 
 //限幅 需要自己手动校准  
 #define YAW_OFFSET        1600  //6051  //编码器
-#define PITCH_OFFSET      397 //编码器
+#define PITCH_OFFSET      457 //编码器
 
 #define MIN_YAW         -3.0f
 #define MAX_YAW         3.0f

@@ -47,7 +47,8 @@ fp32 input_vot;
 fp32 supercap_vot;
 fp32 input_current;
 fp32 target_power;
-
+//遥控器控制变量
+extern RC_ctrl_t rc_ctrl;
 extern ext_game_robot_state_t game_state; //0x0201     比赛机器人状态
 uint8_t cap_change = FALSE; //超电电压过低标识符
 
@@ -164,5 +165,6 @@ void cap_init()
 {
 	CAN_cmd_super_cap(13000);
 }
+
 
 
