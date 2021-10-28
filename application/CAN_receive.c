@@ -40,23 +40,29 @@ extern CAN_HandleTypeDef hcan2;
         (ptr)->given_current = (uint16_t)((data)[4] << 8 | (data)[5]);  \
         (ptr)->temperate = (data)[6];                                   \
     }
-    
-
 
 /*
 电机数据, 
-0:底盘电机1 3508电机,  1:底盘电机2 3508电机,2:底盘电机3 3508电机,3:底盘电机4 3508电机;
-4:左摩擦轮电机 3508电机, 5右摩擦轮电机 3508电机, 6拨弹电机 2006电机, 7无电机 暂时保留
-8:yaw云台电机 6020电机; 9:pitch云台电机 6020电机;
+0:底盘动力电机1 3508,  1:底盘动力电机2 3508, 2:底盘动力电机3 3508, 3:底盘动力电机4 3508;
+4:底盘舵向电机1 6020,  5:底盘舵向电机2 6020, 6:底盘舵向电机3 6020, 7:底盘舵向电机4 6020,  
 */
-static motor_measure_t motor_chassis[10];
+static motor_measure_t motor_chassis[8];
+/*
+0:左摩擦轮电机 3508电机,  1:右摩擦轮电机 3508电机, 2:拨盘电机 2006电机, 3:弹仓电机 2006电机;
+*/
+static motor_measure_t motor_shoot[4];
+/*
+0:yaw轴云台电机 6020电机,  1:pitch轴电机 6020电机,
+*/
+static motor_measure_t motor_gimbal[2];
 
+
+static CAN_TxHeaderTypeDef chassis_tx_message;
+static uint8_t chassis_can_send_data[8];
+static CAN_TxHeaderTypeDef shoot_tx_message;
+static uint8_t shoot_can_send_data[8];
 static CAN_TxHeaderTypeDef  gimbal_tx_message;
 static uint8_t              gimbal_can_send_data[8];
-static CAN_TxHeaderTypeDef  chassis_tx_message;
-static uint8_t              chassis_can_send_data[8];
-static CAN_TxHeaderTypeDef  shoot_tx_message;
-static uint8_t              shoot_can_send_data[8];
 static CAN_TxHeaderTypeDef  super_cap_tx_message;
 static uint8_t              super_cap_can_send_data[8];      
 
@@ -70,47 +76,96 @@ static uint8_t              super_cap_can_send_data[8];
   */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-    CAN_RxHeaderTypeDef rx_header;
-    uint8_t rx_data[8];
 
-    HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
-
-    switch (rx_header.StdId)
+    //接收can1 信息
+    if (hcan == hcan1)
     {
-        case CAN_3508_M1_ID:
-        case CAN_3508_M2_ID:
-        case CAN_3508_M3_ID:
-        case CAN_3508_M4_ID:
+      CAN_RxHeaderTypeDef rx_header;
+      uint8_t rx_data[8];
+
+      HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
+      switch (rx_header.StdId)
+      {
+        //底盘动力电机
+        case CAN_POWER_FL_ID:
+        case CAN_POWER_FR_ID:
+        case CAN_POWER_BL_ID:
+        case CAN_POWER_BR_ID:
+        //底盘舵向电机
+        case CAN_RUDDER_FL_ID:
+        case CAN_RUDDER_FR_ID:
+        case CAN_RUDDER_BL_ID:
+        case CAN_RUDDER_BR_ID:
+        //超电
+        case CAN_SUPER_CAP_ID:
+        {
+
+          if (rx_header.StdId == CAN_SUPER_CAP_ID) //超电
+          {
+            cap_update_cap_inputvot((float)((int16_t)(rx_data)[1] << 8 | (rx_data)[0]) / 100.0f);
+            cap_update_cap_capvot((float)((int16_t)(rx_data)[3] << 8 | (rx_data)[2]) / 100.0f);
+            cap_update_cap_test_current((float)((int16_t)(rx_data)[5] << 8 | (rx_data)[4]) / 100.0f);
+            cap_update_cap_target_power((float)((int16_t)(rx_data)[7] << 8 | (rx_data)[6]) / 100.0f);
+          }
+          else
+          {
+            static uint8_t i = 0;
+            //get motor id
+            i = rx_header.StdId - CAN_POWER_FL_ID;
+            get_motor_measure(&motor_chassis[i], rx_data);
+          }
+          break;
+        }
+        default:
+        {
+          break;
+        }
+      }
+
+    }
+    else if (hcan == hcan2) //接收can2 信息
+    {
+      CAN_RxHeaderTypeDef rx_header;
+      uint8_t rx_data[8];
+
+      HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
+      switch (rx_header.StdId)
+      {
+        //发射机构电机
         case CAN_LEFT_FRIC_MOTOR_ID:
         case CAN_RIGHT_FRIC_MOTOR_ID:
         case CAN_TRIGGER_MOTOR_ID:
-        case CAN_YAW_MOTOR_ID:
-        case CAN_PIT_MOTOR_ID:
-        case CAN_SUPER_CAP_ID:
-        {
-            if(rx_header.StdId == CAN_SUPER_CAP_ID)  //超电
-            {                                  
-              cap_update_cap_inputvot((float)((int16_t)(rx_data)[1] << 8 | (rx_data)[0]) / 100.0f) ;            
-              cap_update_cap_capvot((float)((int16_t)(rx_data)[3] << 8 | (rx_data)[2]) / 100.0f);      
-              cap_update_cap_test_current((float)((int16_t)(rx_data)[5] << 8 | (rx_data)[4]) / 100.0f) ;  
-              cap_update_cap_target_power((float)((int16_t)(rx_data)[7] << 8 | (rx_data)[6]) / 100.0f) ;       
-            }
-            else
-            {
-              static uint8_t i = 0;
-              //get motor id
-              i = rx_header.StdId - CAN_3508_M1_ID;
-              get_motor_measure(&motor_chassis[i], rx_data);
-              detect_hook(CHASSIS_MOTOR1_TOE + i);
-            }
-              break;
-        }
+        case CAN_MAGAZINE_MOTOR_ID:
 
+        //云台电机
+       case CAN_YAW_MOTOR_ID:
+
+       case CAN_PIT_MOTOR_ID:
+       {
+
+         if (rx_header.StdId == CAN_SUPER_CAP_ID) //超电
+         {
+           cap_update_cap_inputvot((float)((int16_t)(rx_data)[1] << 8 | (rx_data)[0]) / 100.0f);
+           cap_update_cap_capvot((float)((int16_t)(rx_data)[3] << 8 | (rx_data)[2]) / 100.0f);
+           cap_update_cap_test_current((float)((int16_t)(rx_data)[5] << 8 | (rx_data)[4]) / 100.0f);
+           cap_update_cap_target_power((float)((int16_t)(rx_data)[7] << 8 | (rx_data)[6]) / 100.0f);
+         }
+         else
+         {
+           static uint8_t i = 0;
+           //get motor id
+           i = rx_header.StdId - CAN_POWER_FL_ID;
+           get_motor_measure(&motor_chassis[i], rx_data);
+         }
+         break;
+        }
         default:
         {
-            break;
+          break;
         }
-    }
+      }
+     
+
 
 
 }

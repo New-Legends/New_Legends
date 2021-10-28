@@ -99,11 +99,14 @@ Developing
 CAN1: L H
 CAN2: V G H L
 
-底盘电机：can2  ID 为1 2 3 4 右前，左前，左后，右后
+底盘动力电机：can2  ID 为1 2 3 4 右前，左前，左后，右后
 ///////
 2     1
 3     4   
 ///////
+
+底盘舵向电机：can2 id
+
 云台电机：can1 yaw 9 pitch 10 
 
 摩擦轮电机：can1 left 5 right 6

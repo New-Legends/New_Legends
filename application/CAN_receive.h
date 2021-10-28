@@ -23,35 +23,46 @@
 
 #include "struct_typedef.h"
 
-#define CHASSIS_CAN hcan2
-#define GIMBAL_CAN hcan1
-#define SHOOT_CAN hcan1
-#define SUPER_CAP_CAN hcan2
+#define CHASSIS_CAN hcan1
+#define GIMBAL_CAN hcan2
+#define SHOOT_CAN hcan2
+#define SUPER_CAP_CAN hcan1
 
 
 
 /* CAN send and receive ID */
 typedef enum
 {
-  //底盘电机接收ID
-    CAN_CHASSIS_ALL_ID = 0x200,
-    CAN_3508_M1_ID = 0x201,
-    CAN_3508_M2_ID = 0x202,
-    CAN_3508_M3_ID = 0x203, 
-    CAN_3508_M4_ID = 0x204,
-  //发射电机接收ID
-    CAN_LEFT_FRIC_MOTOR_ID = 0x205,
-    CAN_RIGHT_FRIC_MOTOR_ID = 0x206,
-    CAN_TRIGGER_MOTOR_ID = 0x207,
-    CAN_SHOOT_ALL_ID = 0x1FF,
-  //云台电机接收ID
-    CAN_YAW_MOTOR_ID = 0x209,
-    CAN_PIT_MOTOR_ID = 0x20A,
-    CAN_GIMBAL_ALL_ID = 0x2FF,
-  //超级电容接收ID
-    CAN_SUPER_CAP_ID = 0x211,  
-    CAN_SUPER_CAP_ALL_ID = 0x210,
-} can_msg_id_e; 
+  //底盘电机接收ID  CAN1
+  CAN_POWER_FR_ID = 0x201,
+  CAN_POWER_FL_ID = 0x202,
+  CAN_POWER_BL_ID = 0x203,
+  CAN_POWER_BR_ID = 0x204,
+  CAN_CHASSIS_POWER_ALL_ID = 0x200,
+
+  //底盘舵向电机ID CAN1
+  CAN_RUDDER_FL_ID = 0x205,
+  CAN_RUDDER_FR_ID = 0x206,
+  CAN_RUDDER_BL_ID = 0x207,
+  CAN_RUDDER_BR_ID = 0X208,
+  CAN_CHASSIS_RUDDER_ALL_ID = 0x1FF,
+
+  //发射机构电机接受ID CAN2
+  CAN_LEFT_FRIC_MOTOR_ID = 0x201,
+  CAN_RIGHT_FRIC_MOTOR_ID = 0x202,
+  CAN_TRIGGER_MOTOR_ID = 0x203,
+  CAN_MAGAZINE_MOTOR_ID = 0X204,
+  CAN_SHOOT_ALL_ID = 0x200,
+
+  //云台电机接收ID CAN2
+  CAN_YAW_MOTOR_ID = 0x205,
+  CAN_PIT_MOTOR_ID = 0x206,
+  CAN_GIMBAL_ALL_ID = 0x1FF,
+
+  //超级电容接收ID CAN1
+  CAN_SUPER_CAP_ID = 0x211,
+  CAN_SUPER_CAP_ALL_ID = 0x210,
+} can_msg_id_e;
 
 //rm motor data
 typedef struct
