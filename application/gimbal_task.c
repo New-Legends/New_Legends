@@ -56,12 +56,12 @@
 
 #define gimbal_total_pid_clear(gimbal_clear)                                                   \
     {                                                                                          \
-        gimbal_PID_clear(&(gimbal_clear)->gimbal_yaw_motor.gimbal_motor_absolute_angle_pid);   \
-        gimbal_PID_clear(&(gimbal_clear)->gimbal_yaw_motor.gimbal_motor_relative_angle_pid);   \
+        angle_PID_clear(&(gimbal_clear)->gimbal_yaw_motor.gimbal_motor_absolute_angle_pid);   \
+        angle_PID_clear(&(gimbal_clear)->gimbal_yaw_motor.gimbal_motor_relative_angle_pid);   \
         PID_clear(&(gimbal_clear)->gimbal_yaw_motor.gimbal_motor_gyro_pid);                    \
                                                                                                \
-        gimbal_PID_clear(&(gimbal_clear)->gimbal_pitch_motor.gimbal_motor_absolute_angle_pid); \
-        gimbal_PID_clear(&(gimbal_clear)->gimbal_pitch_motor.gimbal_motor_relative_angle_pid); \
+        angle_PID_clear(&(gimbal_clear)->gimbal_pitch_motor.gimbal_motor_absolute_angle_pid); \
+        angle_PID_clear(&(gimbal_clear)->gimbal_pitch_motor.gimbal_motor_relative_angle_pid); \
         PID_clear(&(gimbal_clear)->gimbal_pitch_motor.gimbal_motor_gyro_pid);                  \
     }
 
@@ -103,13 +103,7 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update);
 static void gimbal_mode_change_control_transit(gimbal_control_t *mode_change);
 
 
-/**
-  * @brief          计算ecd与offset_ecd之间的相对角度
-  * @param[in]      ecd: 电机当前编码
-  * @param[in]      offset_ecd: 电机中值编码
-  * @retval         相对角度，单位rad
-  */
-static fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd);
+
 
 /**
   * @brief          设置云台控制设定值，控制值是通过gimbal_behaviour_control_set函数设置的
@@ -162,37 +156,6 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add);
 static void gimbal_relative_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add);
 
 /**
-  * @brief          云台角度PID初始化, 因为角度范围在(-pi,pi)，不能用PID.c的PID
-  * @param[out]     pid:云台PID指针
-  * @param[in]      maxout: pid最大输出
-  * @param[in]      intergral_limit: pid最大积分输出
-  * @param[in]      kp: pid kp
-  * @param[in]      ki: pid ki
-  * @param[in]      kd: pid kd
-  * @retval         none
-  */
-static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 intergral_limit, fp32 kp, fp32 ki, fp32 kd);
-
-    
-/**
-  * @brief          云台PID清除，清除pid的out,iout
-  * @param[out]     pid_clear:"gimbal_control"变量指针.
-  * @retval         none
-  */
-static void gimbal_PID_clear(gimbal_PID_t *pid_clear);
-
-/**
-  * @brief          云台角度PID计算, 因为角度范围在(-pi,pi)，不能用PID.c的PID
-  * @param[out]     pid:云台PID指针
-  * @param[in]      get: 角度反馈
-  * @param[in]      set: 角度设定
-  * @param[in]      error_delta: 角速度
-  * @retval         pid 输出
-  */
-static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
-
-
-/**
   * @brief          云台校准计算
   * @param[in]      gimbal_cali: 校准数据
   * @param[out]     yaw_offset:yaw电机云台中值
@@ -236,7 +199,7 @@ void gimbal_task(void const *pvParameters)
     gimbal_init(&gimbal_control);
 
     //判断电机是否都上线
-    while (toe_is_error(YAW_GIMBAL_MOTOR_TOE) || toe_is_error(PITCH_GIMBAL_MOTOR_TOE))
+    while (toe_is_error(GIMBAL_YAW_MOTOR_TOE) && toe_is_error(GIMBAL_PITCH_MOTOR_TOE))
     {
         vTaskDelay(GIMBAL_CONTROL_TIME);
         gimbal_feedback_update(&gimbal_control);             //云台数据反馈
@@ -261,9 +224,9 @@ void gimbal_task(void const *pvParameters)
         pitch_can_set_current = -gimbal_control.gimbal_pitch_motor.given_current;
 #else
         pitch_can_set_current = gimbal_control.gimbal_pitch_motor.given_current;
-#endif
+#endif 
 
-        if (!(toe_is_error(YAW_GIMBAL_MOTOR_TOE) && toe_is_error(PITCH_GIMBAL_MOTOR_TOE) && toe_is_error(TRIGGER_MOTOR_TOE)))
+        if (!(toe_is_error(GIMBAL_YAW_MOTOR_TOE) && toe_is_error(GIMBAL_PITCH_MOTOR_TOE) && (toe_is_error(SHOOT_LEFT_FRIC_MOTOR_ID) && toe_is_error(SHOOT_LEFT_FRIC_MOTOR_ID) && toe_is_error(SHOOT_TRIGGER_MOTOR_TOE))))
         {
             if (toe_is_error(DBUS_TOE))
             {
@@ -556,8 +519,8 @@ static void gimbal_init(gimbal_control_t *init)
     static const fp32 Pitch_speed_pid[3] = {PITCH_SPEED_PID_KP, PITCH_SPEED_PID_KI, PITCH_SPEED_PID_KD};
     static const fp32 Yaw_speed_pid[3] = {YAW_SPEED_PID_KP, YAW_SPEED_PID_KI, YAW_SPEED_PID_KD};
     //电机数据指针获取
-    init->gimbal_yaw_motor.gimbal_motor_measure = get_yaw_gimbal_motor_measure_point();
-    init->gimbal_pitch_motor.gimbal_motor_measure = get_pitch_gimbal_motor_measure_point();
+    init->gimbal_yaw_motor.gimbal_motor_measure = get_gimbal_motor_measure_point(YAW_MOTOR);
+    init->gimbal_pitch_motor.gimbal_motor_measure = get_gimbal_motor_measure_point(PITCH_MOTOR);
     //陀螺仪数据指针获取
     init->gimbal_INT_angle_point = get_INS_angle_point();
     init->gimbal_INT_gyro_point = get_gyro_data_point();
@@ -570,12 +533,12 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_pitch_motor.gimbal_motor_mode = init->gimbal_pitch_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;
     
     //初始化yaw电机pid
-    gimbal_PID_init(&init->gimbal_yaw_motor.gimbal_motor_absolute_angle_pid, YAW_GYRO_ABSOLUTE_PID_MAX_OUT, YAW_GYRO_ABSOLUTE_PID_MAX_IOUT, YAW_GYRO_ABSOLUTE_PID_KP, YAW_GYRO_ABSOLUTE_PID_KI, YAW_GYRO_ABSOLUTE_PID_KD);
-    gimbal_PID_init(&init->gimbal_yaw_motor.gimbal_motor_relative_angle_pid, YAW_ENCODE_RELATIVE_PID_MAX_OUT, YAW_ENCODE_RELATIVE_PID_MAX_IOUT, YAW_ENCODE_RELATIVE_PID_KP, YAW_ENCODE_RELATIVE_PID_KI, YAW_ENCODE_RELATIVE_PID_KD);
+    angle_PID_init(&init->gimbal_yaw_motor.gimbal_motor_absolute_angle_pid, YAW_GYRO_ABSOLUTE_PID_MAX_OUT, YAW_GYRO_ABSOLUTE_PID_MAX_IOUT, YAW_GYRO_ABSOLUTE_PID_KP, YAW_GYRO_ABSOLUTE_PID_KI, YAW_GYRO_ABSOLUTE_PID_KD);
+    angle_PID_init(&init->gimbal_yaw_motor.gimbal_motor_relative_angle_pid, YAW_ENCODE_RELATIVE_PID_MAX_OUT, YAW_ENCODE_RELATIVE_PID_MAX_IOUT, YAW_ENCODE_RELATIVE_PID_KP, YAW_ENCODE_RELATIVE_PID_KI, YAW_ENCODE_RELATIVE_PID_KD);
     PID_init(&init->gimbal_yaw_motor.gimbal_motor_gyro_pid, PID_POSITION, Yaw_speed_pid, YAW_SPEED_PID_MAX_OUT, YAW_SPEED_PID_MAX_IOUT);
     //初始化pitch电机pid
-    gimbal_PID_init(&init->gimbal_pitch_motor.gimbal_motor_absolute_angle_pid, PITCH_GYRO_ABSOLUTE_PID_MAX_OUT, PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT, PITCH_GYRO_ABSOLUTE_PID_KP, PITCH_GYRO_ABSOLUTE_PID_KI, PITCH_GYRO_ABSOLUTE_PID_KD);
-    gimbal_PID_init(&init->gimbal_pitch_motor.gimbal_motor_relative_angle_pid, PITCH_ENCODE_RELATIVE_PID_MAX_OUT, PITCH_ENCODE_RELATIVE_PID_MAX_IOUT, PITCH_ENCODE_RELATIVE_PID_KP, PITCH_ENCODE_RELATIVE_PID_KI, PITCH_ENCODE_RELATIVE_PID_KD);
+    angle_PID_init(&init->gimbal_pitch_motor.gimbal_motor_absolute_angle_pid, PITCH_GYRO_ABSOLUTE_PID_MAX_OUT, PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT, PITCH_GYRO_ABSOLUTE_PID_KP, PITCH_GYRO_ABSOLUTE_PID_KI, PITCH_GYRO_ABSOLUTE_PID_KD);
+    angle_PID_init(&init->gimbal_pitch_motor.gimbal_motor_relative_angle_pid, PITCH_ENCODE_RELATIVE_PID_MAX_OUT, PITCH_ENCODE_RELATIVE_PID_MAX_IOUT, PITCH_ENCODE_RELATIVE_PID_KP, PITCH_ENCODE_RELATIVE_PID_KI, PITCH_ENCODE_RELATIVE_PID_KD);
     PID_init(&init->gimbal_pitch_motor.gimbal_motor_gyro_pid, PID_POSITION, Pitch_speed_pid, PITCH_SPEED_PID_MAX_OUT, PITCH_SPEED_PID_MAX_IOUT);
 
     //清除所有PID
@@ -660,7 +623,7 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
   * @param[in]      offset_ecd: 电机中值编码
   * @retval         相对角度，单位rad
   */
-static fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd)
+fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd)
 {
     int32_t relative_ecd = ecd - offset_ecd;
     if (relative_ecd > HALF_ECD_RANGE)
@@ -899,10 +862,12 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
 
     gimbal_motor->motor_gyro = gimbal_motor->motor_gyro/100;
     //角度环，速度环串级pid调试
-    gimbal_motor->motor_gyro_set = gimbal_PID_calc(&gimbal_motor->gimbal_motor_absolute_angle_pid, gimbal_motor->absolute_angle, gimbal_motor->absolute_angle_set, gimbal_motor->motor_gyro/100);
+    gimbal_motor->motor_gyro_set = angle_PID_calc(&gimbal_motor->gimbal_motor_absolute_angle_pid, gimbal_motor->absolute_angle, gimbal_motor->absolute_angle_set, gimbal_motor->motor_gyro/100);
     gimbal_motor->current_set = PID_calc(&gimbal_motor->gimbal_motor_gyro_pid, gimbal_motor->motor_gyro, gimbal_motor->motor_gyro_set);
     //控制值赋值
     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
+
+
 }
 
 /**
@@ -918,7 +883,7 @@ static void gimbal_motor_relative_angle_control(gimbal_motor_t *gimbal_motor)
     }
 
     //角度环，速度环串级pid调试
-    gimbal_motor->motor_gyro_set = gimbal_PID_calc(&gimbal_motor->gimbal_motor_relative_angle_pid, gimbal_motor->relative_angle, gimbal_motor->relative_angle_set, gimbal_motor->motor_gyro/100);
+    gimbal_motor->motor_gyro_set = angle_PID_calc(&gimbal_motor->gimbal_motor_relative_angle_pid, gimbal_motor->relative_angle, gimbal_motor->relative_angle_set, gimbal_motor->motor_gyro/100);
     gimbal_motor->current_set = PID_calc(&gimbal_motor->gimbal_motor_gyro_pid, gimbal_motor->motor_gyro, gimbal_motor->motor_gyro_set);
     //控制值赋值
     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
@@ -966,64 +931,6 @@ static void J_scope_gimbal_test(void)
 
 #endif
 
-/**
-  * @brief          初始化"gimbal_control"变量，包括pid初始化， 遥控器指针初始化，云台电机指针初始化，陀螺仪角度指针初始化
-  * @param[out]     gimbal_init:"gimbal_control"变量指针.
-  * @retval         none
-  */
-static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
-{
-    if (pid == NULL)
-    {
-        return;
-    }
-    pid->kp = kp;
-    pid->ki = ki;
-    pid->kd = kd;
-
-    pid->err = 0.0f;
-    pid->get = 0.0f;
-
-    pid->max_iout = max_iout;
-    pid->max_out = maxout;
-}
-
-static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
-{
-    fp32 err;
-    if (pid == NULL)
-    {
-        return 0.0f;
-    }
-    pid->get = get;
-    pid->set = set;
-
-    err = set - get;
-    pid->err = rad_format(err);
-    pid->Pout = pid->kp * pid->err;
-    pid->Iout += pid->ki * pid->err;
-    pid->Dout = pid->kd * error_delta;
-    abs_limit(&pid->Iout, pid->max_iout);
-    pid->out = pid->Pout + pid->Iout + pid->Dout;
-    abs_limit(&pid->out, pid->max_out);
-    return pid->out;
-}
-
-
-/**
-  * @brief          云台PID清除，清除pid的out,iout
-  * @param[out]     gimbal_pid_clear:"gimbal_control"变量指针.
-  * @retval         none
-  */
-static void gimbal_PID_clear(gimbal_PID_t *gimbal_pid_clear)
-{
-    if (gimbal_pid_clear == NULL)
-    {
-        return;
-    }
-    gimbal_pid_clear->err = gimbal_pid_clear->set = gimbal_pid_clear->get = 0.0f;
-    gimbal_pid_clear->out = gimbal_pid_clear->Pout = gimbal_pid_clear->Iout = gimbal_pid_clear->Dout = 0.0f;
-}
 
 /**
   * @brief          通过按键,进行重启

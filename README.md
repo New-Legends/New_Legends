@@ -92,6 +92,7 @@ Developing
 ### 硬件连接说明：
 
 从左向右数:
+程序下载线：SWDIO SWCLK G V
 裁判串口线: C板UART1  G TX RX
 裁判学生串口接口 RX TX G
 视觉串口线: C板UART2  RX TXV G V
@@ -99,22 +100,27 @@ Developing
 CAN1: L H
 CAN2: V G H L
 
-底盘动力电机：can2  ID 为1 2 3 4 右前，左前，左后，右后
+云台电机 GM6020：can1 ID yaw 5 pitch 6 
+
+摩擦轮电机：can1 left 1 right 2
+
+拨盘电机：can1 3
+
+弹仓电机：can1 4
+
+
+
+底盘动力电机 M3508：can2  ID 为1 2 3 4 右前，左前，左后，右后
 ///////
 2     1
 3     4   
 ///////
 
-底盘舵向电机：can2 id
-
-云台电机：can1 yaw 9 pitch 10 
-
-摩擦轮电机：can1 left 5 right 6
-
-拨盘电机：can1 7
-
-弹仓舵机: 左边数第2个PWM
-限位舵机: 左边数第3个PWM  
+底盘动力电机 GM6020：can2  ID 为5 6 7 8 右前，左前，左后，右后
+///////
+6    5
+7	8 
+///////
 
 
 射弹 触发条件为  BUTTEN_TRIG_PIN 为低电平 对应C板最左侧的PWM口
@@ -235,7 +241,6 @@ fric T or F
 6.超电
 7.PID运算频率，调整角度环-角速度后的系数 调整1000
 8.机器人间通信
-
 
 
 

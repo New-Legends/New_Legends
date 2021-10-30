@@ -186,31 +186,12 @@ typedef enum
     GIMBAL_MOTOR_ENCONDE, //电机编码值角度控制
 } gimbal_motor_mode_e;
 
-typedef struct
-{
-    fp32 kp;
-    fp32 ki;
-    fp32 kd;
-
-    fp32 set;
-    fp32 get;
-    fp32 err;
-
-    fp32 max_out;
-    fp32 max_iout;
-
-    fp32 Pout;
-    fp32 Iout;
-    fp32 Dout;
-
-    fp32 out;
-} gimbal_PID_t;
 
 typedef struct
 {
     const motor_measure_t *gimbal_motor_measure;
-    gimbal_PID_t gimbal_motor_absolute_angle_pid;
-    gimbal_PID_t gimbal_motor_relative_angle_pid;
+    angle_PID_t gimbal_motor_absolute_angle_pid;
+    angle_PID_t gimbal_motor_relative_angle_pid;
     pid_type_def gimbal_motor_gyro_pid;
     gimbal_motor_mode_e gimbal_motor_mode;
     gimbal_motor_mode_e last_gimbal_motor_mode;
@@ -336,5 +317,12 @@ extern void set_hand_operator_gimbal_hook(const uint16_t yaw_offset, const uint1
   */
 extern void software_reset();
 
+/**
+  * @brief          计算ecd与offset_ecd之间的相对角度
+  * @param[in]      ecd: 电机当前编码
+  * @param[in]      offset_ecd: 电机中值编码
+  * @retval         相对角度，单位rad
+  */
+extern fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd);
 
 #endif

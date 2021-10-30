@@ -23,43 +23,80 @@
 
 #include "struct_typedef.h"
 
-#define CHASSIS_CAN hcan1
+//此处暂时为了调试，把CAN的顺序调整了一下
 #define GIMBAL_CAN hcan2
 #define SHOOT_CAN hcan2
-#define SUPER_CAP_CAN hcan1
+#define CHASSIS_CAN hcan1
+#define SUPER_CAP_CAN hcan2
 
+//云台机构电机编号
+enum gimbal_motor_id_e
+{
+  YAW_MOTOR = 0,
+  PITCH_MOTOR,
+};
 
+//发射机构电机编号
+enum shoot_motor_id_e
+{
+  LEFT_FRIC_MOTOR = 0,
+  RIGHT_FRIC_MOTOR,
+  TRIGGER_MOTOR,
+  MAGAZINE_MOTOR,
+};
+
+//底盘动力电机编号
+enum motive_chassis_motor_id_e
+{
+  //底盘动力电机接收
+  MOTIVE_FR_MOTOR = 0,
+  MOTIVE_FL_MOTOR,
+  MOTIVE_BL_MOTOR,
+  MOTIVE_BR_MOTOR,
+
+};
+
+//底盘舵向电机编号
+enum rudde_chassisr_motor_id_e
+{
+  //底盘舵向电机
+  RUDDER_FL_MOTOR = 0,
+  RUDDER_FR_MOTOR,
+  RUDDER_BL_MOTOR,
+  RUDDER_BR_MOTOR,
+};
 
 /* CAN send and receive ID */
 typedef enum
 {
-  //底盘电机接收ID  CAN1
-  CAN_POWER_FR_ID = 0x201,
-  CAN_POWER_FL_ID = 0x202,
-  CAN_POWER_BL_ID = 0x203,
-  CAN_POWER_BR_ID = 0x204,
-  CAN_CHASSIS_POWER_ALL_ID = 0x200,
 
-  //底盘舵向电机ID CAN1
-  CAN_RUDDER_FL_ID = 0x205,
-  CAN_RUDDER_FR_ID = 0x206,
-  CAN_RUDDER_BL_ID = 0x207,
-  CAN_RUDDER_BR_ID = 0X208,
-  CAN_CHASSIS_RUDDER_ALL_ID = 0x1FF,
-
-  //发射机构电机接受ID CAN2
+  //发射机构电机接受ID CAN1
   CAN_LEFT_FRIC_MOTOR_ID = 0x201,
   CAN_RIGHT_FRIC_MOTOR_ID = 0x202,
   CAN_TRIGGER_MOTOR_ID = 0x203,
   CAN_MAGAZINE_MOTOR_ID = 0X204,
   CAN_SHOOT_ALL_ID = 0x200,
 
-  //云台电机接收ID CAN2
+  //云台电机接收ID CAN1
   CAN_YAW_MOTOR_ID = 0x205,
-  CAN_PIT_MOTOR_ID = 0x206,
+  CAN_PITCH_MOTOR_ID = 0x206,
   CAN_GIMBAL_ALL_ID = 0x1FF,
 
-  //超级电容接收ID CAN1
+  //底盘动力电机接收ID  CAN2
+  CAN_MOTIVE_FR_MOTOR_ID = 0x201,
+  CAN_MOTIVE_FL_MOTOR_ID = 0x202,
+  CAN_MOTIVE_BL_MOTOR_ID = 0x203,
+  CAN_MOTIVE_BR_MOTOR_ID = 0x204,
+  CAN_CHASSIS_MOTIVE_ALL_ID = 0x200,
+
+  //底盘舵向电机ID CAN2
+  CAN_RUDDER_FL_MOTOR_ID = 0x205,
+  CAN_RUDDER_FR_MOTOR_ID = 0x206,
+  CAN_RUDDER_BL_MOTOR_ID = 0x207, 
+  CAN_RUDDER_BR_MOTOR_ID = 0X208,
+  CAN_CHASSIS_RUDDER_ALL_ID = 0x1FF,
+
+  //超级电容接收ID CAN2
   CAN_SUPER_CAP_ID = 0x211,
   CAN_SUPER_CAP_ALL_ID = 0x210,
 } can_msg_id_e;
@@ -96,14 +133,26 @@ extern void CAN_cmd_chassis_reset_ID(void);
 
 
 /**
-  * @brief          发送电机控制电流(0x201,0x202,0x203,0x204)
+  * @brief          发送动力电机控制电流(0x201,0x202,0x203,0x204)
   * @param[in]      motor1: (0x201) 3508电机控制电流, 范围 [-16384,16384]
   * @param[in]      motor2: (0x202) 3508电机控制电流, 范围 [-16384,16384]
   * @param[in]      motor3: (0x203) 3508电机控制电流, 范围 [-16384,16384]
   * @param[in]      motor4: (0x204) 3508电机控制电流, 范围 [-16384,16384]
   * @retval         none
   */
-extern void CAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
+extern void CAN_cmd_chassis_motive(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
+
+
+/**
+  * @brief          发送舵向电机控制电流(0x205,0x206,0x207,0x208)
+  * @param[in]      motor1: (0x205) 6020电机控制电流, 范围 [-30000,30000]
+  * @param[in]      motor2: (0x206) 6020电机控制电流, 范围 [-30000,30000]
+  * @param[in]      motor3: (0x207) 6020电机控制电流, 范围 [-30000,30000]
+  * @param[in]      motor4: (0x208) 6020电机控制电流, 范围 [-30000,30000]
+  * @retval         none
+  */
+extern void CAN_cmd_chassis_rudder(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
+
 
 /**
   * @brief          发送电机控制电流(0x205,0x206,0x207,0x208)
@@ -113,7 +162,7 @@ extern void CAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int1
   * @param[in]      保留: (0x208) 保留，电机控制电流
   * @retval         none
   */
-extern void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger, int16_t rev);
+extern void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger, int16_t magazine);
 
 /**
   * @brief          超级电容发送功率输出
@@ -123,41 +172,31 @@ extern void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger
 extern void CAN_cmd_super_cap(int16_t temPower);
 
 /**
-  * @brief          返回yaw 6020电机数据指针
-  * @param[in]      none
+  * @brief          返回发射机构电机 3508电机数据指针
+  * @param[in]       i: 电机编号,范围[0,3]
   * @retval         电机数据指针
   */
-extern const motor_measure_t *get_yaw_gimbal_motor_measure_point(void);
+extern const motor_measure_t *get_shoot_motor_measure_point(uint8_t i);
 
 /**
-  * @brief          返回pitch 6020电机数据指针
-  * @param[in]      none
+  * @brief          返回云台机构电机数据指针
+  * @param[in]       i: 电机编号,范围[0,1]
   * @retval         电机数据指针
   */
-extern const motor_measure_t *get_pitch_gimbal_motor_measure_point(void);
-
-
-/**
-  * @brief          返回拨弹电机 2006电机数据指针
-  * @param[in]      none
-  * @retval         电机数据指针
-  */
-extern const motor_measure_t *get_trigger_motor_measure_point(void);
+extern const motor_measure_t *get_gimbal_motor_measure_point(uint8_t i);
 
 /**
-  * @brief          返回摩擦轮电机 3508电机数据指针
-  * @param[in]      none
-  * @retval         电机数据指针
-  */
-extern const motor_measure_t *get_fric_motor_measure_point(uint8_t i);
-
-
-/**
-  * @brief          返回底盘电机 3508电机数据指针
+  * @brief          返回底盘动力电机 3508电机数据指针
   * @param[in]      i: 电机编号,范围[0,3]
   * @retval         电机数据指针
   */
-extern const motor_measure_t *get_chassis_motor_measure_point(uint8_t i);
+extern const motor_measure_t *get_chassis_motive_motor_measure_point(uint8_t i);
 
+/**
+  * @brief          返回底盘舵向电机 3508电机数据指针
+  * @param[in]      i: 电机编号,范围[0,3]
+  * @retval         电机数据指针
+  */
+extern const motor_measure_t *get_chassis_rudder_motor_measure_point(uint8_t i);
 
 #endif

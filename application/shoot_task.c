@@ -119,9 +119,9 @@ void shoot_init(void)
     shoot_control.shoot_rc = get_remote_control_point();
 
     //电机指针 拨弹 摩擦轮
-    shoot_control.trigger_motor_measure = get_trigger_motor_measure_point();
-    shoot_control.fric_motor[LEFT].fric_motor_measure = get_fric_motor_measure_point(LEFT);
-    shoot_control.fric_motor[RIGHT].fric_motor_measure = get_fric_motor_measure_point(RIGHT);
+    shoot_control.trigger_motor_measure = get_gimbal_motor_measure_point(TRIGGER_MOTOR);
+    shoot_control.fric_motor[LEFT].fric_motor_measure = get_gimbal_motor_measure_point(LEFT_FRIC_MOTOR);
+    shoot_control.fric_motor[RIGHT].fric_motor_measure = get_gimbal_motor_measure_point(RIGHT_FRIC_MOTOR);
 
     //初始化PID
     PID_init(&shoot_control.trigger_motor_pid, PID_POSITION, Trigger_speed_pid, TRIGGER_READY_PID_MAX_OUT, TRIGGER_READY_PID_MAX_IOUT);

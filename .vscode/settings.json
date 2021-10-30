@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "detect_task.h": "c",
+        "pid.h": "c",
+        "struct_typedef.h": "c",
+        "can_receive.h": "c",
+        "cmsis_os.h": "c",
+        "usb_task.h": "c",
+        "gimbal_task.h": "c",
+        "main.h": "c",
+        "bsp_rng.h": "c"
+    }
+}

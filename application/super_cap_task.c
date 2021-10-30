@@ -72,6 +72,14 @@ void cap_update_cap_target_power(int16_t power)
 	target_power = power; //获取输入功率
 }
 
+void get_cap_merasure(uint8_t rx_data[8])
+{
+	cap_update_cap_inputvot((float)((int16_t)(rx_data)[1] << 8 | (rx_data)[0]) / 100.0f);
+	cap_update_cap_capvot((float)((int16_t)(rx_data)[3] << 8 | (rx_data)[2]) / 100.0f);
+	cap_update_cap_test_current((float)((int16_t)(rx_data)[5] << 8 | (rx_data)[4]) / 100.0f);
+	cap_update_cap_target_power((float)((int16_t)(rx_data)[7] << 8 | (rx_data)[6]) / 100.0f);
+}
+
 //主任务
 void super_cap_task(void const *pvParameters)
 {

@@ -16,6 +16,7 @@ void cap_update_cap_inputvot(int16_t inputvot );
 void cap_update_cap_capvot(int16_t capvot );
 void cap_update_cap_test_current(int16_t current );
 void cap_update_cap_target_power(int16_t power );
+void get_cap_merasure(uint8_t rx_data[8]);
 
 void cap_init(void);
 extern void super_cap_task(void const *pvParameters);

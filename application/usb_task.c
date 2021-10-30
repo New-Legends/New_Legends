@@ -46,7 +46,7 @@ void usb_task(void const * argument)
     {
         osDelay(1000);
         usb_printf(
-"******************************\r\n\
+            "******************************\r\n\
 voltage percentage:%d%% \r\n\
 DBUS:%s\r\n\
 chassis motor1:%s\r\n\
@@ -61,20 +61,27 @@ accel sensor:%s\r\n\
 mag sensor:%s\r\n\
 referee usart:%s\r\n\
 ******************************\r\n",
-            get_battery_percentage(), 
+            get_battery_percentage(),
             status[error_list_usb_local[DBUS_TOE].error_exist],
-            status[error_list_usb_local[CHASSIS_MOTOR1_TOE].error_exist],
-            status[error_list_usb_local[CHASSIS_MOTOR2_TOE].error_exist],
-            status[error_list_usb_local[CHASSIS_MOTOR3_TOE].error_exist],
-            status[error_list_usb_local[CHASSIS_MOTOR4_TOE].error_exist],
-            status[error_list_usb_local[YAW_GIMBAL_MOTOR_TOE].error_exist],
-            status[error_list_usb_local[PITCH_GIMBAL_MOTOR_TOE].error_exist],
-            status[error_list_usb_local[TRIGGER_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[SHOOT_LEFT_FRIC_MOTOR_ID].error_exist],
+            status[error_list_usb_local[SHOOT_RIGHT_FRIC_MOTOR_ID].error_exist],
+            status[error_list_usb_local[SHOOT_TRIGGER_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[SHOOT_MAGAZINE_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[GIMBAL_YAW_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[GIMBAL_PITCH_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[CHASSIS_MOTIVE_FR_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[CHASSIS_MOTIVE_FL_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[CHASSIS_MOTIVE_BL_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[CHASSIS_MOTIVE_BR_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[CHASSIS_RUDDER_FR_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[CHASSIS_RUDDER_FL_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[CHASSIS_RUDDER_BL_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[CHASSIS_RUDDER_BR_MOTOR_TOE].error_exist],
             status[error_list_usb_local[BOARD_GYRO_TOE].error_exist],
             status[error_list_usb_local[BOARD_ACCEL_TOE].error_exist],
             status[error_list_usb_local[BOARD_MAG_TOE].error_exist],
             status[error_list_usb_local[REFEREE_TOE].error_exist]);
-
+            status[error_list_usb_local[SUPER_CAP_TOE].error_exist];
     }
 
 }

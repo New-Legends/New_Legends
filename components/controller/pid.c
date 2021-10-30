@@ -140,3 +140,61 @@ void PID_clear(pid_type_def *pid)
     pid->out = pid->Pout = pid->Iout = pid->Dout = 0.0f;
     pid->fdb = pid->set = 0.0f;
 }
+
+/**
+  * @brief          pid初始化
+  * @param[out]     angle_init:"angle_pid"变量指针.
+  * @retval         none
+  */
+void angle_PID_init(angle_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
+{
+  if (pid == NULL)
+  {
+    return;
+  }
+  pid->kp = kp;
+  pid->ki = ki;
+  pid->kd = kd;
+
+  pid->err = 0.0f;
+  pid->get = 0.0f;
+
+  pid->max_iout = max_iout;
+  pid->max_out = maxout;
+}
+
+fp32 angle_PID_calc(angle_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
+{
+  fp32 err;
+  if (pid == NULL)
+  {
+    return 0.0f;
+  }
+  pid->get = get;
+  pid->set = set;
+
+  err = set - get;
+  pid->err = rad_format(err);
+  pid->Pout = pid->kp * pid->err;
+  pid->Iout += pid->ki * pid->err;
+  pid->Dout = pid->kd * error_delta;
+  abs_limit(&pid->Iout, pid->max_iout);
+  pid->out = pid->Pout + pid->Iout + pid->Dout;
+  abs_limit(&pid->out, pid->max_out);
+  return pid->out;
+}
+
+/**
+  * @brief          角度PID清除，清除pid的out,iout
+  * @param[out]     angle_pid_clear:"angle_control"变量指针.
+  * @retval         none
+  */
+void angle_PID_clear(angle_PID_t *angle_pid_clear)
+{
+  if (angle_pid_clear == NULL)
+  {
+    return;
+  }
+  angle_pid_clear->err = angle_pid_clear->set = angle_pid_clear->get = 0.0f;
+  angle_pid_clear->out = angle_pid_clear->Pout = angle_pid_clear->Iout = angle_pid_clear->Dout = 0.0f;
+}

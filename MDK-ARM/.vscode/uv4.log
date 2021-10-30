@@ -1,0 +1,339 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'standard_robot'
+compiling calibrate_task.c...
+..\application\can_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\calibrate_task.c: 1 warning, 3 errors
+compiling gimbal_behaviour.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\vision.h(142): warning:  #1295-D: Deprecated declaration vision_if_find_target - give arg types
+  bool_t vision_if_find_target();
+..\application\vision.h(146): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\application\gimbal_behaviour.c(213): warning:  #177-D: function "gimbal_auto_control"  was declared but never referenced
+  static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
+..\application\gimbal_behaviour.c: 4 warnings, 3 errors
+compiling chassis_behaviour.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\chassis_task.h(304): error:  #81: more than one storage class may not be specified
+  extern static fp32 chassis_rudder_PID_calc(rudder_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+..\application\chassis_behaviour.h(88): warning:  #47-D: incompatible redefinition of macro "SWING_KEY"  (declared at line 85 of "..\application\chassis_task.h")
+  #define SWING_KEY ((chassis_move.chassis_RC->key.v  & KEY_PRESSED_OFFSET_C) && !(chassis_move.chassis_last_key_v & KEY_PRESSED_OFFSET_C))
+..\application\chassis_behaviour.h(90): warning:  #47-D: incompatible redefinition of macro "TOP_KEY"  (declared at line 87 of "..\application\chassis_task.h")
+  #define TOP_KEY ((chassis_move.chassis_RC->key.v  & KEY_PRESSED_OFFSET_F) && !(chassis_move.chassis_last_key_v & KEY_PRESSED_OFFSET_F))
+..\application\chassis_behaviour.c: 3 warnings, 4 errors
+compiling CAN_receive.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\CAN_receive.c(87): error:  #42: operand types are incompatible ("CAN_HandleTypeDef *" and "CAN_HandleTypeDef")
+      if (hcan == hcan1)
+..\application\CAN_receive.c(100): error:  #2706: case label value has already appeared in this switch at line 96
+          case CAN_LEFT_FRIC_MOTOR_ID:
+..\application\CAN_receive.c(135): error:  #42: operand types are incompatible ("CAN_HandleTypeDef *" and "CAN_HandleTypeDef")
+      else if (hcan == hcan2) //接收can2 信息
+..\application\CAN_receive.c(250): error:  #20: identifier "CAN_CHASSIS_ALL_ID" is undefined
+      chassis_tx_message.StdId = CAN_CHASSIS_ALL_ID;
+..\application\CAN_receive.c(277): error:  #20: identifier "CAN_CHASSIS_ALL_ID" is undefined
+    chassis_tx_message.StdId = CAN_CHASSIS_ALL_ID;
+..\application\CAN_receive.c(339): warning:  #174-D: expression has no effect
+      super_cap_can_send_data[6] = 0;9
+..\application\CAN_receive.c(340): error:  #65: expected a ";"
+      super_cap_can_send_data[7] = 0;
+..\application\CAN_receive.c(384): warning:  #1-D: last line of file ends without a newline
+  }
+..\application\CAN_receive.c: 2 warnings, 7 errors
+compiling chassis_task.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\chassis_task.h(304): error:  #81: more than one storage class may not be specified
+  extern static fp32 chassis_rudder_PID_calc(rudder_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+..\application\chassis_behaviour.h(88): warning:  #47-D: incompatible redefinition of macro "SWING_KEY"  (declared at line 85 of "..\application\chassis_task.h")
+  #define SWING_KEY ((chassis_move.chassis_RC->key.v  & KEY_PRESSED_OFFSET_C) && !(chassis_move.chassis_last_key_v & KEY_PRESSED_OFFSET_C))
+..\application\chassis_behaviour.h(90): warning:  #47-D: incompatible redefinition of macro "TOP_KEY"  (declared at line 87 of "..\application\chassis_task.h")
+  #define TOP_KEY ((chassis_move.chassis_RC->key.v  & KEY_PRESSED_OFFSET_F) && !(chassis_move.chassis_last_key_v & KEY_PRESSED_OFFSET_F))
+..\application\chassis_task.c(121): error:  #20: identifier "CHASSIS_MOTOR1_TOE" is undefined
+      while (toe_is_error(CHASSIS_MOTOR1_TOE) || toe_is_error(CHASSIS_MOTOR2_TOE) || toe_is_error(CHASSIS_MOTOR3_TOE) || toe_is_error(CHASSIS_MOTOR4_TOE) || toe_is_error(DBUS_TOE))
+..\application\chassis_task.c(121): error:  #20: identifier "CHASSIS_MOTOR2_TOE" is undefined
+      while (toe_is_error(CHASSIS_MOTOR1_TOE) || toe_is_error(CHASSIS_MOTOR2_TOE) || toe_is_error(CHASSIS_MOTOR3_TOE) || toe_is_error(CHASSIS_MOTOR4_TOE) || toe_is_error(DBUS_TOE))
+..\application\chassis_task.c(121): error:  #20: identifier "CHASSIS_MOTOR3_TOE" is undefined
+      while (toe_is_error(CHASSIS_MOTOR1_TOE) || toe_is_error(CHASSIS_MOTOR2_TOE) || toe_is_error(CHASSIS_MOTOR3_TOE) || toe_is_error(CHASSIS_MOTOR4_TOE) || toe_is_error(DBUS_TOE))
+..\application\chassis_task.c(121): error:  #20: identifier "CHASSIS_MOTOR4_TOE" is undefined
+      while (toe_is_error(CHASSIS_MOTOR1_TOE) || toe_is_error(CHASSIS_MOTOR2_TOE) || toe_is_error(CHASSIS_MOTOR3_TOE) || toe_is_error(CHASSIS_MOTOR4_TOE) || toe_is_error(DBUS_TOE))
+..\application\chassis_task.c(140): error:  #20: identifier "CHASSIS_MOTOR1_TOE" is undefined
+          if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
+..\application\chassis_task.c(140): error:  #20: identifier "CHASSIS_MOTOR2_TOE" is undefined
+          if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
+..\application\chassis_task.c(140): error:  #20: identifier "CHASSIS_MOTOR3_TOE" is undefined
+          if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
+..\application\chassis_task.c(140): error:  #20: identifier "CHASSIS_MOTOR4_TOE" is undefined
+          if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
+..\application\chassis_task.c(145): warning:  #223-D: function "CAN_cmd_chassis" declared implicitly
+                  CAN_cmd_chassis(0, 0, 0, 0);
+..\application\chassis_task.c(150): warning:  #223-D: function "CAN_cmd_chassis" declared implicitly
+                  CAN_cmd_chassis(chassis_move.motive_motor_chassis[0].give_current, chassis_move.motive_motor_chassis[1].give_current,
+..\application\chassis_task.c(210): error:  #20: identifier "M3505_MOTOR_SPEED_PID_MAX_OUT" is undefined
+          PID_init(&chassis_move_init->motive_motor_speed_pid[i], PID_POSITION, motive_motor_speed_pid, M3505_MOTOR_SPEED_PID_MAX_OUT, M3505_MOTOR_SPEED_PID_MAX_IOUT);
+..\application\chassis_task.c(210): error:  #20: identifier "M3505_MOTOR_SPEED_PID_MAX_IOUT" is undefined
+          PID_init(&chassis_move_init->motive_motor_speed_pid[i], PID_POSITION, motive_motor_speed_pid, M3505_MOTOR_SPEED_PID_MAX_OUT, M3505_MOTOR_SPEED_PID_MAX_IOUT);
+..\application\chassis_task.c(231): warning:  #223-D: function "angle_PID_init" declared implicitly
+          angle_PID_init(&chassis_move_init->rudder_motor_chassis[i].rudder_motor_angle_pid, RUDDER_MATOR_ANGLE_PID_KP, RUDDER_MATOR_ANGLE_PID_KI, RUDDER_MATOR_ANGLE_PID_KD, RUDDER_MATOR_ANGLE_PID_MAX_OUT, RUDDER_MATOR_ANGLE_PID_MAX_IOUT);
+..\application\chassis_task.c(328): error:  #136: struct "<unnamed>"  has no field "motor_speed_pid"
+          chassis_move_update->motive_motor_chassis[i].accel = chassis_move_update->motor_speed_pid[i].Dbuf[0] * CHASSIS_CONTROL_FREQUENCE;
+..\application\chassis_task.c(331): warning:  #223-D: function "motor_ecd_to_angle_change" declared implicitly
+          chassis_move_update->rudder_motor_chassis[i].angle = motor_ecd_to_angle_change(chassis_move_update->rudder_motor_chassis[i].rudder_motor_measure->ecd,
+..\application\chassis_task.c(331): error:  #136: struct "<unnamed>"  has no field "rudder_motor_measure"
+          chassis_move_update->rudder_motor_chassis[i].angle = motor_ecd_to_angle_change(chassis_move_update->rudder_motor_chassis[i].rudder_motor_measure->ecd,
+..\application\chassis_task.c(332): error:  #136: struct "<unnamed>"  has no field "offecd"
+                                                                                         chassis_move_update->rudder_motor_chassis[i].offecd);
+..\application\chassis_task.c(539): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          chassis_move_control_loop->max_wheel_speed = 1.5 * MAX_WHEEL_SPEED;
+..\application\chassis_task.c(549): error:  #165: too few arguments in function call
+                                            chassis_move_control_loop->vy_set, chassis_move_control_loop->wz_set, wheel_speed);
+..\application\chassis_task.c(557): error:  #136: struct "<unnamed>"  has no field "give_current"
+              chassis_move_control_loop->rudder_motor_chassis[i].give_current = (int16_t)(rudder_angle[i]);
+..\application\chassis_task.c(604): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_gyro_set = angle_PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid, chassis_move_control_loop->rudder_motor[i]->angle, chassis_move_control_loop->rudder_motor[i]->angle_set,  0);
+..\application\chassis_task.c(604): warning:  #223-D: function "angle_PID_calc" declared implicitly
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_gyro_set = angle_PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid, chassis_move_control_loop->rudder_motor[i]->angle, chassis_move_control_loop->rudder_motor[i]->angle_set,  0);
+..\application\chassis_task.c(604): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_gyro_set = angle_PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid, chassis_move_control_loop->rudder_motor[i]->angle, chassis_move_control_loop->rudder_motor[i]->angle_set,  0);
+..\application\chassis_task.c(604): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_gyro_set = angle_PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid, chassis_move_control_loop->rudder_motor[i]->angle, chassis_move_control_loop->rudder_motor[i]->angle_set,  0);
+..\application\chassis_task.c(604): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_gyro_set = angle_PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid, chassis_move_control_loop->rudder_motor[i]->angle, chassis_move_control_loop->rudder_motor[i]->angle_set,  0);
+..\application\chassis_task.c(605): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid.current_set = PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid, chassis_move_control_loop->rudder_motor[i].chassis_motor_measure->speed, chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_speed_set);
+..\application\chassis_task.c(605): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid.current_set = PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid, chassis_move_control_loop->rudder_motor[i].chassis_motor_measure->speed, chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_speed_set);
+..\application\chassis_task.c(605): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid.current_set = PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid, chassis_move_control_loop->rudder_motor[i].chassis_motor_measure->speed, chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_speed_set);
+..\application\chassis_task.c(605): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid.current_set = PID_calc(chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid, chassis_move_control_loop->rudder_motor[i].chassis_motor_measure->speed, chassis_move_control_loop->rudder_motor[i].rudder_motor_angle_pid.motor_speed_set);
+..\application\chassis_task.c(617): error:  #136: struct "<unnamed>"  has no field "motor_speed_pid"
+          chassis_move_control_loop->motive_motor_chassis[i].give_current = (int16_t)(chassis_move_control_loop->motor_speed_pid[i].out);
+..\application\chassis_task.c(619): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor.given_current = (int16_t)(chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid.current_set);
+..\application\chassis_task.c(619): error:  #136: struct "<unnamed>"  has no field "rudder_motor"
+          chassis_move_control_loop->rudder_motor.given_current = (int16_t)(chassis_move_control_loop->rudder_motor[i].rudder_motor_speed_pid.current_set);
+..\application\chassis_task.c: 9 warnings, 30 errors
+compiling freertos.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\chassis_task.h(304): error:  #81: more than one storage class may not be specified
+  extern static fp32 chassis_rudder_PID_calc(rudder_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+..\application\software_reset_task.h(33): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Src/freertos.c(197): warning:  #144-D: a value of type "void (*)(void *)" cannot be used to initialize an entity of type "os_pthread"
+      osThreadDef(UI, ui_task, osPriorityNormal, 0, 512);
+../Src/freertos.c: 3 warnings, 4 errors
+compiling main.c...
+..\application\vision.h(142): warning:  #1295-D: Deprecated declaration vision_if_find_target - give arg types
+  bool_t vision_if_find_target();
+..\application\vision.h(146): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\chassis_task.h(304): error:  #81: more than one storage class may not be specified
+  extern static fp32 chassis_rudder_PID_calc(rudder_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+../Src/main.c(102): warning:  #9-D: nested comment is not allowed
+    /* USER CODE END 1 */
+../Src/main.c(152): warning:  #223-D: function "vision_init" declared implicitly
+      vision_init();
+../Src/main.c: 5 warnings, 4 errors
+compiling gimbal_task.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\vision.h(142): warning:  #1295-D: Deprecated declaration vision_if_find_target - give arg types
+  bool_t vision_if_find_target();
+..\application\vision.h(146): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\application\gimbal_task.c(208): error:  #20: identifier "YAW_GIMBAL_MOTOR_TOE" is undefined
+      while (toe_is_error(YAW_GIMBAL_MOTOR_TOE) || toe_is_error(PITCH_GIMBAL_MOTOR_TOE))
+..\application\gimbal_task.c(208): error:  #20: identifier "PITCH_GIMBAL_MOTOR_TOE" is undefined
+      while (toe_is_error(YAW_GIMBAL_MOTOR_TOE) || toe_is_error(PITCH_GIMBAL_MOTOR_TOE))
+..\application\gimbal_task.c(235): error:  #20: identifier "YAW_GIMBAL_MOTOR_TOE" is undefined
+          if (!(toe_is_error(YAW_GIMBAL_MOTOR_TOE) && toe_is_error(PITCH_GIMBAL_MOTOR_TOE) && toe_is_error(TRIGGER_MOTOR_TOE)))
+..\application\gimbal_task.c(235): error:  #20: identifier "PITCH_GIMBAL_MOTOR_TOE" is undefined
+          if (!(toe_is_error(YAW_GIMBAL_MOTOR_TOE) && toe_is_error(PITCH_GIMBAL_MOTOR_TOE) && toe_is_error(TRIGGER_MOTOR_TOE)))
+..\application\gimbal_task.c(235): error:  #20: identifier "TRIGGER_MOTOR_TOE" is undefined
+          if (!(toe_is_error(YAW_GIMBAL_MOTOR_TOE) && toe_is_error(PITCH_GIMBAL_MOTOR_TOE) && toe_is_error(TRIGGER_MOTOR_TOE)))
+..\application\gimbal_task.c(528): warning:  #223-D: function "get_yaw_gimbal_motor_measure_point" declared implicitly
+      init->gimbal_yaw_motor.gimbal_motor_measure = get_yaw_gimbal_motor_measure_point();
+..\application\gimbal_task.c(528): error:  #513: a value of type "int" cannot be assigned to an entity of type "const motor_measure_t *"
+      init->gimbal_yaw_motor.gimbal_motor_measure = get_yaw_gimbal_motor_measure_point();
+..\application\gimbal_task.c(529): warning:  #223-D: function "get_pitch_gimbal_motor_measure_point" declared implicitly
+      init->gimbal_pitch_motor.gimbal_motor_measure = get_pitch_gimbal_motor_measure_point();
+..\application\gimbal_task.c(529): error:  #513: a value of type "int" cannot be assigned to an entity of type "const motor_measure_t *"
+      init->gimbal_pitch_motor.gimbal_motor_measure = get_pitch_gimbal_motor_measure_point();
+..\application\gimbal_task.c(542): warning:  #223-D: function "angle_PID_init" declared implicitly
+      angle_PID_init(&init->gimbal_yaw_motor.gimbal_motor_absolute_angle_pid, YAW_GYRO_ABSOLUTE_PID_MAX_OUT, YAW_GYRO_ABSOLUTE_PID_MAX_IOUT, YAW_GYRO_ABSOLUTE_PID_KP, YAW_GYRO_ABSOLUTE_PID_KI, YAW_GYRO_ABSOLUTE_PID_KD);
+..\application\gimbal_task.c(551): warning:  #223-D: function "angle_PID_clear" declared implicitly
+      gimbal_total_pid_clear(init);
+..\application\gimbal_task.c(871): warning:  #223-D: function "angle_PID_calc" declared implicitly
+      gimbal_motor->motor_gyro_set = angle_PID_calc(&gimbal_motor->gimbal_motor_absolute_angle_pid, gimbal_motor->absolute_angle, gimbal_motor->absolute_angle_set, gimbal_motor->motor_gyro/100);
+..\application\gimbal_task.c(892): warning:  #223-D: function "angle_PID_calc" declared implicitly
+      gimbal_motor->motor_gyro_set = angle_PID_calc(&gimbal_motor->gimbal_motor_relative_angle_pid, gimbal_motor->relative_angle, gimbal_motor->relative_angle_set, gimbal_motor->motor_gyro/100);
+..\application\gimbal_task.c(960): warning:  #1-D: last line of file ends without a newline
+  }
+..\application\gimbal_task.c(190): warning:  #177-D: variable "shoot_can_set_current"  was declared but never referenced
+  static int16_t yaw_can_set_current = 0, pitch_can_set_current = 0, shoot_can_set_current = 0;
+..\application\gimbal_task.c: 11 warnings, 10 errors
+compiling oled_task.c...
+..\application\oled_task.c(104): error:  #20: identifier "CHASSIS_MOTOR1_TOE" is undefined
+                  for(i = CHASSIS_MOTOR1_TOE; i < TRIGGER_MOTOR_TOE + 1; i++)
+..\application\oled_task.c(104): error:  #20: identifier "TRIGGER_MOTOR_TOE" is undefined
+                  for(i = CHASSIS_MOTOR1_TOE; i < TRIGGER_MOTOR_TOE + 1; i++)
+..\application\oled_task.c: 0 warnings, 2 errors
+compiling usb_task.c...
+..\application\usb_task.c(66): error:  #20: identifier "CHASSIS_MOTOR1_TOE" is undefined
+              status[error_list_usb_local[CHASSIS_MOTOR1_TOE].error_exist],
+..\application\usb_task.c(67): error:  #20: identifier "CHASSIS_MOTOR2_TOE" is undefined
+              status[error_list_usb_local[CHASSIS_MOTOR2_TOE].error_exist],
+..\application\usb_task.c(68): error:  #20: identifier "CHASSIS_MOTOR3_TOE" is undefined
+              status[error_list_usb_local[CHASSIS_MOTOR3_TOE].error_exist],
+..\application\usb_task.c(69): error:  #20: identifier "CHASSIS_MOTOR4_TOE" is undefined
+              status[error_list_usb_local[CHASSIS_MOTOR4_TOE].error_exist],
+..\application\usb_task.c(70): error:  #20: identifier "YAW_GIMBAL_MOTOR_TOE" is undefined
+              status[error_list_usb_local[YAW_GIMBAL_MOTOR_TOE].error_exist],
+..\application\usb_task.c(71): error:  #20: identifier "PITCH_GIMBAL_MOTOR_TOE" is undefined
+              status[error_list_usb_local[PITCH_GIMBAL_MOTOR_TOE].error_exist],
+..\application\usb_task.c(72): error:  #20: identifier "TRIGGER_MOTOR_TOE" is undefined
+              status[error_list_usb_local[TRIGGER_MOTOR_TOE].error_exist],
+..\application\usb_task.c: 0 warnings, 7 errors
+compiling referee_control.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\chassis_task.h(304): error:  #81: more than one storage class may not be specified
+  extern static fp32 chassis_rudder_PID_calc(rudder_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+..\application\referee_control.c(61): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
+..\application\referee_control.c(61): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
+..\application\referee_control.c(61): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
+..\application\referee_control.c(61): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
+..\application\referee_control.c(61): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
+..\application\referee_control.c(142): error:  #136: struct "<unnamed>"  has no field "motor_speed_pid"
+          total_current += fabs(chassis_power_control->motor_speed_pid[i].out);
+..\application\referee_control.c(149): error:  #136: struct "<unnamed>"  has no field "motor_speed_pid"
+          chassis_power_control->motor_speed_pid[0].out*=current_scale;
+..\application\referee_control.c(150): error:  #136: struct "<unnamed>"  has no field "motor_speed_pid"
+          chassis_power_control->motor_speed_pid[1].out*=current_scale;
+..\application\referee_control.c(151): error:  #136: struct "<unnamed>"  has no field "motor_speed_pid"
+          chassis_power_control->motor_speed_pid[2].out*=current_scale;
+..\application\referee_control.c(152): error:  #136: struct "<unnamed>"  has no field "motor_speed_pid"
+          chassis_power_control->motor_speed_pid[3].out*=current_scale;
+..\application\referee_control.c(222): warning:  #1-D: last line of file ends without a newline
+  }
+..\application\referee_control.c: 7 warnings, 9 errors
+compiling ui_task.c...
+..\application\CAN_Receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\ui_task.c(16): warning:  #47-D: incompatible redefinition of macro "PI"  (declared at line 23 of "..\application\struct_typedef.h")
+  #define PI 3.1415926
+..\application\ui_task.c(42): warning:  #223-D: function "vTaskDelay" declared implicitly
+  		vTaskDelay(1000);
+..\application\ui_task.c(73): warning:  #223-D: function "sin" declared implicitly
+  		Circle_Draw(&G8,"007",UI_Graph_ADD,8,UI_Color_Green,3,960+(int)340*sin((angle)*2*PI/360.0),540+(int)340*cos((angle)*2*PI/360.0),50);
+..\application\ui_task.c(73): warning:  #223-D: function "cos" declared implicitly
+  		Circle_Draw(&G8,"007",UI_Graph_ADD,8,UI_Color_Green,3,960+(int)340*sin((angle)*2*PI/360.0),540+(int)340*cos((angle)*2*PI/360.0),50);
+..\application\ui_task.c: 4 warnings, 1 error
+compiling super_cap_task.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\super_cap_task.c(88): warning:  #223-D: function "vTaskDelay" declared implicitly
+  	vTaskDelay(SUPER_CAP_TASK_INIT_TIME);
+..\application\super_cap_task.c(166): warning:  #111-D: statement is unreachable
+  		vTaskDelay(SUPER_CONTROL_TIME);
+..\application\super_cap_task.c: 2 warnings, 1 error
+compiling servo_task.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\servo_task.c: 1 warning, 3 errors
+compiling shoot_task.c...
+..\application\CAN_receive.h(45): error:  #256: invalid redeclaration of type name "motor_gimbal_id_e"  (declared at line 36)
+  } motor_gimbal_id_e;
+..\application\gimbal_task.h(193): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_absolute_angle_pid;
+..\application\gimbal_task.h(194): error:  #20: identifier "gimbal_PID_t" is undefined
+      gimbal_PID_t gimbal_motor_relative_angle_pid;
+..\application\gimbal_task.h(318): warning:  #1295-D: Deprecated declaration software_reset - give arg types
+  extern void software_reset();
+..\application\chassis_task.h(304): error:  #81: more than one storage class may not be specified
+  extern static fp32 chassis_rudder_PID_calc(rudder_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+..\application\shoot_task.c(122): warning:  #223-D: function "get_trigger_motor_measure_point" declared implicitly
+      shoot_control.trigger_motor_measure = get_trigger_motor_measure_point();
+..\application\shoot_task.c(122): error:  #513: a value of type "int" cannot be assigned to an entity of type "const motor_measure_t *"
+      shoot_control.trigger_motor_measure = get_trigger_motor_measure_point();
+..\application\shoot_task.c(123): warning:  #223-D: function "get_fric_motor_measure_point" declared implicitly
+      shoot_control.fric_motor[LEFT].fric_motor_measure = get_fric_motor_measure_point(LEFT);
+..\application\shoot_task.c(123): error:  #513: a value of type "int" cannot be assigned to an entity of type "const motor_measure_t *"
+      shoot_control.fric_motor[LEFT].fric_motor_measure = get_fric_motor_measure_point(LEFT);
+..\application\shoot_task.c(124): error:  #513: a value of type "int" cannot be assigned to an entity of type "const motor_measure_t *"
+      shoot_control.fric_motor[RIGHT].fric_motor_measure = get_fric_motor_measure_point(RIGHT);
+..\application\shoot_task.c(380): warning:  #223-D: function "abs" declared implicitly
+      if(shoot_control.shoot_mode == SHOOT_READY_FRIC &&(abs(shoot_control.fric_motor[LEFT].fric_motor_measure->speed_rpm)>abs(shoot_control.fric_motor[LEFT].require_speed) || abs(shoot_control.fric_motor[RIGHT].fric_motor_measure->speed_rpm)>abs(shoot_control.fric_motor[RIGHT].require_speed)))
+..\application\shoot_task.c(527): warning:  #1-D: last line of file ends without a newline
+  }
+..\application\shoot_task.c: 5 warnings, 7 errors
+"standard_tpye_c\standard_tpye_c.axf" - 95 Error(s), 57 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:03
