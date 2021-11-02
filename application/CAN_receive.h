@@ -29,6 +29,11 @@
 #define CHASSIS_CAN hcan1
 #define SUPER_CAP_CAN hcan2
 
+// #define GIMBAL_CAN hcan1
+// #define SHOOT_CAN hcan1
+// #define CHASSIS_CAN hcan2
+// #define SUPER_CAP_CAN hcan1
+
 //云台机构电机编号
 enum gimbal_motor_id_e
 {

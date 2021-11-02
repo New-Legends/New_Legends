@@ -24,9 +24,7 @@
 #include "pid.h"
 #include "user_lib.h"
 
-//测试模式下,CHASSIS_TEST 1 则输出电流为0
-#define CHASSIS_MOTIVE_TEST 1
-#define CHASSIS_RUDDER_TEST 0
+
 
 //in the beginning of task ,wait a time
 //任务开始空闲一段时间
@@ -103,11 +101,9 @@
 #define M3508_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f
 #define CHASSIS_MOTOR_RPM_TO_VECTOR_SEN M3508_MOTOR_RPM_TO_VECTOR
 
-//gm6020 rmp change to chassis speed,   待测的
-//gm6020转化成底盘速度(m/s)的比例， 
-#define GM6020_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f*3591/187
-
-
+//gm6020 rmp change to chassis speed,   
+//gm6020转化成底盘速度(m/s)的比例，
+#define GM6020_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f * 187 / 3591
 
 //单个底盘电机最大速度
 #define MAX_WHEEL_SPEED 4.0f   //4
@@ -129,8 +125,10 @@
 #define RUDDER_OFFSET 5483  //编码器
 
 
-#define MIN_RUDDER_ANGLE -3.0f
-#define MAX_RUDDER_ANGLE 3.0f
+
+#define MIN_RUDDER_ANGLE -PI
+#define MID_RUDDER_ANGLE 0.0f
+#define MAX_RUDDER_ANGLE PI
 
 #define ACCEL_RUDDER_NUM 0.002f
 
@@ -143,7 +141,7 @@
 //chassis motor speed PID
 //底盘电机速度环PID
 #define MOTIVE_MOTOR_SPEED_PID_KP 6000.0f
-#define MOTIVE_MOTOR_SPEED_PID_KI 0.0f
+#define MOTIVE_MOTOR_SPEED_PID_KI 0.1f
 #define MOTIVE_MOTOR_SPEED_PID_KD 2.0f 
 #define MOTIVE_MOTOR_SPEED_PID_MAX_OUT  6000.0f
 #define MOTIVE_MOTOR_SPEED_PID_MAX_IOUT 2000.0f
@@ -151,14 +149,14 @@
 //chassis follow angle PID
 //底盘旋转跟随PID
 #define CHASSIS_FOLLOW_GIMBAL_PID_KP 30.0f
-#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.0f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.1f
 #define CHASSIS_FOLLOW_GIMBAL_PID_KD 2.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 6.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.0f
 
 
 //底盘舵向电机 速度环 PID参数以及 PID最大输出，积分输出
-#define RUDDER_MOTOR_SPEED_PID_KP 200.0f //2900
+#define RUDDER_MOTOR_SPEED_PID_KP 1000.0f //2900
 #define RUDDER_MOTOR_SPEED_PID_KI 0.0f
 #define RUDDER_MOTOR_SPEED_PID_KD 0.0f
 #define RUDDER_MOTOR_SPEED_PID_MAX_OUT 30000.0f
@@ -200,8 +198,9 @@ typedef struct
   uint16_t offset_ecd;
 
   fp32 max_angle; //rad
-  fp32 min_angle; //rad
   fp32 mid_angle; //rad
+  fp32 min_angle; //rad
+
 
   fp32 angle;
   fp32 angle_set;

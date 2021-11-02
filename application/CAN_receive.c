@@ -31,6 +31,8 @@
 
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
+
+
 //motor data read
 #define get_motor_measure(ptr, data)                                    \
     {                                                                   \
@@ -96,32 +98,39 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         case CAN_LEFT_FRIC_MOTOR_ID:
           get_motor_measure(&motor_shoot[0], rx_data);
           detect_hook(SHOOT_LEFT_FRIC_MOTOR_ID);
+          break;
 
         case CAN_RIGHT_FRIC_MOTOR_ID:
           get_motor_measure(&motor_shoot[1], rx_data);
           detect_hook(SHOOT_RIGHT_FRIC_MOTOR_ID);
+          break;
 
         case CAN_TRIGGER_MOTOR_ID:
           get_motor_measure(&motor_shoot[2], rx_data);
           detect_hook(SHOOT_TRIGGER_MOTOR_TOE);
+          break;
 
         case CAN_MAGAZINE_MOTOR_ID:
           get_motor_measure(&motor_shoot[3], rx_data);
           detect_hook(SHOOT_MAGAZINE_MOTOR_TOE);
+          break;
 
         //云台机构电机
         case CAN_YAW_MOTOR_ID:
           get_motor_measure(&motor_gimbal[0], rx_data);
           detect_hook(GIMBAL_YAW_MOTOR_TOE);
+          break;
 
         case CAN_PITCH_MOTOR_ID:
           get_motor_measure(&motor_gimbal[1], rx_data);
           detect_hook(GIMBAL_PITCH_MOTOR_TOE);
+          break;
 
         //超级电容
         case CAN_SUPER_CAP_ID:
           get_cap_merasure(rx_data);
           detect_hook(SUPER_CAP_TOE);
+          break;
 
         default:
         {
@@ -144,35 +153,43 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
       case CAN_MOTIVE_FR_MOTOR_ID:
         get_motor_measure(&motor_chassis_motive[0], rx_data);
         detect_hook(CHASSIS_MOTIVE_FR_MOTOR_TOE);
+        break;
 
       case CAN_MOTIVE_FL_MOTOR_ID:
         get_motor_measure(&motor_chassis_motive[1], rx_data);
         detect_hook(CHASSIS_MOTIVE_FL_MOTOR_TOE);
+        break;
 
       case CAN_MOTIVE_BL_MOTOR_ID:
         get_motor_measure(&motor_chassis_motive[2], rx_data);
         detect_hook(CHASSIS_MOTIVE_BL_MOTOR_TOE);
+        break;
 
       case CAN_MOTIVE_BR_MOTOR_ID:
         get_motor_measure(&motor_chassis_motive[3], rx_data);
         detect_hook(CHASSIS_MOTIVE_BR_MOTOR_TOE);
+        break;
 
       //底盘舵向电机
       case CAN_RUDDER_FL_MOTOR_ID:
         get_motor_measure(&motor_chassis_rudder[0], rx_data);
         detect_hook(CHASSIS_RUDDER_FR_MOTOR_TOE);
+        break;
 
       case CAN_RUDDER_FR_MOTOR_ID:
         get_motor_measure(&motor_chassis_rudder[1], rx_data);
         detect_hook(CHASSIS_RUDDER_FL_MOTOR_TOE);
+        break;
 
       case CAN_RUDDER_BL_MOTOR_ID:
         get_motor_measure(&motor_chassis_rudder[2], rx_data);
         detect_hook(CHASSIS_RUDDER_BL_MOTOR_TOE);
+        break;
 
       case CAN_RUDDER_BR_MOTOR_ID:
         get_motor_measure(&motor_chassis_rudder[3], rx_data);
         detect_hook(CHASSIS_RUDDER_BR_MOTOR_TOE);
+        break;
 
       default:
       {

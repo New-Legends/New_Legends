@@ -159,8 +159,10 @@
 #define YAW_OFFSET        6051  //±àÂëÆ÷
 #define PITCH_OFFSET      397 //±àÂëÆ÷
 
-#define MIN_YAW         -3.0f
-#define MAX_YAW         3.0f
+// #define MIN_YAW         -3.0f
+// #define MAX_YAW         3.0f
+#define MIN_YAW               -PI
+#define MAX_YAW               PI
 
 #define MIN_PITCH      -0.28f
 #define MAX_PITCH      0.48f
