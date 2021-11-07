@@ -139,7 +139,7 @@ void shoot_init(void)
     
     //摩擦轮,弹仓舵机,限位舵机状态
     shoot_control.fric_status = FALSE;
-    shoot_control.magazine_status = FALSE;
+    shoot_control.cover_status = FALSE;
     shoot_control.limit_switch_status = FALSE;
 
     //记录上一次按键值
@@ -516,7 +516,7 @@ static void shoot_bullet_control(void)
 
 bool_t shoot_cmd_to_gimbal_stop(void)
 {
-    if (shoot_control.magazine_status == TRUE)
+    if (shoot_control.cover_status == TRUE)
     {
         return 1;
     }

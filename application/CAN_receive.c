@@ -110,9 +110,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
           detect_hook(SHOOT_TRIGGER_MOTOR_TOE);
           break;
 
-        case CAN_MAGAZINE_MOTOR_ID:
+        case CAN_COVER_MOTOR_ID:
           get_motor_measure(&motor_shoot[3], rx_data);
-          detect_hook(SHOOT_MAGAZINE_MOTOR_TOE);
+          detect_hook(SHOOT_COVER_MOTOR_TOE);
           break;
 
         //云台机构电机
@@ -315,7 +315,7 @@ void CAN_cmd_chassis_rudder(int16_t motor1, int16_t motor2, int16_t motor3, int1
   * @param[in]      保留: (0x208) 保留，电机控制电流
   * @retval         none
   */
-void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger, int16_t magazine)
+void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger, int16_t COVER)
 {
     uint32_t send_mail_box;
     shoot_tx_message.StdId = CAN_SHOOT_ALL_ID;
@@ -328,8 +328,8 @@ void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger, int16
     shoot_can_send_data[3] = right_fric;
     shoot_can_send_data[4] = (trigger >> 8);
     shoot_can_send_data[5] = trigger;
-    shoot_can_send_data[6] = (magazine >> 8);
-    shoot_can_send_data[7] = magazine;
+    shoot_can_send_data[6] = (COVER >> 8);
+    shoot_can_send_data[7] = COVER;
 
     HAL_CAN_AddTxMessage(&SHOOT_CAN, &shoot_tx_message, shoot_can_send_data, &send_mail_box);
 

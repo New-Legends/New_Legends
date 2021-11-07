@@ -25,8 +25,9 @@ static void buzzer_warn_error(uint8_t num);
 
 const error_t *error_list_test_local;
 
-
-
+uint8_t exit_flag = 0;
+uint8_t rising_falling_flag;
+uint8_t buzzer_close_flag = 0;
 /**
   * @brief          test task
   * @param[in]      pvParameters: NULL
@@ -58,18 +59,73 @@ void test_task(void const * argument)
             }
         }
 
-        //no error, stop buzzer
-        //ĂťÓĐ´íÎó, ÍŁÖšˇäĂůĆ÷
-        if(error == 0 && last_error != 0)
+        if (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_RESET && exit_flag  == 0)
+        {
+            exit_flag = 1;
+            rising_falling_flag = HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin);
+        }
+            
+
+        //前台程序
+        if (exit_flag == 1)
+        {
+            exit_flag = 2;
+            if (rising_falling_flag == GPIO_PIN_RESET)
+            {
+                //debouce
+                //消抖
+                HAL_Delay(20);
+                if (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_RESET)
+                {
+                    if (buzzer_close_flag == 0)
+                        buzzer_close_flag = 1;
+                    else if (buzzer_close_flag == 1)
+                        buzzer_close_flag = 0;
+
+                    exit_flag = 0;
+                }
+                else
+                {
+                    exit_flag = 0;
+                }
+            }
+            else if (rising_falling_flag == GPIO_PIN_SET)
+            {
+                //debouce
+                //消抖
+                HAL_Delay(20);
+                if (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_SET)
+                {
+                    exit_flag = 0;
+                }
+                else
+                {
+                    exit_flag = 0;
+                }
+            }
+        }
+
+        //关闭蜂鸣器
+        if (buzzer_close_flag == 1)
         {
             buzzer_off();
         }
-        //have error
-        //有错误
-        if(error)
+        else //打开蜂鸣器
         {
-            buzzer_warn_error(error_num+1);
+            //no error, stop buzzer
+            //没有错误, 停止蜂鸣器
+            if (error == 0 && last_error != 0)
+            {
+                buzzer_off();
+            }
+            //have error
+            //有错误
+            if (error)
+            {
+                buzzer_warn_error(error_num + 1);
+            }
         }
+
 
         last_error = error;
         osDelay(10);

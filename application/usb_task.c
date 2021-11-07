@@ -66,7 +66,7 @@ referee usart:%s\r\n\
             status[error_list_usb_local[SHOOT_LEFT_FRIC_MOTOR_ID].error_exist],
             status[error_list_usb_local[SHOOT_RIGHT_FRIC_MOTOR_ID].error_exist],
             status[error_list_usb_local[SHOOT_TRIGGER_MOTOR_TOE].error_exist],
-            status[error_list_usb_local[SHOOT_MAGAZINE_MOTOR_TOE].error_exist],
+            status[error_list_usb_local[SHOOT_COVER_MOTOR_TOE].error_exist],
             status[error_list_usb_local[GIMBAL_YAW_MOTOR_TOE].error_exist],
             status[error_list_usb_local[GIMBAL_PITCH_MOTOR_TOE].error_exist],
             status[error_list_usb_local[CHASSIS_MOTIVE_FR_MOTOR_TOE].error_exist],

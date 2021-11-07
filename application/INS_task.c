@@ -52,7 +52,7 @@
     0.0f, 0.0f, 1.0f                      \
   }
 
-                                                                                                                                                                                       /**
+/**
   * @brief          rotate the gyro, accel and mag, and calculate the zero drift, because sensors have 
   *                 different install derection.
   * @param[out]     gyro: after plus zero drift and rotate
@@ -62,7 +62,7 @@
   * @param[in]      ist8310: mag data
   * @retval         none
   */
-                                                                                                                                                                                       /**
+/**
   * @brief          旋转陀螺仪,加速度计和磁力计,并计算零漂,因为设备有不同安装方式
   * @param[out]     gyro: 加上零漂和旋转
   * @param[out]     accel: 加上零漂和旋转
@@ -71,7 +71,7 @@
   * @param[in]      ist8310: 磁力计数据
   * @retval         none
   */
-                                                                                                                                                                                       static void imu_cali_slove(fp32 gyro[3], fp32 accel[3], fp32 mag[3], bmi088_real_data_t *bmi088, ist8310_real_data_t *ist8310);
+static void imu_cali_slove(fp32 gyro[3], fp32 accel[3], fp32 mag[3], bmi088_real_data_t *bmi088, ist8310_real_data_t *ist8310);
 
 /**
   * @brief          control the temperature of bmi088
@@ -521,6 +521,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
   }
+
+
 }
 
 /**

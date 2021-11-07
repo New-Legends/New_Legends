@@ -47,7 +47,7 @@ enum shoot_motor_id_e
   LEFT_FRIC_MOTOR = 0,
   RIGHT_FRIC_MOTOR,
   TRIGGER_MOTOR,
-  MAGAZINE_MOTOR,
+  COVER_MOTOR,
 };
 
 //底盘动力电机编号
@@ -79,7 +79,7 @@ typedef enum
   CAN_LEFT_FRIC_MOTOR_ID = 0x201,
   CAN_RIGHT_FRIC_MOTOR_ID = 0x202,
   CAN_TRIGGER_MOTOR_ID = 0x203,
-  CAN_MAGAZINE_MOTOR_ID = 0X204,
+  CAN_COVER_MOTOR_ID = 0X204,
   CAN_SHOOT_ALL_ID = 0x200,
 
   //云台电机接收ID CAN1
@@ -167,7 +167,7 @@ extern void CAN_cmd_chassis_rudder(int16_t motor1, int16_t motor2, int16_t motor
   * @param[in]      保留: (0x208) 保留，电机控制电流
   * @retval         none
   */
-extern void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger, int16_t magazine);
+extern void CAN_cmd_shoot(int16_t left_fric, int16_t right_fric, int16_t trigger, int16_t COVER);
 
 /**
   * @brief          超级电容发送功率输出

@@ -30,7 +30,7 @@
 #define PWM_DETAL_VALUE 10
 
 //弹仓舵机开关
-#define SERVO_MAGAZINE_KEY KEY_PRESSED_OFFSET_R
+#define SERVO_cover_KEY KEY_PRESSED_OFFSET_R
 
 
 const RC_ctrl_t *servo_rc;
@@ -48,7 +48,7 @@ const uint16_t servo_close_pwm[4] = {SERVO_MAX_PWM, SERVO_MAX_PWM, SERVO_MAX_PWM
 //舵机发送的控制值
 uint16_t servo_pwm[4] = {SERVO_MIN_PWM, SERVO_MIN_PWM, SERVO_MIN_PWM, SERVO_MIN_PWM};
 //弹仓按键计算 保证双击情况下打开弹仓
-uint8_t magazine_key_num = 0;
+uint8_t cover_key_num = 0;
 
 
 
@@ -64,22 +64,22 @@ void servo_task(void const * argument)
     while(1)
     {       
         if(KEY_SENVO)
-            magazine_key_num++;
+            cover_key_num++;
   
         //双击R键 打开或弹仓
-        if(magazine_key_num >= 2 && shoot_control.magazine_status == FALSE)
+        if(cover_key_num >= 2 && shoot_control.cover_status == FALSE)
         {   
             //打开弹仓
             servo_pwm[0] = servo_open_pwm[0];
-            shoot_control.magazine_status = TRUE;
-            magazine_key_num = 0;
+            shoot_control.cover_status = TRUE;
+            cover_key_num = 0;
         }
-        else if(magazine_key_num >= 2 && shoot_control.magazine_status == TRUE)
+        else if(cover_key_num >= 2 && shoot_control.cover_status == TRUE)
         {
             //关闭弹仓
             servo_pwm[0] = servo_close_pwm[0];
-            shoot_control.magazine_status = FALSE; 
-            magazine_key_num = 0;   
+            shoot_control.cover_status = FALSE; 
+            cover_key_num = 0;   
         }
 
         

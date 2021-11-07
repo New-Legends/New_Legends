@@ -175,7 +175,7 @@ typedef struct
 
     //摩擦轮电机 弹仓舵机 限位开关 状态
     bool_t fric_status;
-    bool_t magazine_status;
+    bool_t cover_status;
     bool_t limit_switch_status;
   
     //鼠标状态
