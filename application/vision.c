@@ -58,7 +58,7 @@ void vision_read_data(uint8_t *ReadFormUart)
 	//判断帧头数据是否为0xA5
 	if(ReadFormUart[0] == VISION_BEGIN)
 	{
-		//判断帧头数据是否为0xff  
+		//判断帧尾数据是否为0xff  
 		if(ReadFormUart[17] == VISION_END)
 		{
 
@@ -114,7 +114,7 @@ void vision_send_data(uint8_t CmdID)
 	
   
   //将打包好的数据通过串口移位发送到西奥迪男
-  HAL_UART_Transmit(&huart1, vision_send_pack, 4, 0xFFF);
+ HAL_UART_Transmit(&huart1, vision_send_pack, 4, 0xFFF);
   
 
 	memset(vision_send_pack, 0, 50);

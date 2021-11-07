@@ -393,13 +393,13 @@ static void shoot_set_mode(shoot_control_t *shoot_control)
 
     
 
-        //摩擦轮速度达到一定值,才可开启拨盘  为了便于测试,这里至少需要一个摩擦轮电机达到拨盘启动要求就可以开启拨盘
-        if(shoot_control->shoot_mode == SHOOT_READY_FRIC &&(abs(shoot_control->fric_motor[LEFT].fric_motor_measure->speed_rpm)>abs(shoot_control->fric_motor[LEFT].require_speed) || abs(shoot_control->fric_motor[RIGHT].fric_motor_measure->speed_rpm)>abs(shoot_control->fric_motor[RIGHT].require_speed)))
-        {
-            shoot_control->fric_status = TRUE;     
+       // 摩擦轮速度达到一定值,才可开启拨盘  为了便于测试,这里至少需要一个摩擦轮电机达到拨盘启动要求就可以开启拨盘
+       if(shoot_control->shoot_mode == SHOOT_READY_FRIC &&(abs(shoot_control->fric_motor[LEFT].fric_motor_measure->speed_rpm)>abs(shoot_control->fric_motor[LEFT].require_speed) || abs(shoot_control->fric_motor[RIGHT].fric_motor_measure->speed_rpm)>abs(shoot_control->fric_motor[RIGHT].require_speed)))
+       {
+           shoot_control->fric_status = TRUE;     
             shoot_control->shoot_mode = SHOOT_READY_BULLET;
-        }
-        else if(shoot_control->shoot_mode == SHOOT_READY_BULLET && shoot_control->key == SWITCH_TRIGGER_ON)
+       }
+         if(shoot_control->shoot_mode == SHOOT_READY_BULLET && shoot_control->key == SWITCH_TRIGGER_ON)
         {
             shoot_control->shoot_mode = SHOOT_READY;
         }
