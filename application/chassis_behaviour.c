@@ -102,7 +102,6 @@ static void chassis_no_follow_yaw_control(fp32 *vy_set, chassis_move_t *chassis_
 
 static void chassis_open_set_control(fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector);
 
-ext_event_data_t changdi;
 
 //留意，这个底盘行为模式变量
 chassis_behaviour_e chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
@@ -260,8 +259,7 @@ int sj_flag =0;
 
 static void chassis_no_follow_yaw_control(fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector)
 {
-    char ch[100];
-    sprintf(ch, "%s", changdi.event_type); 
+    
     if (vy_set == NULL || chassis_move_rc_to_vector == NULL)
     {
         return;
@@ -286,7 +284,8 @@ static void chassis_no_follow_yaw_control(fp32 *vy_set, chassis_move_t *chassis_
     }
     else if(chassis_move_rc_to_vector->chassis_control_way == AUTO)  //自动程序控制
     {
-        if(ch[10]==1){//前哨站存活,停在右边
+        output_state();
+        if(field_event_outpost == 1){//前哨站存活,停在右边
             if(chassis_move_rc_to_vector->left_light_sensor == TRUE && chassis_move_rc_to_vector->right_light_sensor == TRUE)
             {
                 chassis_move_rc_to_vector->direction = NO_MOVE;
@@ -305,7 +304,7 @@ static void chassis_no_follow_yaw_control(fp32 *vy_set, chassis_move_t *chassis_
             }
 
         }
-        if(ch[10]==0){//前哨站被击毁，开始巡逻
+        if(field_event_outpost == 0){//前哨站被击毁，开始巡逻
             //底盘基础巡逻轨迹
             /*
             左边识别 右边识别    静止不动
@@ -356,11 +355,11 @@ static void chassis_no_follow_yaw_control(fp32 *vy_set, chassis_move_t *chassis_
         //根据不同情况设置速度等级
         if(if_hit())
         {
-            *vy_set = CHASSIS_MID_SPEED;
+            *vy_set = CHASSIS_HIGH_SPEED;
         }
         else
         {
-            *vy_set = CHASSIS_HIGH_SPEED;
+            *vy_set = CHASSIS_MID_SPEED;
         }
 
         //防止缓冲能量全用完

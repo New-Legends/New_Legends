@@ -107,6 +107,7 @@ void shoot_task(void const *pvParameters)
             {
                 //发送控制电流
                 CAN_cmd_chassis_shoot(shoot_control.given_current, shoot_control.fric_motor[LEFT].give_current, shoot_control.fric_motor[RIGHT].give_current, chassis_move.motor_chassis.give_current);
+                //CAN_cmd_chassis_shoot(0, 0, 0, 0);
             }
         }
 

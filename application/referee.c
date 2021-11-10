@@ -31,7 +31,7 @@ ext_student_interactive_data_t student_interactive_data_t;
 uint8_t Judge_Self_ID;//当前机器人的ID
 uint16_t Judge_SelfClient_ID;//发送者机器人对应的客户端ID
 
-
+int field_event_outpost;
 
 
 
@@ -172,6 +172,17 @@ void referee_data_solve(uint8_t *frame)
     }
 }
 
+//判断前哨站状态
+void output_state(void){
+    if(game_robot_HP_t.red_outpost_HP>0){
+        field_event_outpost=1;
+    }
+    else 
+    {
+        field_event_outpost=0;
+    }
+}
+
 
 
 //返回机器人ID
@@ -279,7 +290,7 @@ bool_t if_hit()
   * @retval RED   BLUE
   * @attention  数据打包,打包完成后通过串口发送到裁判系统
   */
-bool_t Color;
+
 bool_t is_red_or_blue(void)
 {
 	Judge_Self_ID = robot_state.robot_id;//读取当前机器人ID
@@ -301,6 +312,7 @@ bool_t is_red_or_blue(void)
   */
 void determine_ID(void)
 {
+    bool_t Color;
 	Color = is_red_or_blue();
 	if(Color == BLUE)
 	{

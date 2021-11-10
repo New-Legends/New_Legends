@@ -47,24 +47,29 @@ typedef __packed struct //0002
 } ext_game_result_t;
 typedef __packed struct
 {
-    uint16_t red_1_robot_HP;
-    uint16_t red_2_robot_HP;
-    uint16_t red_3_robot_HP;
-    uint16_t red_4_robot_HP;
-    uint16_t red_5_robot_HP;
-    uint16_t red_7_robot_HP;
-    uint16_t red_base_HP;
-    uint16_t blue_1_robot_HP;
-    uint16_t blue_2_robot_HP;
-    uint16_t blue_3_robot_HP;
-    uint16_t blue_4_robot_HP;
-    uint16_t blue_5_robot_HP;
-    uint16_t blue_7_robot_HP;
-    uint16_t blue_base_HP;
+    uint16_t red_1_robot_HP;	// 红1英雄机器人血量(未上场及罚下血量为0)
+	uint16_t red_2_robot_HP;	// 红2工程机器人血量
+	uint16_t red_3_robot_HP;	// 红3步兵机器人血量
+	uint16_t red_4_robot_HP;	// 红4步兵机器人血量
+	uint16_t red_5_robot_HP;	// 红5步兵机器人血量
+	uint16_t red_7_robot_HP;	// 红7哨兵机器人血量
+	uint16_t red_outpost_HP;	// 红方前哨站血量
+	uint16_t red_base_HP;		// 红方基地血量
+	uint16_t blue_1_robot_HP;	// 蓝1英雄机器人血量
+	uint16_t blue_2_robot_HP;	// 蓝2工程机器人血量
+	uint16_t blue_3_robot_HP;	// 蓝3步兵机器人血量
+	uint16_t blue_4_robot_HP;	// 蓝4步兵机器人血量
+	uint16_t blue_5_robot_HP;	// 蓝5步兵机器人血量
+	uint16_t blue_7_robot_HP;	// 蓝7哨兵机器人血量
+	uint16_t blue_outpost_HP;	// 蓝方前哨站血量
+	uint16_t blue_base_HP;		// 蓝方基地血量	
 } ext_game_robot_HP_t;
-typedef __packed struct //0101
+typedef __packed struct//0x0101
 {
-    uint32_t event_type;
+    uint32_t others_1 : 10;
+    uint32_t outpost  : 1;
+    uint32_t others_2 : 21;
+//	uint32_t event_type;
 } ext_event_data_t;
 
 typedef __packed struct //0x0102
@@ -199,6 +204,8 @@ extern void referee_data_solve(uint8_t *frame);
 extern void get_chassis_power_and_buffer(fp32 *power, fp32 *buffer);
 
 extern uint8_t get_robot_id(void);
+extern void output_state(void);
+extern int field_event_outpost;
 
 
 //17mm枪口热量上限, 17mm枪口实时热量 默认ID1
