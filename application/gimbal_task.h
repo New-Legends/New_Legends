@@ -73,9 +73,9 @@
 #define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define YAW_ENCODE_RELATIVE_PID_KP        2.0  //8
+#define YAW_ENCODE_RELATIVE_PID_KP        1.0  //8
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
-#define YAW_ENCODE_RELATIVE_PID_KD        1.5f
+#define YAW_ENCODE_RELATIVE_PID_KD        0.5f
 #define YAW_ENCODE_RELATIVE_PID_MAX_OUT   10.0f
 #define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  0.0f
 
@@ -94,7 +94,8 @@
 //向后转头180 按键
 #define TURN_180_KEYBOARD KEY_PRESSED_OFFSET_V
 //转头云台速度
-#define TURN_SPEED    0.004f  
+#define TURN_SPEED_YAW    0.003f 
+#define TURN_SPEED_PITCH    0.002f 
 //遥控器输入死区，因为遥控器存在差异，摇杆在中间，其值不一定为零
 #define RC_DEADBAND   10
 
@@ -160,14 +161,14 @@
 
 
 //限幅 需要自己手动校准  
-#define YAW_OFFSET        6506  //编码器
-#define PITCH_OFFSET      3500 //编码器
+#define YAW_OFFSET        1500  //编码器
+#define PITCH_OFFSET      3000 //编码器
 
 #define MIN_YAW         -2*PI
 #define MAX_YAW         2*PI
 
-#define MIN_PITCH      -2.9f
-#define MAX_PITCH      2.95f
+#define MIN_PITCH      -3.14f
+#define MAX_PITCH      -1.5f
 
 
 #define MIN_ABSOULATE_YAW     -PI
@@ -180,8 +181,8 @@
 #define MIN_PATROL_YAW -3.0F
 #define MAX_PATROL_YAW 3.0F
 
-#define MIN_PATROL_PITCH -2.9f
-#define MAX_PATROL_PITCH 2.8f
+#define MIN_PATROL_PITCH -2.7f
+#define MAX_PATROL_PITCH -2.4f
 
 //旋转方向
 #define CCW 0  //逆时针
