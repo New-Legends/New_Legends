@@ -742,7 +742,7 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
     {
         return;
     }
-    //云台陀螺仪绝对角度控制模式下，切换自动控制和遥控器控制
+    //云台陀螺仪相对角度控制模式下，切换自动控制和遥控器控制
     if (switch_is_up(gimbal_control_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
         gimbal_control_set->gimbal_control_way = AUTO;
@@ -759,7 +759,7 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
     rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
     rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel, RC_DEADBAND);
 
-    *yaw = yaw_channel * YAW_RC_SEN - gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
+        *yaw = yaw_channel * YAW_RC_SEN - gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
     *pitch = pitch_channel * PITCH_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.y * PITCH_MOUSE_SEN;
 
     }
@@ -774,12 +774,15 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
         else    //未识别到目标，进入巡逻状态
         {
             //yaw轴巡逻
-           
+            // output_state();
+            // if(field_event_outpost == 1){//前哨站存活
+                
+            // }
             
             if(gimbal_control_set->yaw_patrol_dir == CCW)  //yaw轴逆时针旋转
             {
-                *yaw += TURN_SPEED;
-                if(MAX_PATROL_YAW - gimbal_control_set->gimbal_yaw_motor.relative_angle < 0.1f)
+                *yaw -= TURN_SPEED;
+                if(gimbal_control_set->gimbal_yaw_motor.relative_angle - MIN_PATROL_YAW < 0.1f)
                 {
                     gimbal_control_set->yaw_patrol_dir = CW;
 
@@ -787,8 +790,8 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
             }
             else if(gimbal_control_set->yaw_patrol_dir == CW)  //yaw轴顺时针旋转
             {
-                *yaw -= TURN_SPEED;
-                if(gimbal_control_set->gimbal_yaw_motor.relative_angle - MIN_PATROL_YAW < 0.1f)
+                *yaw += TURN_SPEED;
+                if(MAX_PATROL_YAW - gimbal_control_set->gimbal_yaw_motor.relative_angle < 0.1f)
                 {
                     gimbal_control_set->yaw_patrol_dir = CCW;
 
@@ -799,35 +802,25 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
            
 
             //pitch轴巡逻
-            if(gimbal_control_set->pitch_patrol_dir == CCW)  //yaw轴逆时针旋转
-            {
-                gimbal_control_set->gimbal_pitch_motor.absolute_angle_set = rad_format(MAX_PATROL_PITCH);
-            }
-            else if(gimbal_control_set->pitch_patrol_dir == CW)  //yaw轴顺时针旋转
-            {
-                gimbal_control_set->gimbal_pitch_motor.absolute_angle_set = rad_format(MIN_PATROL_PITCH);
-            }
+            // if(gimbal_control_set->pitch_patrol_dir == CCW)  //yaw轴逆时针旋转
+            // {
+            //     *pitch += TURN_SPEED;
+            //     if(MAX_PATROL_PITCH - gimbal_control_set->gimbal_pitch_motor.relative_angle < 0.1f)
+            //     {
+            //         gimbal_control_set->pitch_patrol_dir =CW;
 
-            //不断控制到掉头的目标值，正转，反装是随机
-            if (rad_format(gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle) > 0.0f)
-            {      
-                *pitch += TURN_SPEED;
-            }
-            else
-            {        
-                *pitch -= TURN_SPEED;
-            }
+            //     }
+            // }
+            // else if(gimbal_control_set->pitch_patrol_dir == CW)  //yaw轴顺时针旋转
+            // {
+            //     *pitch -= TURN_SPEED;
+            //     if(gimbal_control_set->gimbal_pitch_motor.relative_angle - MIN_PATROL_PITCH < 0.1f)
+            //     {
+            //         gimbal_control_set->pitch_patrol_dir = CCW;
+
+            //     }
+            // }
             
-            //到达对应角度后向方向旋转
-            if (fabs(rad_format(gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle)) < 0.01f)
-            {
-                if(gimbal_control_set->pitch_patrol_dir == CW)
-                    gimbal_control_set->pitch_patrol_dir = CCW;
-                else if(gimbal_control_set->pitch_patrol_dir == CW)
-                    gimbal_control_set->pitch_patrol_dir == CCW;
-            }
-
-
         }
     }
    

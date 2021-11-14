@@ -37,7 +37,7 @@
 
 
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_SPEED_PID_KP        2000.0f  //2900
+#define PITCH_SPEED_PID_KP        2500.0f  //2900
 #define PITCH_SPEED_PID_KI        0.0f
 #define PITCH_SPEED_PID_KD        0.4f
 #define PITCH_SPEED_PID_MAX_OUT   30000.0f
@@ -51,21 +51,21 @@
 #define YAW_SPEED_PID_MAX_IOUT  5000.0f
 
 //pitch 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_ABSOLUTE_PID_KP 13.0f   //15
+#define PITCH_GYRO_ABSOLUTE_PID_KP 8.0f   //15
 #define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
 #define PITCH_GYRO_ABSOLUTE_PID_KD 0.1f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 6.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define YAW_GYRO_ABSOLUTE_PID_KP        4.0f  //26
+#define YAW_GYRO_ABSOLUTE_PID_KP        1.0f  //26
 #define YAW_GYRO_ABSOLUTE_PID_KI        0.0f
 #define YAW_GYRO_ABSOLUTE_PID_KD        0.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   4.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 
 //pitch 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define PITCH_ENCODE_RELATIVE_PID_KP 15.0f  //15
+#define PITCH_ENCODE_RELATIVE_PID_KP 10.0f  //15
 #define PITCH_ENCODE_RELATIVE_PID_KI 0.0f
 #define PITCH_ENCODE_RELATIVE_PID_KD 0.0f
 
@@ -73,9 +73,9 @@
 #define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define YAW_ENCODE_RELATIVE_PID_KP        8.0f  //8
+#define YAW_ENCODE_RELATIVE_PID_KP        2.0  //8
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
-#define YAW_ENCODE_RELATIVE_PID_KD        0.0f
+#define YAW_ENCODE_RELATIVE_PID_KD        1.5f
 #define YAW_ENCODE_RELATIVE_PID_MAX_OUT   10.0f
 #define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  0.0f
 
@@ -161,13 +161,13 @@
 
 //限幅 需要自己手动校准  
 #define YAW_OFFSET        6506  //编码器
-#define PITCH_OFFSET      4000 //编码器
+#define PITCH_OFFSET      3500 //编码器
 
 #define MIN_YAW         -2*PI
 #define MAX_YAW         2*PI
 
-#define MIN_PITCH      -2.0f
-#define MAX_PITCH      3.0f
+#define MIN_PITCH      -2.9f
+#define MAX_PITCH      2.95f
 
 
 #define MIN_ABSOULATE_YAW     -PI
@@ -180,8 +180,8 @@
 #define MIN_PATROL_YAW -3.0F
 #define MAX_PATROL_YAW 3.0F
 
-#define MIN_PATROL_PITCH -2.0f
-#define MAX_PATROL_PITCH 3.0f
+#define MIN_PATROL_PITCH -2.9f
+#define MAX_PATROL_PITCH 2.8f
 
 //旋转方向
 #define CCW 0  //逆时针

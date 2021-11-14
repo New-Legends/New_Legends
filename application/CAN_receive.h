@@ -40,8 +40,8 @@ typedef enum
     
   //云台电机接收ID
     CAN_GIMBAL_ALL_ID = 0x1FF,
-    CAN_YAW_MOTOR_ID = 0x205,
-    CAN_PIT_MOTOR_ID = 0x206,
+    CAN_YAW_MOTOR_ID = 0x205,//记住6020实际编码要-4
+    CAN_PIT_MOTOR_ID = 0x206,//记住6020实际编码要-4
 
   //板间通信接收ID
     CAN_BORAD_COMMUNICAT_ALL_ID = 0x220,
