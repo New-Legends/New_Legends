@@ -59,7 +59,7 @@
 #include "vision.h"
 #include "shoot_task.h"
 #include "remote_control.h"
-
+#include "referee.h"
 #include "user_lib.h"
 
 //when gimbal is in calibrating, set buzzer frequency and strenght
@@ -658,16 +658,34 @@ static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
         else    //Î´Ê¶±ðµ½Ä¿±ê£¬½øÈëÑ²Âß×´Ì¬
         {
 
-            //yawÖáÑ²Âß
-            // output_state();
-            // if(field_event_outpost == 1){//Ç°ÉÚÕ¾´æ»î
-                
-            // }
             
+            // output_state();
+            //  if(field_event_outpost == 1){//Ç°ÉÚÕ¾´æ»î
+            //     if(gimbal_control_set->pitch_patrol_dir == CCW)  //yawÖáÄæÊ±ÕëÐý×ª
+            //     {
+            //         *pitch += TURN_SPEED_PITCH;
+            //         if(MAX_PATROL_PITCH - gimbal_control_set->gimbal_pitch_motor.relative_angle < 0.01f)
+            //         {
+            //             gimbal_control_set->pitch_patrol_dir =CW;
+
+            //         }
+            //     }
+            //     else if(gimbal_control_set->pitch_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
+            //     {
+            //         *pitch -= TURN_SPEED_PITCH;
+            //         if(gimbal_control_set->gimbal_pitch_motor.relative_angle - MIN_PATROL_PITCH < 0.01f)
+            //         {
+            //             gimbal_control_set->pitch_patrol_dir = CCW;
+
+            //         }
+            //     }
+            // }
+            // if(field_event_outpost == 0){
+            //     //yawÖáÑ²Âß
             // if(gimbal_control_set->yaw_patrol_dir == CCW)  //yawÖáÄæÊ±ÕëÐý×ª
             // {
-            //     *yaw -= TURN_SPEED_YAW;
-            //     if(gimbal_control_set->gimbal_yaw_motor.relative_angle - MIN_PATROL_YAW < 0.1f)
+            //     *yaw += TURN_SPEED_YAW;
+            //     if(MAX_PATROL_YAW - gimbal_control_set->gimbal_yaw_motor.relative_angle < 0.1f)
             //     {
             //         gimbal_control_set->yaw_patrol_dir = CW;
 
@@ -675,36 +693,34 @@ static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
             // }
             // else if(gimbal_control_set->yaw_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
             // {
-            //     *yaw += TURN_SPEED_YAW;
-            //     if(MAX_PATROL_YAW - gimbal_control_set->gimbal_yaw_motor.relative_angle < 0.1f)
+            //     *yaw -= TURN_SPEED_YAW;
+            //     if(gimbal_control_set->gimbal_yaw_motor.relative_angle - MIN_PATROL_YAW < 0.1f)
             //     {
             //         gimbal_control_set->yaw_patrol_dir = CCW;
 
             //     }
             // }
-           
+            // //pitchÖáÑ²Âß
+            // if(gimbal_control_set->pitch_patrol_dir == CCW)  //yawÖáÄæÊ±ÕëÐý×ª
+            // {
+            //     *pitch += TURN_SPEED_PITCH;
+            //     if(MAX_PATROL_PITCH - gimbal_control_set->gimbal_pitch_motor.relative_angle < 0.01f)
+            //     {
+            //         gimbal_control_set->pitch_patrol_dir =CW;
 
-           
+            //     }
+            // }
+            // else if(gimbal_control_set->pitch_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
+            // {
+            //     *pitch -= TURN_SPEED_PITCH;
+            //     if(gimbal_control_set->gimbal_pitch_motor.relative_angle - MIN_PATROL_PITCH < 0.01f)
+            //     {
+            //         gimbal_control_set->pitch_patrol_dir = CCW;
 
-            //pitchÖáÑ²Âß
-            if(gimbal_control_set->pitch_patrol_dir == CCW)  //yawÖáÄæÊ±ÕëÐý×ª
-            {
-                *pitch += TURN_SPEED_PITCH;
-                if(MAX_PATROL_PITCH - gimbal_control_set->gimbal_pitch_motor.relative_angle < 0.1f)
-                {
-                    gimbal_control_set->pitch_patrol_dir =CW;
+            //     }
+            // }
 
-                }
-            }
-            else if(gimbal_control_set->pitch_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
-            {
-                *pitch -= TURN_SPEED_PITCH;
-                if(gimbal_control_set->gimbal_pitch_motor.relative_angle - MIN_PATROL_PITCH < 0.1f)
-                {
-                    gimbal_control_set->pitch_patrol_dir = CCW;
-
-                }
-            }
+            // }
 
         }
     }
@@ -760,15 +776,33 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
         }
         else    //Î´Ê¶±ðµ½Ä¿±ê£¬½øÈëÑ²Âß×´Ì¬
         {
-            //yawÖáÑ²Âß
-            // output_state();
-            // if(field_event_outpost == 1){//Ç°ÉÚÕ¾´æ»î
-                
-            // }
             
+             output_state();
+             if(field_event_outpost == 1){//Ç°ÉÚÕ¾´æ»î
+                if(gimbal_control_set->pitch_patrol_dir == CCW)  //yawÖáÄæÊ±ÕëÐý×ª
+                {
+                    *pitch += TURN_SPEED_PITCH;
+                    if(MAX_PATROL_PITCH - gimbal_control_set->gimbal_pitch_motor.relative_angle < 0.01f)
+                    {
+                        gimbal_control_set->pitch_patrol_dir =CW;
+
+                    }
+                }
+                else if(gimbal_control_set->pitch_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
+                {
+                    *pitch -= TURN_SPEED_PITCH;
+                    if(gimbal_control_set->gimbal_pitch_motor.relative_angle - MIN_PATROL_PITCH < 0.01f)
+                    {
+                        gimbal_control_set->pitch_patrol_dir = CCW;
+
+                    }
+                }
+            }
+            if(field_event_outpost == 0){
+                //yawÖáÑ²Âß
             if(gimbal_control_set->yaw_patrol_dir == CCW)  //yawÖáÄæÊ±ÕëÐý×ª
             {
-                *yaw -= TURN_SPEED_YAW;
+                *yaw += TURN_SPEED_YAW;
                 if(MAX_PATROL_YAW - gimbal_control_set->gimbal_yaw_motor.relative_angle < 0.1f)
                 {
                     gimbal_control_set->yaw_patrol_dir = CW;
@@ -777,36 +811,35 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
             }
             else if(gimbal_control_set->yaw_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
             {
-                *yaw += TURN_SPEED_YAW;
+                *yaw -= TURN_SPEED_YAW;
                 if(gimbal_control_set->gimbal_yaw_motor.relative_angle - MIN_PATROL_YAW < 0.1f)
                 {
                     gimbal_control_set->yaw_patrol_dir = CCW;
 
                 }
             }
-           
-
-           
-
             //pitchÖáÑ²Âß
-            // if(gimbal_control_set->pitch_patrol_dir == CCW)  //yawÖáÄæÊ±ÕëÐý×ª
-            // {
-            //     *pitch += TURN_SPEED_PITCH;
-            //     if(MAX_PATROL_PITCH - gimbal_control_set->gimbal_pitch_motor.relative_angle < 0.01f)
-            //     {
-            //         gimbal_control_set->pitch_patrol_dir =CW;
+            if(gimbal_control_set->pitch_patrol_dir == CCW)  //yawÖáÄæÊ±ÕëÐý×ª
+            {
+                *pitch += TURN_SPEED_PITCH;
+                if(MAX_PATROL_PITCH - gimbal_control_set->gimbal_pitch_motor.relative_angle < 0.01f)
+                {
+                    gimbal_control_set->pitch_patrol_dir =CW;
 
-            //     }
-            // }
-            // else if(gimbal_control_set->pitch_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
-            // {
-            //     *pitch -= TURN_SPEED_PITCH;
-            //     if(gimbal_control_set->gimbal_pitch_motor.relative_angle - MIN_PATROL_PITCH < 0.01f)
-            //     {
-            //         gimbal_control_set->pitch_patrol_dir = CCW;
+                }
+            }
+            else if(gimbal_control_set->pitch_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
+            {
+                *pitch -= TURN_SPEED_PITCH;
+                if(gimbal_control_set->gimbal_pitch_motor.relative_angle - MIN_PATROL_PITCH < 0.01f)
+                {
+                    gimbal_control_set->pitch_patrol_dir = CCW;
 
-            //     }
-            // }
+                }
+            }
+
+            }
+            
             
         }
     }
