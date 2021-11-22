@@ -170,7 +170,7 @@ void super_cap_task(void const *pvParameters)
 
 void cap_init()
 {
-	CAN_cmd_super_cap(13000);
+	CAN_cmd_super_cap(4500);
 }
 
 

@@ -536,20 +536,20 @@ static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set, const fp32 
     算法来源：华南理工
     */
     float theta = atan(1.0 / 1.0);
-    static float last_wheel_speed[4] ={0};
+    static float last_rudder_angle[4] = {0};
 
-    if ((vx_set == 0) && (vy_set == 0) && (wz_set == 0))
-    {
-        rudder_angle[0] = last_wheel_speed[0];
+    // if ((vx_set == 0) && (vy_set == 0) && (wz_set == 0))
+    // {
+    //     rudder_angle[0] = last_rudder_angle[0];
 
-        rudder_angle[0] = last_wheel_speed[1];
+    //     rudder_angle[1] = last_rudder_angle[1];
 
-        rudder_angle[0] = last_wheel_speed[2];
+    //     rudder_angle[2] = last_rudder_angle[2];
 
-        rudder_angle[0] = last_wheel_speed[3];
-    }
-    else
-    {
+    //     rudder_angle[3] = last_rudder_angle[3];
+    // }
+    // else
+    // {
         //动力电机角度解算
         wheel_speed[0] = sqrt(pow(vy_set - wz_set * RUDDER_RADIUS * sin(theta), 2) + pow(vx_set - wz_set * RUDDER_RADIUS * cos(theta), 2));
         wheel_speed[1] = sqrt(pow(vy_set - wz_set * RUDDER_RADIUS * sin(theta), 2) + pow(vx_set - wz_set * RUDDER_RADIUS * cos(theta), 2));
@@ -562,12 +562,14 @@ static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set, const fp32 
         rudder_angle[2] = atan2(vy_set + wz_set * RUDDER_RADIUS * sin(theta), vx_set - wz_set * RUDDER_RADIUS * cos(theta));
         rudder_angle[3] = atan2(vy_set + wz_set * RUDDER_RADIUS * sin(theta), vx_set + wz_set * RUDDER_RADIUS * cos(theta));
         
-    }
+ //   }
 
-    last_wheel_speed[0] = wheel_speed[0];
-    last_wheel_speed[1] = wheel_speed[1];
-    last_wheel_speed[2] = wheel_speed[2];
-    last_wheel_speed[3] = wheel_speed[3];
+
+
+    // last_rudder_angle[0] = rudder_angle[0];
+    // last_rudder_angle[1] = rudder_angle[1];
+    // last_rudder_angle[2] = rudder_angle[2];
+    // last_rudder_angle[3] = rudder_angle[3];
 } 
 
 fp32 rudder_angle[4] = {0.0f, 0.0f, 0.0f, 0.0f}; //舵向电机目标角度
@@ -656,7 +658,7 @@ fp32 rudder_angle[4] = {0.0f, 0.0f, 0.0f, 0.0f}; //舵向电机目标角度
         }
 
         //功率控制
-        //chassis_power_control(chassis_move_control_loop);
+        chassis_power_control(chassis_move_control_loop);
 
         //赋值电流值
         for (i = 0; i < 4; i++)
