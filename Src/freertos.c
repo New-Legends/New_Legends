@@ -153,8 +153,8 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of test */
-  osThreadDef(test, test_task, osPriorityNormal, 0, 128);
-  testHandle = osThreadCreate(osThread(test), NULL);
+  // osThreadDef(test, test_task, osPriorityNormal, 0, 128);
+  // testHandle = osThreadCreate(osThread(test), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -197,8 +197,8 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(UI, ui_task, osPriorityNormal, 0, 512);
     ui_task_handle = osThreadCreate(osThread(UI), NULL);
 
-    // osThreadDef(SIPER_CAP, super_cap_task, osPriorityNormal, 0, 128);
-    // super_cap_task_handle = osThreadCreate(osThread(SIPER_CAP), NULL);
+    osThreadDef(SIPER_CAP, super_cap_task, osPriorityNormal, 0, 128);
+    super_cap_task_handle = osThreadCreate(osThread(SIPER_CAP), NULL);
 
     // osThreadDef(SOTFWARE_RESET, software_reset_task, osPriorityNormal, 0, 128);
     // software_reset_task_handle = osThreadCreate(osThread(SOTFWARE_RESET), NULL);

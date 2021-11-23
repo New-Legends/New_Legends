@@ -147,8 +147,8 @@ void chassis_task(void const *pvParameters)
             else
             {
                 //发送控制电流
-                CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-                               chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+                CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current*3, chassis_move.motor_chassis[1].give_current*3,
+                               chassis_move.motor_chassis[2].give_current*3, chassis_move.motor_chassis[3].give_current*3);
             }
         }
         
@@ -495,6 +495,7 @@ static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set, const fp32 
 
 }
 
+bool_t super_cap_flag = FALSE;
 
 
 /**
@@ -509,15 +510,7 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
     fp32 wheel_speed[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     uint8_t i = 0;
 
-    //按下shift,提高速度,触发超级电容
-    if(IF_KEY_PRESSED_SHIFT)
-    {
-        chassis_move_control_loop->max_wheel_speed = 1.5 * MAX_WHEEL_SPEED;
-    }
-    else
-    {
-        chassis_move_control_loop->max_wheel_speed = MAX_WHEEL_SPEED;
-    }
+
 
 
     //麦轮运动分解
@@ -555,12 +548,25 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
         }
     }
 
+
+
     //计算pid
     for (i = 0; i < 4; i++)
     {
         PID_calc(&chassis_move_control_loop->motor_speed_pid[i], chassis_move_control_loop->motor_chassis[i].speed, chassis_move_control_loop->motor_chassis[i].speed_set);
     }
 
+    //按下shift,提高速度,触发超级电容  当左侧按键为上,便于测试
+    if (IF_KEY_PRESSED_SHIFT || (switch_is_up(chassis_move_control_loop->chassis_RC->rc.s[1])))
+    {
+        super_cap_flag = TRUE;
+        for (i = 0; i < 4; i++)
+        {
+            chassis_move_control_loop->motor_speed_pid[i].out = 2 * chassis_move_control_loop->motor_speed_pid[i].out;
+        } 
+    }
+    else
+        super_cap_flag = FALSE;
 
     //功率控制
     //chassis_power_control(chassis_move_control_loop);

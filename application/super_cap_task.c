@@ -48,7 +48,7 @@ fp32 supercap_vot;
 fp32 input_current;
 fp32 target_power;
 
-extern ext_game_robot_state_t game_state; //0x0201     比赛机器人状态
+extern ext_game_robot_state_t robot_state; //0x0201     比赛机器人状态
 uint8_t cap_change = FALSE; //超电电压过低标识符
 
 
@@ -86,31 +86,31 @@ void super_cap_task(void const *pvParameters)
 					{
 						 if(supercap_vot >= 20)
 						{
-								if (game_state.chassis_power_limit <= 40 )//当前底盘最大功率限制<40  目标功率为39w
-								{
-									 CAN_cmd_super_cap(3900);
+							if (robot_state.chassis_power_limit <= 40) //当前底盘最大功率限制<40  目标功率为39w
+							{
+								CAN_cmd_super_cap(3900);
 								}
-								else if(game_state.chassis_power_limit > 40 && game_state.chassis_power_limit <= 50)//当前底盘最大功率限制40-50w  目标功率为49w
+								else if(robot_state.chassis_power_limit > 40 && robot_state.chassis_power_limit <= 50)//当前底盘最大功率限制40-50w  目标功率为49w
 								{
 									 CAN_cmd_super_cap(4900);
 								}	
-								else if(game_state.chassis_power_limit > 50 && game_state.chassis_power_limit <= 60)//当前底盘最大功率限制50-60w  目标功率为59w
+								else if(robot_state.chassis_power_limit > 50 && robot_state.chassis_power_limit <= 60)//当前底盘最大功率限制50-60w  目标功率为59w
 								{
 									CAN_cmd_super_cap(5900);
 								}
-								else if(game_state.chassis_power_limit > 60 && game_state.chassis_power_limit <= 70)//当前底盘最大功率限制60-70w  目标功率为79w
+								else if(robot_state.chassis_power_limit > 60 && robot_state.chassis_power_limit <= 70)//当前底盘最大功率限制60-70w  目标功率为79w
 								{
 									CAN_cmd_super_cap(6900);
 								}
-								else if(game_state.chassis_power_limit > 70 && game_state.chassis_power_limit <= 80)//当前底盘最大功率限制70-80w  目标功率为79w
+								else if(robot_state.chassis_power_limit > 70 && robot_state.chassis_power_limit <= 80)//当前底盘最大功率限制70-80w  目标功率为79w
 								{
 									CAN_cmd_super_cap(7900);
 								}
-								else if(game_state.chassis_power_limit > 80 && game_state.chassis_power_limit <= 100)//当前底盘最大功率限制80-100w  目标功率为99w
+								else if(robot_state.chassis_power_limit > 80 && robot_state.chassis_power_limit <= 100)//当前底盘最大功率限制80-100w  目标功率为99w
 								{
 									CAN_cmd_super_cap(9900);
 								}
-								else if(game_state.chassis_power_limit > 100 && game_state.chassis_power_limit < 120)//当前底盘最大功率限制100-120w  目标功率为119w
+								else if(robot_state.chassis_power_limit > 100 && robot_state.chassis_power_limit < 120)//当前底盘最大功率限制100-120w  目标功率为119w
 								{
 									CAN_cmd_super_cap(11900);
 								}
@@ -124,31 +124,31 @@ void super_cap_task(void const *pvParameters)
 					}
 					else
 					{
-						if (game_state.chassis_power_limit <= 40 )//当前底盘最大功率限制<40  目标功率为39w
+						if (robot_state.chassis_power_limit <= 40 )//当前底盘最大功率限制<40  目标功率为39w
 						{
 							 CAN_cmd_super_cap(3900);
 						}
-						else if(game_state.chassis_power_limit > 40 && game_state.chassis_power_limit <= 50)//当前底盘最大功率限制40-50w  目标功率为49w
+						else if(robot_state.chassis_power_limit > 40 && robot_state.chassis_power_limit <= 50)//当前底盘最大功率限制40-50w  目标功率为49w
 						{
 							 CAN_cmd_super_cap(4900);
 						}	
-						else if(game_state.chassis_power_limit > 50 && game_state.chassis_power_limit <= 60)//当前底盘最大功率限制50-60w  目标功率为59w
+						else if(robot_state.chassis_power_limit > 50 && robot_state.chassis_power_limit <= 60)//当前底盘最大功率限制50-60w  目标功率为59w
 						{
 							CAN_cmd_super_cap(5900);
 						}
-						else if(game_state.chassis_power_limit > 60 && game_state.chassis_power_limit <= 70)//当前底盘最大功率限制60-70w  目标功率为79w
+						else if(robot_state.chassis_power_limit > 60 && robot_state.chassis_power_limit <= 70)//当前底盘最大功率限制60-70w  目标功率为79w
 						{
 							CAN_cmd_super_cap(6900);
 						}
-						else if(game_state.chassis_power_limit > 70 && game_state.chassis_power_limit <= 80)//当前底盘最大功率限制70-80w  目标功率为79w
+						else if(robot_state.chassis_power_limit > 70 && robot_state.chassis_power_limit <= 80)//当前底盘最大功率限制70-80w  目标功率为79w
 						{
 							CAN_cmd_super_cap(7900);
 						}
-						else if(game_state.chassis_power_limit > 80 && game_state.chassis_power_limit <= 100)//当前底盘最大功率限制80-100w  目标功率为99w
+						else if(robot_state.chassis_power_limit > 80 && robot_state.chassis_power_limit <= 100)//当前底盘最大功率限制80-100w  目标功率为99w
 						{
 							CAN_cmd_super_cap(9900);
 						}
-						else if(game_state.chassis_power_limit > 100 && game_state.chassis_power_limit < 120)//当前底盘最大功率限制100-120w  目标功率为119w
+						else if(robot_state.chassis_power_limit > 100 && robot_state.chassis_power_limit < 120)//当前底盘最大功率限制100-120w  目标功率为119w
 						{
 							CAN_cmd_super_cap(11900);
 						}
@@ -162,7 +162,7 @@ void super_cap_task(void const *pvParameters)
 
 void cap_init()
 {
-	CAN_cmd_super_cap(13000);
+	CAN_cmd_super_cap(4500);
 }
 
 
