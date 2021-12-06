@@ -95,7 +95,7 @@ void vision_read_data(uint8_t *ReadFormUart)
   */
 uint8_t vision_send_pack[50] = {0};//大于18就行
 uint8_t CmdID = 0;
-void vision_send_data(uint8_t CmdID)
+void vision_send_data(uint8_t  CmdID)
 {
 	int i;    //循环发送次数
 	uint16_t id1_17mm_speed_limit;
@@ -123,8 +123,8 @@ void vision_send_data(uint8_t CmdID)
 
 void vision_error_angle(float *yaw_angle_error, float *pitch_angle_error)
 {
-	*yaw_angle_error = VisionRecvData.yaw_angle / PI;
-	*pitch_angle_error = VisionRecvData.pitch_angle / PI;
+	*yaw_angle_error = VisionRecvData.yaw_angle /180* PI;
+	*pitch_angle_error = VisionRecvData.pitch_angle /180* PI;
 	
 	if(VisionRecvData.yaw_angle == 0)
 	{

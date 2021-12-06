@@ -51,21 +51,21 @@
 #define YAW_SPEED_PID_MAX_IOUT  5000.0f
 
 //pitch 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_ABSOLUTE_PID_KP 8.0f   //15
+#define PITCH_GYRO_ABSOLUTE_PID_KP 6.0f   //15
 #define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
 #define PITCH_GYRO_ABSOLUTE_PID_KD 0.1f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 6.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define YAW_GYRO_ABSOLUTE_PID_KP        1.0f  //26
+#define YAW_GYRO_ABSOLUTE_PID_KP        0.5f  //26
 #define YAW_GYRO_ABSOLUTE_PID_KI        0.0f
 #define YAW_GYRO_ABSOLUTE_PID_KD        0.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   4.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 
 //pitch 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define PITCH_ENCODE_RELATIVE_PID_KP 3.0f  //15
+#define PITCH_ENCODE_RELATIVE_PID_KP 6.0f  //15
 #define PITCH_ENCODE_RELATIVE_PID_KI 0.0f
 #define PITCH_ENCODE_RELATIVE_PID_KD 0.0f
 
@@ -73,9 +73,9 @@
 #define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define YAW_ENCODE_RELATIVE_PID_KP        10.0  //8
+#define YAW_ENCODE_RELATIVE_PID_KP        4.0  //8
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
-#define YAW_ENCODE_RELATIVE_PID_KD        1.0f
+#define YAW_ENCODE_RELATIVE_PID_KD        100.0f
 #define YAW_ENCODE_RELATIVE_PID_MAX_OUT   10.0f
 #define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  0.0f
 
@@ -164,8 +164,8 @@
 #define YAW_OFFSET        2048  //编码器
 #define PITCH_OFFSET      4000 //编码器
 
-#define MIN_YAW         -2*PI
-#define MAX_YAW         2*PI
+#define MIN_YAW         -PI
+#define MAX_YAW         PI
 
 #define MIN_PITCH      1.0f
 #define MAX_PITCH      2.5f
@@ -178,8 +178,8 @@
 #define MAX_ABSOULATE_PITCH       1.0f
 
 //云台巡逻时的限幅
-#define MIN_PATROL_YAW -2.7F
-#define MAX_PATROL_YAW 2.7F
+#define MIN_PATROL_YAW -PI
+#define MAX_PATROL_YAW PI
 
 #define MIN_PATROL_PITCH 2.2f
 #define MAX_PATROL_PITCH 2.8f

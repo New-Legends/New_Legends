@@ -248,7 +248,7 @@ uint16_t turn_switch_delay_time = 0;  //·ÀÖ¹Á½´Î°´¼ü±»ÎóÊ¶±ðÎªÒ»´Î Ö÷ÒªÊÇÅÂÓë45¶
 
 
 //×ÔÃéÏà¹ØÊý¾Ý
-bool_t auto_switch = 0;  //×ÔÃé¿ª¹Ø
+bool_t auto_switch = 1;  //×ÔÃé¿ª¹Ø
 
 
 //ÔÆÌ¨×ªÍ·Ïà¹ØÊý¾Ý
@@ -808,11 +808,13 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
                     gimbal_control_set->yaw_patrol_dir = CW;
 
                 }
+                
             }
+            
             else if(gimbal_control_set->yaw_patrol_dir == CW)  //yawÖáË³Ê±ÕëÐý×ª
             {
                 *yaw -= TURN_SPEED_YAW;
-                if(gimbal_control_set->gimbal_yaw_motor.relative_angle - MIN_PATROL_YAW < 0.1f)
+                if(gimbal_control_set->gimbal_yaw_motor.relative_angle - MIN_PATROL_YAW < 0.2f)
                 {
                     gimbal_control_set->yaw_patrol_dir = CCW;
 
