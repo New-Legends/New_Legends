@@ -104,24 +104,28 @@ CAN2: V G H L
 2     1
 3     4   
 ///////
-云台电机：can1 yaw 9 pitch 10 
+云台电机：can1 yaw 9
+
+​                    can2  pitch 10 
 
 摩擦轮电机：can1 left 5 right 6
 
-拨盘电机：can1 7
+拨盘电机：can2      7
 
 弹仓舵机: 左边数第2个PWM
 限位舵机: 左边数第3个PWM  
 
 
-射弹 触发条件为  BUTTEN_TRIG_PIN 为低电平 对应C板最左侧的PWM口
+//英雄无此要求（射弹 触发条件为  BUTTEN_TRIG_PIN 为低电平 对应C板最左侧的PWM口）
         
 
 关于电机正反装
 #define YAW_TURN    0
 #define PITCH_TURN  0
 
-这两个宏定义与电机正反装相关,当yaw轴电机转子与云台相对运动时,YAW_TURN为0,否则为1;pitch轴电机转子与云台相对运动时,PITCH_TURN为0,否则为1,
+这两个宏定义与电机正反装相关,当yaw轴电机转子与云台相对运动时,YAW_TURN为0,否则为1;pitch轴电机转子与云台相对运动时,PITCH_TURN为0,否则为1。
+
+英雄为yaw轴电机反装，pitch轴电机正装。
 
 
 ### 校准操作说明：
