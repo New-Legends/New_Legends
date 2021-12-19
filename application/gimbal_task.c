@@ -173,7 +173,7 @@ static void gimbal_relative_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add);
   */
 static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 intergral_limit, fp32 kp, fp32 ki, fp32 kd);
 
-
+    
 /**
   * @brief          云台PID清除，清除pid的out,iout
   * @param[out]     pid_clear:"gimbal_control"变量指针.
@@ -413,7 +413,7 @@ static void calc_gimbal_cali(const gimbal_step_cali_t *gimbal_cali, uint16_t *ya
 
     if (temp_ecd < 0)
     {
-        temp_ecd += ecd_range;
+        temp_ecd += ECD_RANGE;
     }
     temp_ecd = gimbal_cali->max_yaw_ecd + (temp_ecd / 2);
 
@@ -622,8 +622,8 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
     {
         return;
     }
-    //云台数据更新 这里由于陀螺仪安装在云台前侧,所以pitch绝对坐标添加了负号
-    feedback_update->gimbal_pitch_motor.absolute_angle = -*(feedback_update->gimbal_INT_angle_point + INS_PITCH_ADDRESS_OFFSET);
+    //云台数据更新 这里由于陀螺仪安装在云台前侧,所以pitch绝对坐标添加了负号----英雄不需要故已删除
+    feedback_update->gimbal_pitch_motor.absolute_angle = *(feedback_update->gimbal_INT_angle_point + INS_PITCH_ADDRESS_OFFSET);
 
 #if PITCH_TURN
     feedback_update->gimbal_pitch_motor.relative_angle = -motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.gimbal_motor_measure->ecd,

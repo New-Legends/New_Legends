@@ -123,7 +123,7 @@ static void chassis_no_follow_yaw_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_s
   * @param[in]      vy_set左右的速度，正值 左移速度， 负值 右移速度
   * @param[in]      wz_set 旋转速度， 正值 逆时针旋转，负值 顺时针旋转
   * @param[in]      chassis_move_rc_to_vector底盘数据
-  * @retval         none
+  * @retval         none-
   */
 
 static void chassis_open_set_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, chassis_move_t *chassis_move_rc_to_vector);
@@ -171,11 +171,11 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {    
        //chassis_behaviour_mode = CHASSIS_ENGINEER_FOLLOW_CHASSIS_YAW;    
-       chassis_behaviour_mode =CHASSIS_NO_FOLLOW_YAW ;
+          chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
     }
     else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
-       chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
+          chassis_behaviour_mode = CHASSIS_NO_FOLLOW_YAW;
        //chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
     }
     else if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
@@ -186,10 +186,10 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
 
 
     //当云台在某些模式下或者弹仓打开，像初始化， 底盘不动
-    if (gimbal_cmd_to_chassis_stop())
-    {
-        chassis_behaviour_mode = CHASSIS_NO_MOVE;
-    }
+//    if (gimbal_cmd_to_chassis_stop())
+//    {
+//        chassis_behaviour_mode = CHASSIS_NO_MOVE;
+//    }
     
 
     //添加自己的逻辑判断进入新模式

@@ -17,6 +17,7 @@
   *  V1.0.0     Dec-26-2018     RM              1. done
   *  V1.1.0     Nov-11-2019     RM              1. add some annotation
   *
+	gimbal_control
   @verbatim
   ==============================================================================
     如果要添加一个新的行为模式
@@ -58,7 +59,7 @@
 typedef enum
 {
   GIMBAL_ZERO_FORCE = 0,             //无力模式
-  GIMBAL_INIT,                       //初始化模式
+  GIMBAL_INIT,                       //初始化模式-编码值控制
   GIMBAL_CALI,                      //校准模式
   GIMBAL_ABSOLUTE_ANGLE,            //云台陀螺仪绝对角度控制
   GIMBAL_RELATIVE_ANGLE,            //云台电机编码值相对角度控制

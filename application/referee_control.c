@@ -38,10 +38,6 @@
 
 
 /*
-17mm射速上限 15 18 30 m/s
-17mm热量上限 50 100 150 280 400
-17mm热量冷却 10 20 30 40 60 80
-一发17mm 10热量
 
 42mm射速上限 10 16 m/s
 42mm热量上限 100 200 300 350 500
@@ -55,10 +51,11 @@
 
 //通过读取裁判数据,直接修改射速和射频等级
 //射速等级  摩擦电机
-fp32 shoot_fric_grade[4] = {0, 15*FRIC_REFEREE_PARA, 18*FRIC_REFEREE_PARA, 30*FRIC_REFEREE_PARA};
-
+fp32 shoot_fric_grade[4] = {0, 17*FRIC_REFEREE_PARA, 34*FRIC_REFEREE_PARA, 50*FRIC_REFEREE_PARA};//    15m/s
+//测试用，尿弹模式
+//fp32 shoot_fric_grade[4] = {0, 1*FRIC_REFEREE_PARA, 1*FRIC_REFEREE_PARA, 10*FRIC_REFEREE_PARA};
 //射频等级 拨弹电机
-fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
+ fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
 
  //拨盘等级 摩擦轮等级
 uint8_t grigger_speed_grade;
@@ -176,40 +173,40 @@ fp32 bullet_speed;
     {
         get_shooter_id1_17mm_cooling_limit_and_heat(&id1_17mm_cooling_limit,&id1_17mm_cooling_heat);   //获取17mm枪口热量上限, 17mm枪口实时热量
         get_shooter_id1_17mm_speed_limit_and_bullet_speed(&id1_17mm_speed_limit, &bullet_speed); // 获取17mm枪口枪口射速上限,17mm实时射速
-
+        get_shooter_id2_42mm
         //根据热量和射速上限修改等级
         //热量
-        if(id1_17mm_cooling_limit <= 50)
-            grigger_speed_grade = 1;
-        else if(id1_17mm_cooling_limit <= 100)
-            grigger_speed_grade = 2;
-        else if(id1_17mm_cooling_limit <= 150)
-            grigger_speed_grade = 3;
-        else if(id1_17mm_cooling_limit <= 280)
-            grigger_speed_grade = 4;
-        else if(id1_17mm_cooling_limit <= 400)
-            grigger_speed_grade = 5;
+//        if(id1_17mm_cooling_limit <= 50)
+//            grigger_speed_grade = 1;
+//        else if(id1_17mm_cooling_limit <= 100)
+//            grigger_speed_grade = 2;
+//        else if(id1_17mm_cooling_limit <= 150)
+//            grigger_speed_grade = 3;
+//        else if(id1_17mm_cooling_limit <= 280)
+//            grigger_speed_grade = 4;
+//        else if(id1_17mm_cooling_limit <= 400)
+//            grigger_speed_grade = 5;
 
         //射速
-        if(id1_17mm_speed_limit <= 15)
-            fric_speed_grade = 1;
-        else if(id1_17mm_speed_limit <= 18)
-            fric_speed_grade = 2;
-        else if(id1_17mm_speed_limit <= 30)
-            fric_speed_grade = 3;
+//        if(id1_17mm_speed_limit <= 15)
+//            fric_speed_grade = 1;
+//        else if(id1_17mm_speed_limit <= 18)
+//            fric_speed_grade = 2;
+//        else if(id1_17mm_speed_limit <= 30)
+//            fric_speed_grade = 3;
 
 
         //当调试射速和射频等级数组时可以暂时注释
         //根据当前热量和射速修改等级,确保不会因超限扣血,
 
         //热量 当剩余热量低于30,强制制动
-        if(id1_17mm_cooling_limit - id1_17mm_cooling_heat <= 20 && grigger_speed_grade!=0)
-            grigger_speed_grade = 0 ;
+//        if(id1_17mm_cooling_limit - id1_17mm_cooling_heat <= 20 && grigger_speed_grade!=0)
+//            grigger_speed_grade = 0 ;
 
-        
+//        
         //射速 超射速,强制降低摩擦轮转速
-        if(bullet_speed > id1_17mm_speed_limit)
-            fric_speed_grade -- ;
+//        if(bullet_speed > id1_17mm_speed_limit)
+//            fric_speed_grade -- ;
 
     }
 

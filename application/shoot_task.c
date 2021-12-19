@@ -94,9 +94,9 @@ void shoot_task(void const *pvParameters)
         shoot_feedback_update(); //更新数据
         shoot_set_control();        //射击任务控制循环
 
-        //CAN发送
+        //CAN发送  
         CAN_cmd_shoot(shoot_control.fric_motor[LEFT].give_current, shoot_control.fric_motor[RIGHT].give_current, shoot_control.given_current, 0);
-        //CAN_cmd_shoot(0, 0, 0, 0);
+        //CAN_cmd_shoot(0, 0, 0, 0);左摩擦轮 右摩擦轮
 
 
         //last_rc_ctrl = rc_ctrl;
@@ -307,16 +307,19 @@ void shoot_set_control(void)
     {
         shoot_laser_on(); //激光开启
         //设置摩擦轮转速
-        shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[2];
-        shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[2];
+			shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[2];
+			shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[2];
+			  //摩擦轮速度为0，仅播弹 
+//			  shoot_control.fric_motor[LEFT].speed_set = 0;
+//        shoot_control.fric_motor[RIGHT].speed_set = 0;
 
-//        //连发模式 控制17mm发射机构射速和热量控制
+//        连发模式 控制17mm发射机构射速和热量控制
 //        if(shoot_control.shoot_mode == SHOOT_CONTINUE_BULLET)
-//            shoot_id1_17mm_speed_and_cooling_control(&shoot_control);
+//        shoot_id1_17mm_speed_and_cooling_control(&shoot_control);
 
-
+        //将设置的拨盘旋转角度,转化为速度,且防止卡弹
         if(shoot_control.shoot_mode == SHOOT_READY_BULLET || shoot_control.shoot_mode == SHOOT_CONTINUE_BULLET)
-            trigger_motor_turn_back();  //将设置的拨盘旋转角度,转化为速度,且防止卡弹
+            trigger_motor_turn_back();  
 
         //计算拨弹轮电机PID
         PID_calc(&shoot_control.trigger_motor_pid, shoot_control.speed, shoot_control.speed_set);
@@ -449,7 +452,7 @@ static void shoot_set_mode(void)
     last_s = shoot_control.shoot_rc->rc.s[SHOOT_RC_MODE_CHANNEL];
 
 }
-
+//卡弹 反转
 static void trigger_motor_turn_back(void)
 {
     if( shoot_control.block_time < BLOCK_TIME)
@@ -512,13 +515,14 @@ static void shoot_bullet_control(void)
   * @brief          弹仓打开时,云台要停止运动
   * @param[in]      none
   * @retval         1: no move 0:normal
+        全设置为正常模式
   */
 
 bool_t shoot_cmd_to_gimbal_stop(void)
 {
     if (shoot_control.magazine_status == TRUE)
     {
-        return 1;
+        return 0;
     }
     else
     {

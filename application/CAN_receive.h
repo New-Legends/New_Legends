@@ -23,11 +23,17 @@
 
 #include "struct_typedef.h"
 
-#define CHASSIS_CAN hcan2
-#define GIMBAL_CAN hcan1
-#define SHOOT_CAN hcan1
-#define SUPER_CAP_CAN hcan2
+//#define CHASSIS_CAN hcan2
+//#define GIMBAL_CAN hcan13
+//#define SHOOT_CAN hcan1
+//#define SUPER_CAP_CAN hcan2
 
+#define CHASSIS_CAN hcan2            //底盘can通讯
+#define GIMBAL_PITCH_CAN hcan1            //云台yaw轴通讯
+#define GIMBAL_YAW_CAN hcan2            //云台pitch轴通讯
+#define SHOOT_CAN hcan2
+#define SHOOT_FRIC_CAN hcan1           //摩擦轮电机通讯
+#define SUPER_CAP_CAN hcan2
 
 
 /* CAN send and receive ID */

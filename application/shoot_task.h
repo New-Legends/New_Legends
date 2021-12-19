@@ -78,10 +78,10 @@
 #define SWITCH_TRIGGER_ON           0
 #define SWITCH_TRIGGER_OFF          1
 
-//卡单时间 以及反转时间
+//卡弹时间  以及反转时间
 #define BLOCK_TRIGGER_SPEED         1.0f
-#define BLOCK_TIME                  700
-#define REVERSE_TIME                500
+#define BLOCK_TIME                   700//
+#define REVERSE_TIME                1000//500
 #define REVERSE_SPEED_LIMIT         13.0f
 
 #define PI_FOUR                     0.78539816339744830961566084581988f
@@ -89,9 +89,9 @@
 
 
 //拨弹轮电机PID
-#define TRIGGER_ANGLE_PID_KP        1000.0f  //800
-#define TRIGGER_ANGLE_PID_KI        2.0f  //0.5
-#define TRIGGER_ANGLE_PID_KD        5.0f
+#define TRIGGER_ANGLE_PID_KP        800.0f  //800
+#define TRIGGER_ANGLE_PID_KI        0.9f  //0.5
+#define TRIGGER_ANGLE_PID_KD        1.0f
 
 #define TRIGGER_BULLET_PID_MAX_OUT  10000.0f
 #define TRIGGER_BULLET_PID_MAX_IOUT 200.0f
@@ -105,20 +105,20 @@
 
 
 //摩擦轮电机PID
-#define FRIC_SPEED_PID_KP        1800.0f
+#define FRIC_SPEED_PID_KP        2000.0f
 #define FRIC_SPEED_PID_KI        0.5f
 #define FRIC_SPEED_PID_KD        2.0f
 
-#define FRIC_PID_MAX_OUT  8000.0f
+#define FRIC_PID_MAX_OUT  20000.0f
 #define FRIC_PID_MAX_IOUT 200.0f
 
 
-#define FRIC_MAX_SPEED_RMP 4000.0f
+#define FRIC_MAX_SPEED_RMP 40000.0f
 #define FRIC_REQUIRE_SPEED_RMP 500.0f
 
 #define SHOOT_HEAT_REMAIN_VALUE     80
 //拨盘格数
-#define TRIGGER_GRID_NUM 8     
+#define TRIGGER_GRID_NUM  10     
 #define TRIGGER_ONCE 2*PI/TRIGGER_GRID_NUM
 
 
@@ -156,7 +156,7 @@ typedef struct
 {
     shoot_mode_e shoot_mode;
     const RC_ctrl_t *shoot_rc;
-    uint16_t shoot_last_key_v;;
+    uint16_t shoot_last_key_v;
 
     //拨弹电机数据
     const motor_measure_t *trigger_motor_measure;
