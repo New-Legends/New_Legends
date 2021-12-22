@@ -173,7 +173,7 @@ fp32 bullet_speed;
     {
         get_shooter_id1_17mm_cooling_limit_and_heat(&id1_17mm_cooling_limit,&id1_17mm_cooling_heat);   //获取17mm枪口热量上限, 17mm枪口实时热量
         get_shooter_id1_17mm_speed_limit_and_bullet_speed(&id1_17mm_speed_limit, &bullet_speed); // 获取17mm枪口枪口射速上限,17mm实时射速
-        get_shooter_id2_42mm
+ //       get_shooter_id2_42mm_speed
         //根据热量和射速上限修改等级
         //热量
 //        if(id1_17mm_cooling_limit <= 50)
