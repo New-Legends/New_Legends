@@ -4,9 +4,8 @@
 extern UART_HandleTypeDef huart3;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 
-void RC_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
+void RC_init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
 {
-
     //enable the DMA transfer for the receiver request
     //使能DMA串口接收
     SET_BIT(huart3.Instance->CR3, USART_CR3_DMAR);
@@ -41,24 +40,7 @@ void RC_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
     //使能DMA
     __HAL_DMA_ENABLE(&hdma_usart3_rx);
 
-
 }
-void RC_unable(void)
-{
-    __HAL_UART_DISABLE(&huart3);
-}
-void RC_restart(uint16_t dma_buf_num)
-{
-    __HAL_UART_DISABLE(&huart3);
-    __HAL_DMA_DISABLE(&hdma_usart3_rx);
-
-    hdma_usart3_rx.Instance->NDTR = dma_buf_num;
-
-    __HAL_DMA_ENABLE(&hdma_usart3_rx);
-    __HAL_UART_ENABLE(&huart3);
-
-}
-
 
 
 
