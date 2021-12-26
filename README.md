@@ -145,6 +145,9 @@ CAN2: V G H L
 2.底盘校准,调整底盘电机ID
 3.陀螺仪校准,根据C板固定方式,读取INS_angle内的三轴角度,通过调整C板固定方式或者
 修改代码内的INS_YAW_ADDRESS_OFFSET等宏定义以及云台绝对坐标更新函数,调整适配的欧拉角
+
+修改宏定义，修改get_angle
+
 4.云台调试,根据电机正反装调节宏定义,YAW_TURN,PITCH_TURN;根据反馈的电机编码值,调整YAW_OFFSET, PITCH_OFFSET为云台归中编码值,再依此调节限幅,
 5.调试完以上一个
 

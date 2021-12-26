@@ -51,7 +51,7 @@
 
 //通过读取裁判数据,直接修改射速和射频等级
 //射速等级  摩擦电机
-fp32 shoot_fric_grade[4] = {0, 17*FRIC_REFEREE_PARA, 34*FRIC_REFEREE_PARA, 50*FRIC_REFEREE_PARA};//    15m/s
+fp32 shoot_fric_grade[4] = {0, 34*FRIC_REFEREE_PARA, 34*FRIC_REFEREE_PARA, 35*FRIC_REFEREE_PARA};//    15m/s
 //测试用，尿弹模式
 //fp32 shoot_fric_grade[4] = {0, 1*FRIC_REFEREE_PARA, 1*FRIC_REFEREE_PARA, 10*FRIC_REFEREE_PARA};
 //射频等级 拨弹电机

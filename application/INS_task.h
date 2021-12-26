@@ -57,8 +57,8 @@
 #define INS_TASK_INIT_TIME 7 //任务开始初期 delay 一段时间
 
 #define INS_YAW_ADDRESS_OFFSET    0
-#define INS_PITCH_ADDRESS_OFFSET  1
-#define INS_ROLL_ADDRESS_OFFSET   2
+#define INS_PITCH_ADDRESS_OFFSET  2
+#define INS_ROLL_ADDRESS_OFFSET   1
 
 
 
