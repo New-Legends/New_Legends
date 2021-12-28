@@ -37,3 +37,4 @@ new_legends_project\chassis.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal
 new_legends_project\chassis.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_legends_project\chassis.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_legends_project\chassis.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+new_legends_project\chassis.o: ..\APP\CAN_receive.h

@@ -8,9 +8,9 @@ void card_task(void const * argument)
   card.init();
   while(1)
   {
-    card.measure();
     card.set_mode();
     card.control();
     card.can_send();
+    vTaskDelay(10);
   }
 }

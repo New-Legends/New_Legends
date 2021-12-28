@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc; ../Drivers/STM32F4xx_HAL_Driver/Inc; ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy; ../Drivers/CMSIS/Device/ST/STM32F4xx/Include; ../Drivers/CMSIS/Include; ../Middlewares/Third_Party/FreeRTOS/Source/include; ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS; ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F; ..\bsp\boards</IncludePath>
+              <IncludePath>../Core/Inc;  ../Drivers/STM32F4xx_HAL_Driver/Inc;  ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;  ../Drivers/CMSIS/Include;  ../Middlewares/Third_Party/FreeRTOS/Source/include;  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;  ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;  ..\bsp\boards</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1229,11 +1229,6 @@
           <GroupName>APP</GroupName>
           <Files>
             <File>
-              <FileName>pid.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\pid.c</FilePath>
-            </File>
-            <File>
               <FileName>save.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\APP\save.c</FilePath>
@@ -1252,6 +1247,11 @@
               <FileName>chassis.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\APP\chassis.c</FilePath>
+            </File>
+            <File>
+              <FileName>CAN_receive.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\CAN_receive.c</FilePath>
             </File>
           </Files>
         </Group>

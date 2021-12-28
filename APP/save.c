@@ -14,25 +14,26 @@ int last_data = 1;
 void save_task(void const * argument)
 {
 	save_init(&save_control);
-  while (1)
-  {
-		if (last_data != save_control.rc_data->rc.s[1] && save_control.rc_data->rc.s[1] != 3)
-		{
-			if (save_control.rc_data->rc.s[1] == 1)
+	while (1)
+	{
+			if (last_data != save_control.rc_data->rc.s[1] && save_control.rc_data->rc.s[1] != 3)
 			{
-				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 1500);
-				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 2500);
-				last_data = save_control.rc_data->rc.s[1];
-				//HAL_GPIO_WritePin(SERVO_GPIO_Port, SERVO_Pin, GPIO_PIN_RESET);
+				if (save_control.rc_data->rc.s[1] == 1)
+				{
+					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 1500);
+					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 2500);
+					last_data = save_control.rc_data->rc.s[1];
+					//HAL_GPIO_WritePin(SERVO_GPIO_Port, SERVO_Pin, GPIO_PIN_RESET);
+				}
+				else if(save_control.rc_data->rc.s[1] == 2)
+				{
+					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 2500);
+					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 1500);
+					last_data = save_control.rc_data->rc.s[1];
+					//HAL_GPIO_WritePin(SERVO_GPIO_Port, SERVO_Pin, GPIO_PIN_SET);
+				}
 			}
-			else if(save_control.rc_data->rc.s[1] == 2)
-			{
-				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 2500);
-				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 1500);
-				last_data = save_control.rc_data->rc.s[1];
-				//HAL_GPIO_WritePin(SERVO_GPIO_Port, SERVO_Pin, GPIO_PIN_SET);
-			}
-		}
+			vTaskDelay(10);
 	}
 }
 

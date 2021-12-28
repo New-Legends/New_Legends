@@ -1,5 +1,5 @@
 #include "chassis.h"
-
+#include "main.h"
 
 void chassis_task(void const * argument)
 {   
@@ -7,9 +7,10 @@ void chassis_task(void const * argument)
     chassis.init();
     while(1)
     {
-        chassis.measure();
         chassis.set_mode();
         chassis.control();
         chassis.can_send();
+        vTaskDelay(10);
     }
 }
+

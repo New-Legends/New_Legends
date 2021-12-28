@@ -100,27 +100,8 @@ void card_control(void)
 
 card_measure_t  motor_card;
 
-void card_motor_measure(void)
-{
-    CAN_RxHeaderTypeDef rx_header;
-    uint8_t rx_data[8]; 
-    HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &rx_header, rx_data);
-    switch (rx_header.StdId)
-    {
-        case 517:
-        {
-            get_motor_measure(&motor_card, rx_data);
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
-}
-
 static CAN_TxHeaderTypeDef  can_tx_message;
-static uint8_t              card_can_send_data[10];
+static uint8_t              card_can_send_data[8];
 
 void card_can_send(void)
 {
@@ -141,7 +122,6 @@ void card_init(void)
     card.set_mode  =   card_set_mode;
     card.control   =   card_control;
     card.can_send  =   card_can_send;
-    card.measure   =   card_motor_measure;
 }
 
 #endif
