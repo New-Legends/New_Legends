@@ -36,26 +36,32 @@
 #define POWER_TOTAL_CURRENT_LIMIT       20000.0f
 
 
-
+/*规则
+英雄：
+类型           等级          枪口热量上限           枪口热量每秒冷却值      射击初速度上限 m/s
+初始状态                     100                     20                       10
+爆发优先       1             200                     40                       10
+               2             350                     80                       10
+               3             500                     120                      10
+弹速优先       1             100                     20                       16
+               2             200                     60                       16
+							 3             300                     100                      16
+*/
 /*
+ 
 
-42mm射速上限 10 16 m/s
-42mm热量上限 100 200 300 350 500
-42mm热量冷却 20 40 60 80 100 120
-一发42mm 100热量
 */
 
-#define FRIC_REFEREE_PARA  0.5            //射速裁判规定数值转实际输入
+#define FRIC_REFEREE_PARA       0.5      //射速裁判规定数值转实际输入
 #define GRIGGER_SPEED_TO_RADIO  0.8      //射频裁判规定数值转实际输入
 
 
 //通过读取裁判数据,直接修改射速和射频等级
-//射速等级  摩擦电机
-fp32 shoot_fric_grade[4] = {0, 34*FRIC_REFEREE_PARA, 34*FRIC_REFEREE_PARA, 35*FRIC_REFEREE_PARA};//    15m/s
-//测试用，尿弹模式
-//fp32 shoot_fric_grade[4] = {0, 1*FRIC_REFEREE_PARA, 1*FRIC_REFEREE_PARA, 10*FRIC_REFEREE_PARA};
-//射频等级 拨弹电机
- fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
+//射速等级  摩擦电机（没有调试）
+//fp32 shoot_fric_grade[4] = {0, 18*FRIC_REFEREE_PARA, 18*FRIC_REFEREE_PARA, 18*FRIC_REFEREE_PARA};//步兵
+  fp32 shoot_fric_grade[3] = {0, 18*FRIC_REFEREE_PARA, 18*FRIC_REFEREE_PARA};//英雄
+//射频等级 拨弹电机(没有调试）
+fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO};
 
  //拨盘等级 摩擦轮等级
 uint8_t grigger_speed_grade;
@@ -150,30 +156,81 @@ void chassis_power_control(chassis_move_t *chassis_power_control)
     }
 }
 
-//17mm枪口热量上限, 17mm枪口实时热量
+/*//17mm枪口热量上限, 17mm枪口实时热量
 uint16_t id1_17mm_cooling_limit;
 uint16_t id1_17mm_cooling_heat;
+
 //17mm枪口枪口射速上限,17mm实时射速
 uint16_t id1_17mm_speed_limit; 
 fp32 bullet_speed;
+*/
+//42mm枪口热量上限, 42mm枪口实时热量
+uint16_t id1_42mm_cooling_limit;
+uint16_t id1_42mm_cooling_heat;
+
+//42mm枪口枪口射速上限,42mm实时射速
+uint16_t id1_42mm_speed_limit; 
+uint16_t bullet_speed;
+/**
+  * @brief          限制42mm发射机构射速和射频，主要限制电机电流 默认枪口ID为1
+  * @param[in]      shoot_heat0_speed_and_cooling_control: 发送机构数据
+  * @retval         none
+  */
+void shoot_id1_42mm_speed_and_cooling_control(shoot_control_t *shoot_heat0_speed_and_cooling_control)
+{
+	if(toe_is_error(REFEREE_TOE))
+    {
+        grigger_speed_grade = 1;
+        fric_speed_grade = 1;
+    }
+		else
+		{
+			  get_shooter_id1_42mm_cooling_limit_and_heat(&id1_42mm_cooling_limit,&id1_42mm_cooling_heat);   //获取42mm枪口热量上限, 42mm枪口实时热量
+        get_shooter_id1_42mm_speed_limit_and_bullet_speed(&id1_42mm_speed_limit, &bullet_speed);       // 获取42mm枪口枪口射速上限,42mm实时射速
+//根据热量和射速上限修改等级
+        if(id1_42mm_cooling_limit <= 100)
+            grigger_speed_grade = 1;
+        else if(id1_42mm_cooling_limit <= 200)
+            grigger_speed_grade = 2;
+        else if(id1_42mm_cooling_limit <= 300)
+            grigger_speed_grade = 3;
+        else if(id1_42mm_cooling_limit <= 350)
+            grigger_speed_grade = 4;
+        else if(id1_42mm_cooling_limit <= 500)
+            grigger_speed_grade = 5;
+        //射速
+        if(id1_42mm_speed_limit <= 10)
+            fric_speed_grade = 1;
+        else if(id1_42mm_speed_limit <= 16)
+            fric_speed_grade = 2;		
+		
+//当调试射速和射频等级数组时可以暂时注释
+//根据当前热量和射速修改等级,确保不会因超限扣血
+			}
+    //对拨盘电机输入控制值
+    shoot_heat0_speed_and_cooling_control->trigger_speed_set = shoot_grigger_grade[grigger_speed_grade] * SHOOT_TRIGGER_DIRECTION;
+    //对摩擦轮电机输入控制值
+    shoot_heat0_speed_and_cooling_control->fric_motor[LEFT].speed_set = -shoot_fric_grade[grigger_speed_grade];
+    shoot_heat0_speed_and_cooling_control->fric_motor[RIGHT].speed_set = shoot_fric_grade[fric_speed_grade];
+}
+	
 /**
   * @brief          限制17mm发射机构射速和射频，主要限制电机电流 默认枪口ID为1,如果需要ID2,自行修改和添加
   * @param[in]      shoot_heat0_speed_and_cooling_control: 发送机构数据
   * @retval         none
   */
- void shoot_id1_17mm_speed_and_cooling_control(shoot_control_t *shoot_heat0_speed_and_cooling_control)
-{
+// void shoot_id1_17mm_speed_and_cooling_control(shoot_control_t *shoot_heat0_speed_and_cooling_control)
+//{
 
-    if(toe_is_error(REFEREE_TOE))
-    {
-        grigger_speed_grade = 1;
-        fric_speed_grade = 1;
-    }
-    else
-    {
-        get_shooter_id1_17mm_cooling_limit_and_heat(&id1_17mm_cooling_limit,&id1_17mm_cooling_heat);   //获取17mm枪口热量上限, 17mm枪口实时热量
-        get_shooter_id1_17mm_speed_limit_and_bullet_speed(&id1_17mm_speed_limit, &bullet_speed); // 获取17mm枪口枪口射速上限,17mm实时射速
- //       get_shooter_id2_42mm_speed_limit
+//    if(toe_is_error(REFEREE_TOE))
+//    {
+//        grigger_speed_grade = 1;
+//        fric_speed_grade = 1;
+//    }
+//    else
+//    {
+//        get_shooter_id1_17mm_cooling_limit_and_heat(&id1_17mm_cooling_limit,&id1_17mm_cooling_heat);   //获取17mm枪口热量上限, 17mm枪口实时热量
+//        get_shooter_id1_17mm_speed_limit_and_bullet_speed(&id1_17mm_speed_limit, &bullet_speed); // 获取17mm枪口枪口射速上限,17mm实时射速
         //根据热量和射速上限修改等级
         //热量
 //        if(id1_17mm_cooling_limit <= 50)
@@ -208,12 +265,12 @@ fp32 bullet_speed;
 //        if(bullet_speed > id1_17mm_speed_limit)
 //            fric_speed_grade -- ;
 
-    }
+//    }
 
-    //对拨盘电机输入控制值
-    shoot_heat0_speed_and_cooling_control->trigger_speed_set = shoot_grigger_grade[grigger_speed_grade] * SHOOT_TRIGGER_DIRECTION;
-    //对摩擦轮电机输入控制值
-    shoot_heat0_speed_and_cooling_control->fric_motor[LEFT].speed_set = -shoot_fric_grade[fric_speed_grade];
-    shoot_heat0_speed_and_cooling_control->fric_motor[RIGHT].speed_set = shoot_fric_grade[fric_speed_grade];
-   
-}
+//    //对拨盘电机输入控制值
+//    shoot_heat0_speed_and_cooling_control->trigger_speed_set = shoot_grigger_grade[grigger_speed_grade] * SHOOT_TRIGGER_DIRECTION;
+//    //对摩擦轮电机输入控制值
+//    shoot_heat0_speed_and_cooling_control->fric_motor[LEFT].speed_set = -shoot_fric_grade[grigger_speed_grade];
+//    shoot_heat0_speed_and_cooling_control->fric_motor[RIGHT].speed_set = shoot_fric_grade[fric_speed_grade];
+//   
+//}

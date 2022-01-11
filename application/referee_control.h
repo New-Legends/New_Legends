@@ -38,7 +38,7 @@
 extern void chassis_power_control(chassis_move_t *chassis_power_control);
 
 /**
-  * @brief          限制17mm发射机构射速和射频，主要限制电机电流
+  * @brief          限制42mm发射机构射速和射频，主要限制电机电流
   * @param[in]      shoot_heat0_speed_and_cooling_control: 发送机构数据
   * @retval         none
   */
@@ -46,7 +46,7 @@ extern void shoot_heat0_speed_and_cooling_control(shoot_control_t *shoot_heat0_s
 
 //通过读取裁判数据,直接修改射速和射频等级
 //射速等级  摩擦电机
-extern fp32 shoot_fric_grade[4];
+extern fp32 shoot_fric_grade[3];
 
 //射频等级 拨弹电机
 extern fp32 shoot_grigger_grade[6];

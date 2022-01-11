@@ -80,7 +80,7 @@
 
 //卡弹时间  以及反转时间
 #define BLOCK_TRIGGER_SPEED         1.0f
-#define BLOCK_TIME                   700//
+#define BLOCK_TIME                  700//
 #define REVERSE_TIME                1000//500
 #define REVERSE_SPEED_LIMIT         13.0f
 
@@ -105,15 +105,15 @@
 
 
 //摩擦轮电机PID
-#define FRIC_SPEED_PID_KP        2000.0f
+#define FRIC_SPEED_PID_KP        1800.0f
 #define FRIC_SPEED_PID_KI        0.5f
 #define FRIC_SPEED_PID_KD        2.0f
 
-#define FRIC_PID_MAX_OUT  20000.0f
+#define FRIC_PID_MAX_OUT  8000.0f
 #define FRIC_PID_MAX_IOUT 200.0f
 
 
-#define FRIC_MAX_SPEED_RMP 40000.0f
+#define FRIC_MAX_SPEED_RMP 4000.0f
 #define FRIC_REQUIRE_SPEED_RMP 500.0f
 
 #define SHOOT_HEAT_REMAIN_VALUE     80

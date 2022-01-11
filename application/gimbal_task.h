@@ -160,21 +160,21 @@
 
 
 //限幅 需要自己手动校准  云台归中编码值
-#define YAW_OFFSET        5200//编码器
-#define PITCH_OFFSET      1200 //编码器
+#define YAW_OFFSET        6805//编码器
+#define PITCH_OFFSET      2235 //编码器
 //编码值控制最大值最小值
 #define MIN_YAW         -3.14f
 #define MAX_YAW         3.14f
 //最大或最小相对角度 relative angle
-#define MIN_PITCH       -0.21f
-#define MAX_PITCH       0.64f
+#define MIN_PITCH       -0.23f
+#define MAX_PITCH       0.68f
 
 
 #define MIN_ABSOULATE_YAW     -3.14f
 #define MAX_ABSOULATE_YAW     3.14f
 
-#define MIN_ABSOULATE_PITCH      -0.21f
-#define MAX_ABSOULATE_PITCH      0.64f
+#define MIN_ABSOULATE_PITCH      -0.28f
+#define MAX_ABSOULATE_PITCH      0.67f
 
 #define GIMBAL_ACCEL_YAW_NUM 0.002f
 #define GIMBAL_ACCEL_PITCH_NUM 0.002f

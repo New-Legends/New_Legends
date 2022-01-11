@@ -313,9 +313,9 @@ void shoot_set_control(void)
 //			  shoot_control.fric_motor[LEFT].speed_set = 0;
 //        shoot_control.fric_motor[RIGHT].speed_set = 0;
 
-//        连发模式 控制17mm发射机构射速和热量控制
+//        连发模式 控制42mm发射机构射速和热量控制（未测试）
 //        if(shoot_control.shoot_mode == SHOOT_CONTINUE_BULLET)
-//        shoot_id1_17mm_speed_and_cooling_control(&shoot_control);
+//        shoot_id1_42mm_speed_and_cooling_control(&shoot_control);
 
         //将设置的拨盘旋转角度,转化为速度,且防止卡弹
         if(shoot_control.shoot_mode == SHOOT_READY_BULLET || shoot_control.shoot_mode == SHOOT_CONTINUE_BULLET)
