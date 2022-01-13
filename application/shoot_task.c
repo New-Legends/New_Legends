@@ -307,8 +307,10 @@ void shoot_set_control(void)
     {
         shoot_laser_on(); //激光开启
         //设置摩擦轮转速
-			shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[2];
-			shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[2];
+	    // shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[2];
+		// shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[2];
+        shoot_control.fric_motor[LEFT].speed_set = -20.0f;
+		    shoot_control.fric_motor[RIGHT].speed_set = 20.0f;
 			  //摩擦轮速度为0，仅播弹 
 //			  shoot_control.fric_motor[LEFT].speed_set = 0;
 //        shoot_control.fric_motor[RIGHT].speed_set = 0;

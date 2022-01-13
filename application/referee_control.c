@@ -59,9 +59,9 @@
 //通过读取裁判数据,直接修改射速和射频等级
 //射速等级  摩擦电机（没有调试）
 //fp32 shoot_fric_grade[4] = {0, 36*FRIC_REFEREE_PARA, 18*FRIC_REFEREE_PARA, 18*FRIC_REFEREE_PARA};//步兵
-  fp32 shoot_fric_grade[3] = {0, 45*FRIC_REFEREE_PARA, 45*FRIC_REFEREE_PARA};//英雄
+  fp32 shoot_fric_grade[3] = {0, 35*FRIC_REFEREE_PARA, 35*FRIC_REFEREE_PARA};//英雄
 //射频等级 拨弹电机(没有调试）
-fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO};
+fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 5.0f*GRIGGER_SPEED_TO_RADIO, 5.0f*GRIGGER_SPEED_TO_RADIO, 5.0f*GRIGGER_SPEED_TO_RADIO, 5.0f*GRIGGER_SPEED_TO_RADIO};
 
  //拨盘等级 摩擦轮等级
 uint8_t grigger_speed_grade;

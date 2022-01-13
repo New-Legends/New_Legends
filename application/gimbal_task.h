@@ -41,16 +41,16 @@
 
 //yaw 速度环 PID参数以及 PID最大输出，积分输出
 #define YAW_SPEED_PID_KP        1800.0f  //1800
-#define YAW_SPEED_PID_KI        0.0f//20
+#define YAW_SPEED_PID_KI        0.0f
 #define YAW_SPEED_PID_KD        0.0f
 #define YAW_SPEED_PID_MAX_OUT   30000.0f
 #define YAW_SPEED_PID_MAX_IOUT  5000.0f
 
 
 //yaw 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define YAW_GYRO_ABSOLUTE_PID_KP        32.0f  //26
-#define YAW_GYRO_ABSOLUTE_PID_KI        3.0f
-#define YAW_GYRO_ABSOLUTE_PID_KD        0.5f
+#define YAW_GYRO_ABSOLUTE_PID_KP        30.0f  //26
+#define YAW_GYRO_ABSOLUTE_PID_KI        1.7f
+#define YAW_GYRO_ABSOLUTE_PID_KD        2.1f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   4.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 
@@ -160,7 +160,7 @@
 
 
 //限幅 需要自己手动校准  云台归中编码值
-#define YAW_OFFSET        5185//编码器
+#define YAW_OFFSET        5427//编码器
 #define PITCH_OFFSET      2235 //编码器
 //编码值控制最大值最小值
 #define MIN_YAW         -3.14f

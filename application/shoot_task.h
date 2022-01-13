@@ -93,7 +93,7 @@
 #define TRIGGER_ANGLE_PID_KI        0.9f  //0.5
 #define TRIGGER_ANGLE_PID_KD        1.0f
 
-#define TRIGGER_BULLET_PID_MAX_OUT  10000.0f
+#define TRIGGER_BULLET_PID_MAX_OUT  4000.0f
 #define TRIGGER_BULLET_PID_MAX_IOUT 200.0f
 
 #define TRIGGER_READY_PID_MAX_OUT   10000.0f
@@ -107,13 +107,13 @@
 //Ä¦²ÁÂÖµç»úPID
 #define FRIC_SPEED_PID_KP        1800.0f
 #define FRIC_SPEED_PID_KI        0.5f
-#define FRIC_SPEED_PID_KD        2.0f
+#define FRIC_SPEED_PID_KD        1.0f
 
 #define FRIC_PID_MAX_OUT  8000.0f
-#define FRIC_PID_MAX_IOUT 200.0f
+#define FRIC_PID_MAX_IOUT 2000.0f
 
 
-#define FRIC_MAX_SPEED_RMP 4000.0f
+#define FRIC_MAX_SPEED_RMP 10000.0f
 #define FRIC_REQUIRE_SPEED_RMP 500.0f
 
 #define SHOOT_HEAT_REMAIN_VALUE     80
