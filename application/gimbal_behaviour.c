@@ -221,7 +221,7 @@ uint16_t turn_switch_delay_time = 0;  //ทภึนมฝดฮฐดผüฑปฮ๓สถฑ๐ฮชาปดฮ ึ๗าชสวลยำ๋45ถ
 
 
 //ืิร้ฯเนุสýพÝ
-bool_t auto_switch = 0;  //ืิร้ฟชนุ
+bool_t auto_switch = TRUE;  //ืิร้ฟชนุ
 
 
 //ิฦฬจืชอทฯเนุสýพÝ
