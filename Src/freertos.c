@@ -161,14 +161,14 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(cali, calibrate_task, osPriorityNormal, 0, 512);
     calibrate_tast_handle = osThreadCreate(osThread(cali), NULL);
 
-   osThreadDef(ChassisTask, chassis_task, osPriorityAboveNormal, 0, 512);
-   chassisTaskHandle = osThreadCreate(osThread(ChassisTask), NULL);
+    osThreadDef(ChassisTask, chassis_task, osPriorityAboveNormal, 0, 512);
+    chassisTaskHandle = osThreadCreate(osThread(ChassisTask), NULL);
 
 //		osThreadDef(DETECT, detect_task, osPriorityNormal, 0, 256);
 //		detect_handle = osThreadCreate(osThread(DETECT), NULL);
 
-//     osThreadDef(gimbalTask, gimbal_task, osPriorityHigh, 0, 512);
-//     gimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
+    osThreadDef(gimbalTask, gimbal_task, osPriorityHigh, 0, 512);
+    gimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
 
     osThreadDef(ShootTask, shoot_task, osPriorityHigh, 0, 512);
     shoot_task_handle = osThreadCreate(osThread(ShootTask), NULL);
@@ -194,11 +194,11 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(SERVO, servo_task, osPriorityHigh, 0, 256);
     servo_task_handle = osThreadCreate(osThread(SERVO), NULL);
 
-//    osThreadDef(UI, ui_task, osPriorityNormal, 0, 512);
-//    ui_task_handle = osThreadCreate(osThread(UI), NULL);
+    osThreadDef(UI, ui_task, osPriorityNormal, 0, 512);
+    ui_task_handle = osThreadCreate(osThread(UI), NULL);
 
-//    osThreadDef(SIPER_CAP, super_cap_task, osPriorityNormal, 0, 128);
- //   super_cap_task_handle = osThreadCreate(osThread(SIPER_CAP), NULL);
+    // osThreadDef(SIPER_CAP, super_cap_task, osPriorityNormal, 0, 128);
+    // super_cap_task_handle = osThreadCreate(osThread(SIPER_CAP), NULL);
 
     // osThreadDef(SOTFWARE_RESET, software_reset_task, osPriorityNormal, 0, 128);
     // software_reset_task_handle = osThreadCreate(osThread(SOTFWARE_RESET), NULL);

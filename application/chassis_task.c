@@ -20,8 +20,7 @@
 #include "chassis_behaviour.h"
 #include "gimbal_task.h"
 #include "cmsis_os.h"
-#include "kalman.h"
-#include "kalman_filter.h"
+
 #include "arm_math.h"
 #include "pid.h"
 #include "remote_control.h"
@@ -97,14 +96,7 @@ uint32_t chassis_high_water;
 
 //底盘运动数据
 chassis_move_t chassis_move;
-//卡尔曼滤波
-extKalman_t chas_motor_pid_Kal[CAN_CHASSIS_ALL_ID] = 
-{
-	[CAN_CHASSIS_ALL_ID] = {
-		.Q = 1,
-		.R = 1,
-	},
-};
+
 
 
 
@@ -155,7 +147,7 @@ void chassis_task(void const *pvParameters)
             else
             {
                 //发送控制电流
-                CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+         CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
                                chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
             }
         }
@@ -237,7 +229,6 @@ static void chassis_init(chassis_move_t *chassis_move_init)
     //update data
     //更新一下数据
     chassis_feedback_update(chassis_move_init);
-    KalmanCreate(&chas_motor_pid_Kal[CAN_CHASSIS_ALL_ID], 1, 1);
 }
 
 
@@ -568,7 +559,6 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
     for (i = 0; i < 4; i++)
     {
         PID_calc(&chassis_move_control_loop->motor_speed_pid[i], chassis_move_control_loop->motor_chassis[i].speed, chassis_move_control_loop->motor_chassis[i].speed_set);
-        pid[i]->out=KalmanFilter(&chas_motor_pid_Kal[i], pid[i]->out);
     }
 
 

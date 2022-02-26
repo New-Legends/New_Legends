@@ -90,29 +90,29 @@ typedef __packed struct
 } ext_referee_warning_t;
 typedef __packed struct //0x0201
 {
-    uint8_t robot_id; 
-    uint8_t robot_level; 
-    uint16_t remain_HP; 
-    uint16_t max_HP; 
+  	uint8_t robot_id;                                     //本机器人id
+	  uint8_t robot_level;                                  //机器人等级
+	  uint16_t remain_HP;                                   //机器人剩余血量
+	  uint16_t max_HP;                                      //机器人上限血量
 
-    uint16_t shooter_id1_17mm_cooling_rate;
-    uint16_t shooter_id1_17mm_cooling_limit;
-    uint16_t shooter_id1_17mm_speed_limit;
+    uint16_t shooter_id1_17mm_cooling_rate;               //机器人1号17mm枪口每秒冷却值
+    uint16_t shooter_id1_17mm_cooling_limit;              //机器人1号17mm枪口热量上限
+    uint16_t shooter_id1_17mm_speed_limit;                //机器人1号17mm 枪口上限速度 单位 m/s
 
-    uint16_t shooter_id2_17mm_cooling_rate; 
-    uint16_t shooter_id2_17mm_cooling_limit;
-    uint16_t shooter_id2_17mm_speed_limit;
+    uint16_t shooter_id2_17mm_cooling_rate;               //机器人2号17mm枪口每秒冷却值
+    uint16_t shooter_id2_17mm_cooling_limit;              //机器人2号17mm枪口热量上限
+    uint16_t shooter_id2_17mm_speed_limit;                //机器人2号17mm 枪口上限速度 单位 m/s
 
-    uint16_t shooter_id1_42mm_cooling_rate; 
-    uint16_t shooter_id1_42mm_cooling_limit;
-    uint16_t shooter_id1_42mm_speed_limit;
+    uint16_t shooter_id1_42mm_cooling_rate;               //机器人42mm枪口每秒冷却值
+    uint16_t shooter_id1_42mm_cooling_limit;              //机器人42mm枪口热量上限
+    uint16_t shooter_id1_42mm_speed_limit;                //机器人42mm枪口上限速度 单位 m/s
 
-    uint16_t chassis_power_limit; 
-    uint8_t mains_power_gimbal_output : 1; 
-    uint8_t mains_power_chassis_output : 1; 
-    uint8_t mains_power_shooter_output : 1;
+    uint16_t chassis_power_limit;                         //机器人底盘功率限制上限
+    uint8_t mains_power_gimbal_output : 1;                //电管gimbal口输出
+    uint8_t mains_power_chassis_output : 1;               //电管chassis口输出
+    uint8_t mains_power_shooter_output : 1;               //电管shooter口输出
 
-} ext_game_robot_state_t;
+} ext_game_robot_state_t;         //发送频率：10Hz
 
 typedef __packed struct //0x0202
 {

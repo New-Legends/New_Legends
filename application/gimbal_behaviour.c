@@ -221,7 +221,7 @@ uint16_t turn_switch_delay_time = 0;  //·ÀÖ¹Á½´Î°´¼ü±»ÎóÊ¶±ðÎªÒ»´Î Ö÷ÒªÊÇÅÂÓë45¶
 
 
 //×ÔÃéÏà¹ØÊý¾Ý
-bool_t auto_switch = 0;  //×ÔÃé¿ª¹Ø
+bool_t auto_switch = TRUE;  //×ÔÃé¿ª¹Ø
 
 
 //ÔÆÌ¨×ªÍ·Ïà¹ØÊý¾Ý
@@ -427,29 +427,32 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         }
     }
 
-    //¿ª¹Ø¿ØÖÆ ÔÆÌ¨×´Ì¬
+    //Ò£¿ØÆ÷¿ØÖÆ    ¿ª¹Ø¿ØÖÆ ÔÆÌ¨×´Ì¬
   /*GIMBAL_ZERO_FORCE = 0, 
     GIMBAL_INIT,           
     GIMBAL_CALI,           
-    GIMBAL_ABSOLUTE_ANGLE, 
-    GIMBAL_RELATIVE_ANGLE, 
+    GIMBAL_ABSOLUTE_ANGLE,  ¾ø¶Ô½Ç¶È-ÍÓÂÝÒÇ¿ØÖÆ
+    GIMBAL_RELATIVE_ANGLE,  Ïà¶Ô½Ç¶È-±àÂëÖµ¿ØÖÆ
     GIMBAL_MOTIONLESS,
     */
     
     if (switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
-        gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;
+//        gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;
+		     	gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;
     }
     else if (switch_is_mid(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
-        gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;
+
+
+		  	gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;       
     }
     else if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
         gimbal_behaviour = GIMBAL_ZERO_FORCE;
     }
 
-
+                                
     if(shoot_cmd_to_gimbal_stop())
     {
         gimbal_behaviour = GIMBAL_ZERO_FORCE;

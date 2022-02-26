@@ -42,8 +42,6 @@
 #include "pid.h"
 #include "vision.h"
 #include "referee.h"
-#include "kalman.h"
-#include "kalman_filter.h"
 
 
 //motor enconde value format, range[0-8191]
@@ -216,9 +214,6 @@ static void J_scope_gimbal_test(void);
 
 //云台控制所有相关数据
 gimbal_control_t gimbal_control;
-//卡尔曼滤波
-extKalman_t gimbal_pid_Kal[CAN_GIMBAL_ALL_ID];
-
 
 
 
@@ -278,7 +273,9 @@ void gimbal_task(void const *pvParameters)
             else
             {
                 //CAN_cmd_gimbal(0, 0, 0, 0);  //pitch轴有问题,未修复
-                CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current, 0, 0);//CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current, 0, 0);
+                CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0, 0);
+
+							
             }
         }
 
@@ -558,6 +555,7 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_yaw_motor.max_absolute_angle = MAX_ABSOULATE_YAW;
     init->gimbal_yaw_motor.min_absolute_angle = MIN_ABSOULATE_YAW;
 
+
     static const fp32 Pitch_speed_pid[3] = {PITCH_SPEED_PID_KP, PITCH_SPEED_PID_KI, PITCH_SPEED_PID_KD};
     static const fp32 Yaw_speed_pid[3] = {YAW_SPEED_PID_KP, YAW_SPEED_PID_KI, YAW_SPEED_PID_KD};
     //电机数据指针获取
@@ -596,13 +594,6 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_pitch_motor.absolute_angle_set = init->gimbal_pitch_motor.absolute_angle;
     init->gimbal_pitch_motor.relative_angle_set = init->gimbal_pitch_motor.relative_angle;
     init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
-
-    KalmanCreate(&gimbal_speed_pid_Kal[CAN_YAW_MOTOR_ID], 1, 5);
-	KalmanCreate(&gimbal_speed_pid_Kal[CAN_PIT_MOTOR_ID], 1, 10);
-	
-	KalmanCreate(&gimbal_angle_pid_Kal[CAN_YAW_MOTOR_ID], 1, 30);
-	KalmanCreate(&gimbal_angle_pid_Kal[CAN_PIT_MOTOR_ID], 1, 200);
-
 
  
 
@@ -911,11 +902,8 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
 
     gimbal_motor->motor_gyro = gimbal_motor->motor_gyro/100;
     //角度环，速度环串级pid调试
-    
     gimbal_motor->motor_gyro_set = gimbal_PID_calc(&gimbal_motor->gimbal_motor_absolute_angle_pid, gimbal_motor->absolute_angle, gimbal_motor->absolute_angle_set, gimbal_motor->motor_gyro/100);
-    gimbal_motor->motor_gyro_set = KalmanFilter(&gimbal_pid_Kal[CAN_GIMBAL_ALL_ID],gimbal_motor->motor_gyro_set);
     gimbal_motor->current_set = PID_calc(&gimbal_motor->gimbal_motor_gyro_pid, gimbal_motor->motor_gyro, gimbal_motor->motor_gyro_set);
-    gimbal_motor->current_set = KalmanFilter(&gimbal_pid_Kal[CAN_GIMBAL_ALL_ID],gimbal_motor->current_set);
     //控制值赋值
     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
 }
@@ -925,7 +913,7 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
   * @param[out]     gimbal_motor:yaw电机或者pitch电机   注意此处陀螺仪校准有问题，角速度有波动，故将角速度/100 !!!
   * @retval         none
   */
-static void  gimbal_motor_relative_angle_control(gimbal_motor_t *gimbal_motor)
+static void gimbal_motor_relative_angle_control(gimbal_motor_t *gimbal_motor)
 {
     if (gimbal_motor == NULL)
     {
@@ -934,9 +922,7 @@ static void  gimbal_motor_relative_angle_control(gimbal_motor_t *gimbal_motor)
 
     //角度环，速度环串级pid调试
     gimbal_motor->motor_gyro_set = gimbal_PID_calc(&gimbal_motor->gimbal_motor_relative_angle_pid, gimbal_motor->relative_angle, gimbal_motor->relative_angle_set, gimbal_motor->motor_gyro/100);
-    gimbal_motor->motor_gyro_set = KalmanFilter(&gimbal_pid_Kal[CAN_GIMBAL_ALL_ID],gimbal_motor->motor_gyro_set);
     gimbal_motor->current_set = PID_calc(&gimbal_motor->gimbal_motor_gyro_pid, gimbal_motor->motor_gyro, gimbal_motor->motor_gyro_set);
-    gimbal_motor->current_set = KalmanFilter(&gimbal_pid_Kal[CAN_GIMBAL_ALL_ID],gimbal_motor->current_set);
     //控制值赋值
     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
 }
@@ -954,7 +940,6 @@ static void gimbal_motor_raw_angle_control(gimbal_motor_t *gimbal_motor)
         return;
     }
     gimbal_motor->current_set = gimbal_motor->raw_cmd_current;
-    gimbal_motor->current_set = KalmanFilter(&gimbal_pid_Kal[CAN_GIMBAL_ALL_ID],gimbal_motor->current_set);
     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
 }
 

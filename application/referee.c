@@ -34,7 +34,7 @@ uint16_t Judge_SelfClient_ID;//发送者机器人对应的客户端ID
 
 
 
-
+//初始化，全设置为0
 void init_referee_struct_data(void)
 {
     memset(&referee_receive_header, 0, sizeof(frame_header_struct_t));
@@ -305,6 +305,17 @@ void determine_ID(void)
 		Judge_SelfClient_ID = 0x0100 + Judge_Self_ID;//计算客户端ID
 	}
 }
-
-
-
+//************************继电器功能设置***********************************
+/**
+  * @brief  判断电管的chassis是否供电
+  * @param  void
+  * @retval RED   BLUE
+  * @attention  chassis供电，则继电器给电
+  */
+//void relay_control(void)
+//{
+//	if(game_state.mains_power_chassis_output==0)
+//	{
+//		
+//	}
+//}

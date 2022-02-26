@@ -46,7 +46,7 @@ extern CAN_HandleTypeDef hcan2;
 /*
 电机数据, 
 0:底盘电机1 3508电机,  1:底盘电机2 3508电机,2:底盘电机3 3508电机,3:底盘电机4 3508电机;
-4:左摩擦轮电机 3508电机, 5右摩擦轮电机 3508电机, 6拨弹电机 2006电机, 7无电机 暂时保留
+4:左摩擦轮电机 3508电机, 5右摩擦轮电机 3508电机, 6拨弹电机 3508电机, 7无电机 暂时保留
 8:yaw云台电机 6020电机; 9:pitch云台电机 6020电机;
 */
 static motor_measure_t motor_chassis[10];
@@ -282,7 +282,7 @@ const motor_measure_t *get_pitch_gimbal_motor_measure_point(void)
 
 
 /**
-  * @brief          返回拨弹电机 2006电机数据指针
+  * @brief          返回拨弹电机 3508电机数据指针
   * @param[in]      none
   * @retval         电机数据指针
   */
