@@ -38,9 +38,9 @@
 #define PITCH_SPEED_PID_MAX_OUT   30000.0f
 #define PITCH_SPEED_PID_MAX_IOUT  10000.0f
 //pitch ???è?· ???èóéíó?Yò??a?? PID2?êyò??° PID×?′óê?3?￡??y·?ê?3?
-#define PITCH_GYRO_ABSOLUTE_PID_KP 16.0f   
-#define PITCH_GYRO_ABSOLUTE_PID_KI 1.0f
-#define PITCH_GYRO_ABSOLUTE_PID_KD 8.0f
+#define PITCH_GYRO_ABSOLUTE_PID_KP 15.0f   
+#define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
+#define PITCH_GYRO_ABSOLUTE_PID_KD 5.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 6.0f//6
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 0.0f
 
@@ -53,9 +53,9 @@
 #define YAW_SPEED_PID_MAX_IOUT  5000.0f  
 
 //yaw ???è?· ???èóéíó?Yò??a?? PID2?êyò??° PID×?′óê?3?￡??y·?ê?3?
-#define YAW_GYRO_ABSOLUTE_PID_KP      6.0f  //26
-#define YAW_GYRO_ABSOLUTE_PID_KI        1.5f   //1.2
-#define YAW_GYRO_ABSOLUTE_PID_KD        3.9f   //0.6
+#define YAW_GYRO_ABSOLUTE_PID_KP      16.0f  //26
+#define YAW_GYRO_ABSOLUTE_PID_KI        0.0f   //1.2
+#define YAW_GYRO_ABSOLUTE_PID_KD        50.0f   //0.6
 #define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   4.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 
@@ -156,7 +156,7 @@
 
 
 //限幅 需要自己手动校准  云台归中编码值
-#define YAW_OFFSET         2527   //编码器
+#define YAW_OFFSET         6700   //编码器
 //电池一侧为3042   主控一侧为7060（步兵）
 #define PITCH_OFFSET     1714 //编码器
 //自动校准

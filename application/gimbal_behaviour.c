@@ -445,7 +445,7 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
     {
 
 
-		  	gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;       
+		  	gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;       
     }
     else if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
