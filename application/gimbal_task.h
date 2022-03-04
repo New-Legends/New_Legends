@@ -40,22 +40,22 @@
 //pitch ???豕?﹞ ???豕車谷赤車?Y辰??a?? PID2?那y辰??～ PID℅?∩車那?3?㏒??y﹞?那?3?
 #define PITCH_GYRO_ABSOLUTE_PID_KP 15.0f   
 #define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
-#define PITCH_GYRO_ABSOLUTE_PID_KD 5.0f
+#define PITCH_GYRO_ABSOLUTE_PID_KD 10.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 6.0f//6
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 0.0f
 
 
 //yaw ?迄?豕?﹞ PID2?那y辰??～ PID℅?∩車那?3?㏒??y﹞?那?3?
-#define YAW_SPEED_PID_KP        2000.0f  
+#define YAW_SPEED_PID_KP        2400.0f  
 #define YAW_SPEED_PID_KI        0.0f   
-#define YAW_SPEED_PID_KD        0.0f    
+#define YAW_SPEED_PID_KD        1.4f    
 #define YAW_SPEED_PID_MAX_OUT   30000.0f
 #define YAW_SPEED_PID_MAX_IOUT  5000.0f  
 
 //yaw ???豕?﹞ ???豕車谷赤車?Y辰??a?? PID2?那y辰??～ PID℅?∩車那?3?㏒??y﹞?那?3?
-#define YAW_GYRO_ABSOLUTE_PID_KP      16.0f  //26
+#define YAW_GYRO_ABSOLUTE_PID_KP      15.0f  //26
 #define YAW_GYRO_ABSOLUTE_PID_KI        0.0f   //1.2
-#define YAW_GYRO_ABSOLUTE_PID_KD        50.0f   //0.6
+#define YAW_GYRO_ABSOLUTE_PID_KD        2.5f   //0.6
 #define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   4.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 
