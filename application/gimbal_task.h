@@ -46,16 +46,16 @@
 
 
 //yaw ?ù?è?· PID2?êyò??° PID×?′óê?3?￡??y·?ê?3?
-#define YAW_SPEED_PID_KP        2400.0f  
-#define YAW_SPEED_PID_KI        0.0f   
-#define YAW_SPEED_PID_KD        1.4f    
+#define YAW_SPEED_PID_KP        2500.0f  
+#define YAW_SPEED_PID_KI        0.2f   
+#define YAW_SPEED_PID_KD        3800.0f    
 #define YAW_SPEED_PID_MAX_OUT   30000.0f
 #define YAW_SPEED_PID_MAX_IOUT  5000.0f  
 
 //yaw ???è?· ???èóéíó?Yò??a?? PID2?êyò??° PID×?′óê?3?￡??y·?ê?3?
-#define YAW_GYRO_ABSOLUTE_PID_KP      15.0f  //26
-#define YAW_GYRO_ABSOLUTE_PID_KI        0.0f   //1.2
-#define YAW_GYRO_ABSOLUTE_PID_KD        2.5f   //0.6
+#define YAW_GYRO_ABSOLUTE_PID_KP      8.0f  //26
+#define YAW_GYRO_ABSOLUTE_PID_KI        0.2f   //1.2
+#define YAW_GYRO_ABSOLUTE_PID_KD        280.0f   //0.6
 #define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   4.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 
@@ -156,7 +156,7 @@
 
 
 //限幅 需要自己手动校准  云台归中编码值
-#define YAW_OFFSET         6700   //编码器
+#define YAW_OFFSET         2600   //编码器
 //电池一侧为3042   主控一侧为7060（步兵）
 #define PITCH_OFFSET     1714 //编码器
 //自动校准
