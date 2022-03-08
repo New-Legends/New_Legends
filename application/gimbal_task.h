@@ -156,9 +156,9 @@
 
 
 //限幅 需要自己手动校准  云台归中编码值
-#define YAW_OFFSET         2600   //编码器
+#define YAW_OFFSET         2545   //编码器
 //电池一侧为3042   主控一侧为7060（步兵）
-#define PITCH_OFFSET     1714 //编码器
+#define PITCH_OFFSET     1803 //编码器
 //自动校准
 #define MIN_YAW         -2*PI
 #define MAX_YAW         2*PI
