@@ -2,8 +2,7 @@ new_legends_project\lift.o: ..\APP\lift.c
 new_legends_project\lift.o: ..\APP\lift.h
 new_legends_project\lift.o: ..\APP\remote_control.h
 new_legends_project\lift.o: ..\APP\struct_typedef.h
-new_legends_project\lift.o: ..\bsp\boards\bsp_rc.h
-new_legends_project\lift.o: ..\bsp\boards\struct_typedef.h
+new_legends_project\lift.o: ..\APP\bsp_rc.h
 new_legends_project\lift.o: ../Core/Inc/can.h
 new_legends_project\lift.o: ../Core/Inc/main.h
 new_legends_project\lift.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
