@@ -336,16 +336,7 @@ void catch_can_send(void)
 //夹爪空接传感器
 void catch_sensor(void)
 {
-    if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_RESET)
-    {
-        catch.catch_sensor  =   0;
-    }
-
-    if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_SET)
-    {
-        catch.catch_sensor  =   1;
-    }
-    
+    catch.catch_sensor  =   HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin);
 }
 
 #define LimitMax(input, max)   \
