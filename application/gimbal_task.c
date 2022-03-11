@@ -173,7 +173,7 @@ static void gimbal_relative_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add);
   */
 static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 intergral_limit, fp32 kp, fp32 ki, fp32 kd);
 
-
+    
 /**
   * @brief          云台PID清除，清除pid的out,iout
   * @param[out]     pid_clear:"gimbal_control"变量指针.
@@ -274,6 +274,8 @@ void gimbal_task(void const *pvParameters)
             {
                 //CAN_cmd_gimbal(0, 0, 0, 0);  //pitch轴有问题,未修复
                 CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0, 0);
+
+							
             }
         }
 
@@ -413,7 +415,7 @@ static void calc_gimbal_cali(const gimbal_step_cali_t *gimbal_cali, uint16_t *ya
 
     if (temp_ecd < 0)
     {
-        temp_ecd += ecd_range;
+        temp_ecd += ECD_RANGE;
     }
     temp_ecd = gimbal_cali->max_yaw_ecd + (temp_ecd / 2);
 
@@ -552,6 +554,7 @@ static void gimbal_init(gimbal_control_t *init)
 
     init->gimbal_yaw_motor.max_absolute_angle = MAX_ABSOULATE_YAW;
     init->gimbal_yaw_motor.min_absolute_angle = MIN_ABSOULATE_YAW;
+
 
     static const fp32 Pitch_speed_pid[3] = {PITCH_SPEED_PID_KP, PITCH_SPEED_PID_KI, PITCH_SPEED_PID_KD};
     static const fp32 Yaw_speed_pid[3] = {YAW_SPEED_PID_KP, YAW_SPEED_PID_KI, YAW_SPEED_PID_KD};

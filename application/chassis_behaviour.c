@@ -170,13 +170,14 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     //遥控器设置模式
     if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {    
-       //chassis_behaviour_mode = CHASSIS_ENGINEER_FOLLOW_CHASSIS_YAW;    
-       chassis_behaviour_mode =CHASSIS_NO_FOLLOW_YAW ;
+//              chassis_behaviour_mode = CHASSIS_NO_FOLLOW_YAW;
+  
+          chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
     }
     else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
+//          chassis_behaviour_mode = CHASSIS_NO_FOLLOW_YAW;
        chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
-       //chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
     }
     else if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
@@ -403,7 +404,16 @@ static void chassis_infantry_follow_gimbal_yaw_control(fp32 *vx_set, fp32 *vy_se
     {
         swing_time -= 2 * PI;
     }
-
+    /****************************45度角对敌控制输入*********************************************/
+    //单击C,开启45度角对敌;重复操作取消45度角对敌
+    if(PISA_KEY && pisa_switch == 0)//打开45度对敌
+    {
+        pisa_switch = TRUE;
+    }
+    else if(PISA_KEY && pisa_switch != 0)//关闭45度对敌
+    {
+        pisa_switch = FALSE;
+    }
    
     /**************************小陀螺控制输入********************************/
     //单击F开启和关闭小陀螺
@@ -416,16 +426,16 @@ static void chassis_infantry_follow_gimbal_yaw_control(fp32 *vx_set, fp32 *vy_se
         top_switch = 0;
     }
 
-    // //遥控器拨至上 打开小陀螺
-    // if(switch_is_up(chassis_move.chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]) && top_switch == 0)
-    // {
-    //     top_switch = 1;
-    // }
-    // else if(switch_is_up(chassis_move.chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]) && top_switch == 1)
-    // {
-    //     top_switch = 0;
-    // }
-    
+     //遥控器拨至上 打开小陀螺
+//     if(switch_is_up(chassis_move.chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]) && top_switch == 0)
+//     {
+//         top_switch = 1;
+//     }
+//     else if(switch_is_up(chassis_move.chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]) && top_switch == 1)
+//     {
+//         top_switch = 0;
+//     }
+//    
     if(top_switch == 1)
     {
         if((fabs(*vx_set)<0.001)&&(fabs(*vy_set)<0.001)) 
@@ -434,24 +444,19 @@ static void chassis_infantry_follow_gimbal_yaw_control(fp32 *vx_set, fp32 *vy_se
         top_angle = TOP_WZ_ANGLE_MOVE;
     }
     else
-        top_angle = 0;
+		{
+			top_angle = 0;
+		}
 
 
-    /****************************45度角对敌控制输入*********************************************/
-    //单击C,开启45度角对敌;重复操作取消45度角对敌
-    if(PISA_KEY && pisa_switch == 0)//打开45度对敌
-    {
-        pisa_switch = TRUE;
-    }
-    else if(PISA_KEY && pisa_switch != 0)//关闭45度对敌
-    {
-        pisa_switch = FALSE;
-    }
+
 
     //更新上一次键盘值
+		
     chassis_move_rc_to_vector->chassis_last_key_v = chassis_move_rc_to_vector->chassis_RC->key.v;
-    
     *angle_set = swing_angle + top_angle;
+    
+		
 }
 
 

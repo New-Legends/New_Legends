@@ -140,15 +140,7 @@
   */
 static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set);
 
-/**
-  * @brief          when gimbal behaviour mode is GIMBAL_ZERO_FORCE, the function is called
-  *                 and gimbal control mode is raw. The raw mode means set value
-  *                 will be sent to CAN bus derectly, and the function will set all zero.
-  * @param[out]     yaw: yaw motor current set, it will be sent to CAN bus derectly.
-  * @param[out]     pitch: pitch motor current set, it will be sent to CAN bus derectly.
-  * @param[in]      gimbal_control_set: gimbal data
-  * @retval         none
-  */
+
 /**
   * @brief          µ±ÔÆÌ¨ÐÐÎªÄ£Ê½ÊÇGIMBAL_ZERO_FORCE, Õâ¸öº¯Êý»á±»µ÷ÓÃ,ÔÆÌ¨¿ØÖÆÄ£Ê½ÊÇrawÄ£Ê½.Ô­Ê¼Ä£Ê½ÒâÎ¶×Å
   *                 Éè¶¨Öµ»áÖ±½Ó·¢ËÍµ½CAN×ÜÏßÉÏ,Õâ¸öº¯Êý½«»áÉèÖÃËùÓÐÎª0.
@@ -160,15 +152,6 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set);
 static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 
 /**
-  * @brief          when gimbal behaviour mode is GIMBAL_INIT, the function is called
-  *                 and gimbal control mode is gyro mode. gimbal will lift the pitch axis
-  *                 and rotate yaw axis.
-  * @param[out]     yaw: yaw motor relative angle increment, unit rad.
-  * @param[out]     pitch: pitch motor absolute angle increment, unit rad.
-  * @param[in]      gimbal_control_set: gimbal data
-  * @retval         none
-  */
-/**
   * @brief          ÔÆÌ¨³õÊ¼»¯¿ØÖÆ£¬µç»úÊÇÍÓÂÝÒÇ½Ç¶È¿ØÖÆ£¬ÔÆÌ¨ÏÈÌ§ÆðpitchÖá£¬ºóÐý×ªyawÖá
   * @param[out]     yawÖá½Ç¶È¿ØÖÆ£¬Îª½Ç¶ÈµÄÔöÁ¿ µ¥Î» rad
   * @param[out]     pitchÖá½Ç¶È¿ØÖÆ£¬Îª½Ç¶ÈµÄÔöÁ¿ µ¥Î» rad
@@ -177,16 +160,6 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
   */
 static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 
-/**
-  * @brief          when gimbal behaviour mode is GIMBAL_CALI, the function is called
-  *                 and gimbal control mode is raw mode. gimbal will lift the pitch axis, 
-  *                 and then put down the pitch axis, and rotate yaw axis counterclockwise,
-  *                 and rotate yaw axis clockwise.
-  * @param[out]     yaw: yaw motor current set, will be sent to CAN bus decretly
-  * @param[out]     pitch: pitch motor current set, will be sent to CAN bus decretly
-  * @param[in]      gimbal_control_set: gimbal data
-  * @retval         none
-  */
 /**
   * @brief          ÔÆÌ¨Ð£×¼¿ØÖÆ£¬µç»úÊÇraw¿ØÖÆ£¬ÔÆÌ¨ÏÈÌ§Æðpitch£¬·ÅÏÂpitch£¬ÔÚÕý×ªyaw£¬×îºó·´×ªyaw£¬¼ÇÂ¼µ±Ê±µÄ½Ç¶ÈºÍ±àÂëÖµ
   * @author         RM
@@ -248,7 +221,7 @@ uint16_t turn_switch_delay_time = 0;  //·ÀÖ¹Á½´Î°´¼ü±»ÎóÊ¶±ðÎªÒ»´Î Ö÷ÒªÊÇÅÂÓë45¶
 
 
 //×ÔÃéÏà¹ØÊý¾Ý
-bool_t auto_switch = 0;  //×ÔÃé¿ª¹Ø
+bool_t auto_switch = TRUE;  //×ÔÃé¿ª¹Ø
 
 
 //ÔÆÌ¨×ªÍ·Ïà¹ØÊý¾Ý
@@ -257,12 +230,7 @@ uint8_t gimbal_turn_switch = 0;         //ÔÆÌ¨×ªÍ·¿ª¹Ø
 
 
 
-/**
-  * @brief          the function is called by gimbal_set_mode function in gimbal_task.c
-  *                 the function set gimbal_behaviour variable, and set motor mode.
-  * @param[in]      gimbal_mode_set: gimbal data
-  * @retval         none
-  */
+
 /**
   * @brief          ±»gimbal_set_modeº¯Êýµ÷ÓÃÔÚgimbal_task.c,ÔÆÌ¨ÐÐÎª×´Ì¬»úÒÔ¼°µç»ú×´Ì¬»úÉèÖÃ
   * @param[out]     gimbal_mode_set: ÔÆÌ¨Êý¾ÝÖ¸Õë
@@ -459,29 +427,32 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         }
     }
 
-    //¿ª¹Ø¿ØÖÆ ÔÆÌ¨×´Ì¬
+    //Ò£¿ØÆ÷¿ØÖÆ    ¿ª¹Ø¿ØÖÆ ÔÆÌ¨×´Ì¬
   /*GIMBAL_ZERO_FORCE = 0, 
     GIMBAL_INIT,           
     GIMBAL_CALI,           
-    GIMBAL_ABSOLUTE_ANGLE, 
-    GIMBAL_RELATIVE_ANGLE, 
+    GIMBAL_ABSOLUTE_ANGLE,  ¾ø¶Ô½Ç¶È-ÍÓÂÝÒÇ¿ØÖÆ
+    GIMBAL_RELATIVE_ANGLE,  Ïà¶Ô½Ç¶È-±àÂëÖµ¿ØÖÆ
     GIMBAL_MOTIONLESS,
     */
     
     if (switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
-        gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;
+//        gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;
+		     	gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;
     }
     else if (switch_is_mid(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
-        gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;
+
+
+		  	gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;       
     }
     else if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
         gimbal_behaviour = GIMBAL_ZERO_FORCE;
     }
 
-
+                                
     if(shoot_cmd_to_gimbal_stop())
     {
         gimbal_behaviour = GIMBAL_ZERO_FORCE;
