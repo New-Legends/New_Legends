@@ -3,24 +3,24 @@
 
 #include "remote_control.h"
 #include "can.h"
-
+#include "CAN_receive.h"
+#include "struct_typedef.h"
 
 //大结构体
 typedef struct
 {
 
     const RC_ctrl_t *rc_data;
-
+    const motor_measure_t *motor_measure[4];
 
     //函数指针定义
     void (*init)();
     void (*pid_init)();
     void (*lift_set_mode)();
     void (*lift_control)();  
-    void (*measure)();
     void (*ore_set_mode)();
     void (*ore_control)(); 
-    fp32 (*pid_calc)();
+    fp32 (*PID_calc)();
 
     void (*can_send)();
     void (*sensor)();
@@ -34,6 +34,8 @@ typedef struct
             int16_t right;
             int16_t left_target;
             int16_t right_target;
+            int16_t left_speed;
+            int16_t right_speed;
             int     state;
         }lift;
         
@@ -73,6 +75,7 @@ typedef struct
     #define state_is_stop               (strt.can.lift.state == stop)
     #define state_is_up                 (strt.can.lift.state == up)
     #define state_is_down               (strt.can.lift.state == down)
+    #define state_is_shut               (strt.can.lift.state == shut)
     
     #define ore_state_is_stop           (strt.can.ore.state == stop)
     #define ore_state_is_in             (strt.can.ore.state == in)
@@ -85,50 +88,6 @@ enum PID_MODE
     PID_POSITION = 0,
     PID_DELTA
 };
-
-//PID参数
-#define     lift_left_speed_KP  0.0
-#define     lift_left_speed_KI  0.0
-#define     lift_left_speed_KD  0.0
-
-#define     lift_left_speed_max_out   0.0
-#define     lift_left_speed_max_iout  0.0
-
-#define     lift_left_location_KP  0.0
-#define     lift_left_location_KI  0.0
-#define     lift_left_location_KD  0.0
-
-#define     lift_left_location_max_out   0.0
-#define     lift_left_location_max_iout  0.0
-
-#define     lift_right_speed_KP  0.0
-#define     lift_right_speed_KI  0.0
-#define     lift_right_speed_KD  0.0
-
-#define     lift_right_speed_max_out   0.0
-#define     lift_right_speed_max_iout  0.0
-
-#define     lift_right_location_KP  0.0
-#define     lift_right_location_KI  0.0
-#define     lift_right_location_KD  0.0
-
-#define     lift_right_location_max_out   0.0
-#define     lift_right_location_max_iout  0.0
-
-
-#define     ore_left_speed_KP  0.0
-#define     ore_left_speed_KI  0.0
-#define     ore_left_speed_KD  0.0
-
-#define     ore_left_speed_max_out   0.0
-#define     ore_left_speed_max_iout  0.0
-
-#define     ore_right_speed_KP  0.0
-#define     ore_right_speed_KI  0.0
-#define     ore_right_speed_KD  0.0
-
-#define     ore_right_speed_max_out   0.0
-#define     ore_right_speed_max_iout  0.0
 
 //PID算法结构体
 typedef struct
@@ -152,18 +111,33 @@ typedef struct
     fp32 Dbuf[3];  //微分项 0最新 1上一次 2上上次
     fp32 error[3]; //误差项 0最新 1上一次 2上上次
 
-} pid_lift_def;
-pid_lift_def    pid_speed[4];
-pid_lift_def    pid_location[2];
+} lift_pid_strt;
+lift_pid_strt lift_PID[4];
 
-typedef struct
-{
-    uint16_t ecd;
-    int16_t speed_rpm;
-    int16_t given_current;
-    uint8_t temperate;
-    int16_t last_ecd;
-} lift_measure_t;
+//一号电机PID
+float LIFT_LEFT_KP     =   11.0f;
+float LIFT_LEFT_KI     =   0.0f;
+float LIFT_LEFT_KD     =   0.1f;
+float LIFT_LEFT_MOUT   =   16000.0f;
+float LIFT_LEFT_MIOUT  =   1.0f;
+//二号电机PID
+float LIFT_RIGHT_KP     =   11.0f;
+float LIFT_RIGHT_KI     =   0.0f;
+float LIFT_RIGHT_KD     =   0.1f;
+float LIFT_RIGHT_MOUT   =   16000.0f;
+float LIFT_RIGHT_MIOUT  =   1.0f;
+//三号电机PID
+float ORE_LEFT_KP     =   100.0f;
+float ORE_LEFT_KI     =   0.0f;
+float ORE_LEFT_KD     =   0.0f;
+float ORE_LEFT_MOUT   =   16000.0f;
+float ORE_LEFT_MIOUT  =   1.0f;
+//四号电机PID
+float ORE_RIGHT_KP     =   100.0f;
+float ORE_RIGHT_KI     =   0.0f;
+float ORE_RIGHT_KD     =   0.0f;
+float ORE_RIGHT_MOUT   =   16000.0f;
+float ORE_RIGHT_MIOUT  =   1.0f;    
 
 
 enum
@@ -181,6 +155,7 @@ enum
     down,
     in,
     out,
+    shut
 }state_type;
 
 strt_t    strt;
@@ -188,41 +163,49 @@ strt_t    strt;
 /************函数开始*************/
 void lift_set_mode(void)
 {
-    if(left_switch_is_up)     
+    if(left_switch_is_mid && right_switch_is_mid)     
     {
         if (left_rocker_up)
         {
             strt.can.lift.state = up;
+
         }
         else if(left_rocker_down)
         {
             strt.can.lift.state = down;
+
         }
         else
         {
             strt.can.lift.state = stop;
+
         }
 
     }else
     {
-        strt.can.lift.state = stop;
+        strt.can.lift.state = shut;
+
     }
 
 }
 
 void ore_set_mode(void)
 {
-    if(left_switch_is_mid)     
+    if(left_switch_is_mid && right_switch_is_up)     
     {
-       if (strt.sensor_data.photogate_1)
+       if (left_rocker_up)//strt.sensor_data.photogate_1
        {
            strt.can.ore.state   =   in;
-       }
-       if (strt.sensor_data.photogate_1 == 0)
+
+       }else if(left_rocker_down)//strt.sensor_data.photogate_1 == 0
        {
            strt.can.ore.state   =   out;
+
+       }else{
+           strt.can.ore.state   =   stop;
+
        }
-       
+
     }
     else
     {
@@ -232,27 +215,39 @@ void ore_set_mode(void)
 }
 
 void lift_control(void)
-{
+{   
+    strt.can.lift.left_speed    = strt.motor_measure[0]->speed_rpm;
+    strt.can.lift.right_speed   = strt.motor_measure[1]->speed_rpm;
+
+    strt.can.lift.left  = 0;
+    strt.can.lift.right = 0;
+
     if (state_is_stop)
     {
-        strt.can.lift.left_target   =   0;
-        strt.can.lift.right_target  =   strt.can.lift.left_target;
+        strt.can.lift.left_target   =   -13 * 19;
+        strt.can.lift.right_target  =   13 * 19;
     }
     if (state_is_up)
     {
-        strt.can.lift.left_target   =   0;
-        strt.can.lift.right_target  =   strt.can.lift.left_target;
+        strt.can.lift.left_target   =   -40 * 19;
+        strt.can.lift.right_target  =   40 * 19;
+        
     }
     if (state_is_down)
     {
-        strt.can.lift.left_target   =   0;
-        strt.can.lift.right_target  =   strt.can.lift.left_target;
+        strt.can.lift.left_target   =   40 * 19;
+        strt.can.lift.right_target  =   -40 * 19;
+        
     }
-    strt.can.lift.left  =   strt.pid_calc(pid_location[0],strt.rc_data->ranging_data,strt.can.lift.left_target);
-    strt.can.lift.left  =   strt.pid_calc(pid_location[0],motor_lift[0].speed_rpm,strt.can.lift.left);
+    if (state_is_shut)
+    {
+        strt.can.lift.left_target   =   -13 * 19;
+        strt.can.lift.right_target  =   13 * 19;
+    }
+
+    strt.can.lift.left = (int16_t)strt.PID_calc(&lift_PID[0],strt.can.lift.left_speed,strt.can.lift.left_target);
+    strt.can.lift.right = (int16_t)strt.PID_calc(&lift_PID[1],strt.can.lift.right_speed,strt.can.lift.right_target);
     
-    strt.can.lift.right  =   strt.pid_calc(pid_location[1],strt.rc_data->ranging_data,strt.can.lift.right_target);
-    strt.can.lift.right  =   strt.pid_calc(pid_location[1],motor_lift[1].speed_rpm,strt.can.lift.right);
 }
 
 void ore_control(void)
@@ -313,71 +308,44 @@ void can_send(void)
     HAL_CAN_AddTxMessage(&hcan1, &can_tx_message, lift_can_send_data, &send_mail_box);
 }
 
-//万恶的PID从此开始
 void lift_PID_init(void)
 {
-    pid_lift_def *lift_left_speed   =   &pid_speed[0];
-    lift_left_speed->mode = PID_DELTA;
-    lift_left_speed->Kp = lift_left_speed_KP;
-    lift_left_speed->Ki = lift_left_speed_KI;
-    lift_left_speed->Kd = lift_left_speed_KD;
-    lift_left_speed->max_out = lift_left_speed_max_out;
-    lift_left_speed->max_iout = lift_left_speed_max_iout;
-    lift_left_speed->Dbuf[0] = lift_left_speed->Dbuf[1] = lift_left_speed->Dbuf[2] = 0.0f;
-    lift_left_speed->error[0] = lift_left_speed->error[1] = lift_left_speed->error[2] = lift_left_speed->Pout = lift_left_speed->Iout = lift_left_speed->Dout = lift_left_speed->out = 0.0f;
+    lift_PID[0].mode = PID_POSITION;
+    lift_PID[0].Kp = LIFT_LEFT_KP;
+    lift_PID[0].Ki = LIFT_LEFT_KI;
+    lift_PID[0].Kd = LIFT_LEFT_KD;
+    lift_PID[0].max_out = LIFT_LEFT_MOUT;
+    lift_PID[0].max_iout = LIFT_LEFT_MIOUT;
+    lift_PID[0].Dbuf[0] = lift_PID[0].Dbuf[1] = lift_PID[0].Dbuf[2] = 0.0f;
+    lift_PID[0].error[0] = lift_PID[0].error[1] = lift_PID[0].error[2] = lift_PID[0].Pout = lift_PID[0].Iout = lift_PID[0].Dout = lift_PID[0].out = 0.0f;
 
-    pid_lift_def *lift_right_speed   =   &pid_speed[1];
-    lift_right_speed->mode = PID_DELTA;
-    lift_right_speed->Kp = lift_right_speed_KP;
-    lift_right_speed->Ki = lift_right_speed_KI;
-    lift_right_speed->Kd = lift_right_speed_KD;
-    lift_right_speed->max_out = lift_right_speed_max_out;
-    lift_right_speed->max_iout = lift_right_speed_max_iout;
-    lift_right_speed->Dbuf[0] = lift_right_speed->Dbuf[1] = lift_right_speed->Dbuf[2] = 0.0f;
-    lift_right_speed->error[0] = lift_right_speed->error[1] = lift_right_speed->error[2] = lift_right_speed->Pout = lift_right_speed->Iout = lift_right_speed->Dout = lift_right_speed->out = 0.0f;
+    lift_PID[1].mode = PID_POSITION;
+    lift_PID[1].Kp = LIFT_RIGHT_KP;
+    lift_PID[1].Ki = LIFT_RIGHT_KI;
+    lift_PID[1].Kd = LIFT_RIGHT_KD;
+    lift_PID[1].max_out = LIFT_RIGHT_MOUT;
+    lift_PID[1].max_iout = LIFT_RIGHT_MIOUT;
+    lift_PID[1].Dbuf[0] = lift_PID[1].Dbuf[1] = lift_PID[1].Dbuf[2] = 0.0f;
+    lift_PID[1].error[0] = lift_PID[1].error[1] = lift_PID[1].error[2] = lift_PID[1].Pout = lift_PID[1].Iout = lift_PID[1].Dout = lift_PID[1].out = 0.0f;
 
-    pid_lift_def *ore_left_speed   =   &pid_speed[2];
-    ore_left_speed->mode = PID_DELTA;
-    ore_left_speed->Kp = ore_left_speed_KP;
-    ore_left_speed->Ki = ore_left_speed_KI;
-    ore_left_speed->Kd = ore_left_speed_KD;
-    ore_left_speed->max_out = ore_left_speed_max_out;
-    ore_left_speed->max_iout = ore_left_speed_max_iout;
-    ore_left_speed->Dbuf[0] = ore_left_speed->Dbuf[1] = ore_left_speed->Dbuf[2] = 0.0f;
-    ore_left_speed->error[0] = ore_left_speed->error[1] = ore_left_speed->error[2] = ore_left_speed->Pout = ore_left_speed->Iout = ore_left_speed->Dout = ore_left_speed->out = 0.0f;
+    lift_PID[2].mode = PID_POSITION;
+    lift_PID[2].Kp = ORE_LEFT_KP;
+    lift_PID[2].Ki = ORE_LEFT_KI;
+    lift_PID[2].Kd = ORE_LEFT_KD;
+    lift_PID[2].max_out = ORE_LEFT_MOUT;
+    lift_PID[2].max_iout = ORE_LEFT_MIOUT;
+    lift_PID[2].Dbuf[0] = lift_PID[2].Dbuf[1] = lift_PID[2].Dbuf[2] = 0.0f;
+    lift_PID[2].error[0] = lift_PID[2].error[1] = lift_PID[2].error[2] = lift_PID[2].Pout = lift_PID[2].Iout = lift_PID[2].Dout = lift_PID[2].out = 0.0f;
 
-    pid_lift_def *ore_right_speed   =   &pid_speed[3];
-    ore_right_speed->mode = PID_DELTA;
-    ore_right_speed->Kp = ore_right_speed_KP;
-    ore_right_speed->Ki = ore_right_speed_KI;
-    ore_right_speed->Kd = ore_right_speed_KD;
-    ore_right_speed->max_out = ore_right_speed_max_out;
-    ore_right_speed->max_iout = ore_right_speed_max_iout;
-    ore_right_speed->Dbuf[0] = ore_right_speed->Dbuf[1] = ore_right_speed->Dbuf[2] = 0.0f;
-    ore_right_speed->error[0] = ore_right_speed->error[1] = ore_right_speed->error[2] = ore_right_speed->Pout = ore_right_speed->Iout = ore_right_speed->Dout = ore_right_speed->out = 0.0f;
-
-    pid_lift_def *lift_left_location   =   &pid_location[0];
-    lift_left_location->mode = PID_POSITION;
-    lift_left_location->Kp = lift_left_location_KP;
-    lift_left_location->Ki = lift_left_location_KI;
-    lift_left_location->Kd = lift_left_location_KD;
-    lift_left_location->max_out = lift_left_location_max_out;
-    lift_left_location->max_iout = lift_left_location_max_iout;
-    lift_left_location->Dbuf[0] = lift_left_location->Dbuf[1] = lift_left_location->Dbuf[2] = 0.0f;
-    lift_left_location->error[0] = lift_left_location->error[1] = lift_left_location->error[2] = lift_left_location->Pout = lift_left_location->Iout = lift_left_location->Dout = lift_left_location->out = 0.0f;
-
-    pid_lift_def *lift_right_location   =   &pid_location[1];
-    lift_right_location->mode = PID_POSITION;
-    lift_right_location->Kp = lift_right_location_KP;
-    lift_right_location->Ki = lift_right_location_KI;
-    lift_right_location->Kd = lift_right_location_KD;
-    lift_right_location->max_out = lift_right_location_max_out;
-    lift_right_location->max_iout = lift_right_location_max_iout;
-    lift_right_location->Dbuf[0] = lift_right_location->Dbuf[1] = lift_right_location->Dbuf[2] = 0.0f;
-    lift_right_location->error[0] = lift_right_location->error[1] = lift_right_location->error[2] = lift_right_location->Pout = lift_right_location->Iout = lift_right_location->Dout = lift_right_location->out = 0.0f;
-
+    lift_PID[3].mode = PID_POSITION;
+    lift_PID[3].Kp = ORE_RIGHT_KP;
+    lift_PID[3].Ki = ORE_RIGHT_KI;
+    lift_PID[3].Kd = ORE_RIGHT_KD;
+    lift_PID[3].max_out = ORE_RIGHT_MOUT;
+    lift_PID[3].max_iout = ORE_RIGHT_MIOUT;
+    lift_PID[3].Dbuf[0] = lift_PID[3].Dbuf[1] = lift_PID[3].Dbuf[2] = 0.0f;
+    lift_PID[3].error[0] = lift_PID[3].error[1] = lift_PID[3].error[2] = lift_PID[3].Pout = lift_PID[3].Iout = lift_PID[3].Dout = lift_PID[3].out = 0.0f;
 }
-
 #define LimitMax(input, max)   \
     {                          \
         if (input > max)       \
@@ -390,7 +358,7 @@ void lift_PID_init(void)
         }                      \
     }
 
-fp32 lift_PID_calc(pid_lift_def *pid, fp32 ref, fp32 set)
+fp32 lift_PID_calc(lift_pid_strt *pid, int16_t ref, int16_t set)
 {
     if (pid == NULL)
     {
@@ -428,41 +396,6 @@ fp32 lift_PID_calc(pid_lift_def *pid, fp32 ref, fp32 set)
     return pid->out;
 }
 
-#define get_motor_measure(ptr, data)                                   \
-{                                                                      \
-    (ptr)->last_ecd = (ptr)->ecd;                                      \
-    (ptr)->ecd = (uint16_t)((data)[0] << 8 | (data)[1]);               \
-    (ptr)->speed_rpm = (uint16_t)((data)[2] << 8 | (data)[3]);         \
-    (ptr)->given_current = (uint16_t)((data)[4] << 8 | (data)[5]);     \
-    (ptr)->temperate = (data)[6];                                      \
-}
-
-lift_measure_t  motor_lift[4];
-void lift_measure(void)
-{
-    CAN_RxHeaderTypeDef rx_header;
-    uint8_t rx_data[8];
-    HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &rx_header, rx_data);
-    switch (rx_header.StdId)
-    {
-        case  motor_left_ID:
-        case  motor_right_ID:
-        case  ore_motor_left_ID:
-        case  ore_motor_right_ID:
-        {
-            static uint8_t i = 0;
-            //get motor id
-            i = rx_header.StdId - motor_left_ID;
-            get_motor_measure(&motor_lift[i], rx_data);
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
- }
-
 //万恶的PID至此结束
 void lift_init(void)
 {
@@ -475,13 +408,18 @@ void lift_init(void)
     strt.ore_control    =   ore_control;
     strt.can_send       =   can_send;
     strt.sensor         =   sensor;
-    strt.measure        =   lift_measure;
     strt.can.lift.state = stop;
     strt.can.ore.state = stop;
-    
+
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        strt.motor_measure[i] = get_motor_measure_point(i+4);
+    }
+
+
     strt.pid_init   =   lift_PID_init;
     strt.pid_init();
-    strt.pid_calc   =   lift_PID_calc;
+    strt.PID_calc   =   lift_PID_calc;
 
     strt.sensor_data.photogate_1  =   0;
 }

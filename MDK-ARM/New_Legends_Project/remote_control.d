@@ -1,7 +1,8 @@
 new_legends_project\remote_control.o: ..\APP\remote_control.c
 new_legends_project\remote_control.o: ..\APP\remote_control.h
 new_legends_project\remote_control.o: ..\APP\struct_typedef.h
-new_legends_project\remote_control.o: ..\APP\bsp_rc.h
+new_legends_project\remote_control.o: ..\bsp\boards\bsp_rc.h
+new_legends_project\remote_control.o: ..\bsp\boards\struct_typedef.h
 new_legends_project\remote_control.o: ../Core/Inc/main.h
 new_legends_project\remote_control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 new_legends_project\remote_control.o: ../Core/Inc/stm32f4xx_hal_conf.h

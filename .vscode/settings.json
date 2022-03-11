@@ -9,6 +9,7 @@
         "limits": "c",
         "type_traits": "c",
         "lift.h": "c",
-        "can.h": "c"
+        "can.h": "c",
+        "can_receive.h": "c"
     }
 }

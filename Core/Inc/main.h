@@ -62,6 +62,8 @@ void Error_Handler(void);
 #define SERVO_GPIO_Port GPIOI
 #define Photogate_Pin GPIO_PIN_12
 #define Photogate_GPIO_Port GPIOB
+#define Air_clip_sensor_Pin GPIO_PIN_13
+#define Air_clip_sensor_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

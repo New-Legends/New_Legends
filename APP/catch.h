@@ -13,26 +13,40 @@
 #include "remote_control.h"
 #include "struct_typedef.h"
 #include "can.h"
+#include "CAN_receive.h"
 
 //大结构体
 typedef struct
 {
     //遥控器指针
     const RC_ctrl_t *rc_data;
+    const motor_measure_t *motor_measure[4];
 
     //函数指针定义
     void (*init)();
+    void (*sensor)();
     void (*set_mode)();
     void (*control)();
     void (*can_send)();
+    fp32 (*PID_calc)();
+
+    int16_t  catch_sensor;
 
     //电机电流、电机状态存储
     struct
     {
-        int16_t left;
-        int16_t right;
-        int16_t stretch;
-        int16_t catch;
+        int16_t left;   //翻转左
+        int16_t right;  //翻转右
+        int16_t stretch;//出矿
+        int16_t catch;  //夹紧
+        int16_t left_target;   
+        int16_t right_target;  
+        int16_t stretch_target;
+        int16_t catch_target;
+        int16_t left_speed;   
+        int16_t right_speed;  
+        int16_t stretch_speed;
+        int16_t catch_speed;  
         int     flip_state;
         int     stretch_state;
         int     catch_state;
@@ -64,26 +78,17 @@ typedef struct
     #define catch_state_is_stop         (catch.can.catch_state == stop)
     #define catch_state_is_open         (catch.can.catch_state == close)
     #define catch_state_is_close        (catch.can.catch_state == open)
+    #define catch_state_is_shut         (catch.can.catch_state == shut)
 
+    #define catch_sensor_0              (catch.catch_sensor == 0)
+    #define catch_sensor_1              (catch.catch_sensor == 1)
 }catch_ctrl_t;
 
-
-typedef struct
+enum PID_MODE
 {
-    uint16_t ecd;
-    int16_t speed_rpm;
-    int16_t given_current;
-    uint8_t temperate;
-    int16_t last_ecd;
-} catch_measure_t;
-
-
-enum
-{
-    motor_left_ID = 0x201,
-    motor_right_ID = 0x202,
-}catch_ID;
-
+    PID_POSITION = 0,
+    PID_DELTA
+};
 
 enum
 {
@@ -94,20 +99,68 @@ enum
     stretch_back,
     close,
     open,
+    shut
 }catch_state;
 
-
 catch_ctrl_t catch;
+
+typedef struct
+{
+    uint8_t mode;
+    //PID 三参数
+    fp32 Kp;
+    fp32 Ki;
+    fp32 Kd;
+
+    fp32 max_out;  //最大输出
+    fp32 max_iout; //最大积分输出
+
+    fp32 set;
+    fp32 fdb;
+
+    fp32 out;
+    fp32 Pout;
+    fp32 Iout;
+    fp32 Dout;
+    fp32 Dbuf[3];  //微分项 0最新 1上一次 2上上次
+    fp32 error[3]; //误差项 0最新 1上一次 2上上次
+
+} catch_pid_strt;
+catch_pid_strt catch_PID[4];
+
+//一号电机PID
+float CATCH_LEFT_KP     =   23.0f;
+float CATCH_LEFT_KI     =   0.0f;
+float CATCH_LEFT_KD     =   0.0f;
+float CATCH_LEFT_MOUT   =   16000.0f;
+float CATCH_LEFT_MIOUT  =   1.0f;
+//二号电机PID
+float CATCH_RIGHT_KP     =   23.0f;
+float CATCH_RIGHT_KI     =   0.0f;
+float CATCH_RIGHT_KD     =   0.0f;
+float CATCH_RIGHT_MOUT   =   16000.0f;
+float CATCH_RIGHT_MIOUT  =   1.0f;
+//三号电机PID
+float CATCH_STRETCH_KP     =   10.0f;
+float CATCH_STRETCH_KI     =   0.0f;
+float CATCH_STRETCH_KD     =   0.0f;
+float CATCH_STRETCH_MOUT   =   16000.0f;
+float CATCH_STRETCH_MIOUT  =   1.0f;
+//四号电机PID
+float CATCH_CATCH_KP     =   10.0f;
+float CATCH_CATCH_KI     =   0.0f;
+float CATCH_CATCH_KD     =   0.0f;
+float CATCH_CATCH_MOUT   =   10000.0f;
+float CATCH_CATCH_MIOUT  =   1.0f;    
 
 //框架函数
 
 //更改遥控器控制模式
 void catch_set_mode(void)
 {
-
-    if (left_switch_is_down)
+    //翻转
+    if (left_switch_is_up && right_switch_is_down)
     {
-
         if (left_rocker_up)
         {
             catch.can.flip_state =   forward;
@@ -126,11 +179,12 @@ void catch_set_mode(void)
     }
     else
     {
-        catch.can.flip_state =   stop;
+        catch.can.flip_state =   shut;
+        
     }
 
-
-    if (right_switch_is_up)
+    //出爪
+    if (left_switch_is_up && right_switch_is_mid)
     {
         if (left_rocker_up)
         {
@@ -154,85 +208,107 @@ void catch_set_mode(void)
         catch.can.stretch_state =   stop;
     }
 
-    if (right_switch_is_mid)
+    //夹紧
+    if (left_switch_is_up && right_switch_is_up)
     {
         if (left_rocker_up)
         {
             catch.can.catch_state =   close;
-        }
 
-        if (left_rocker_down)
-        {
-            catch.can.catch_state =   open;
         }
         
         if (left_rocker_mid)
         {
             catch.can.catch_state =   stop;
+
         }
         
-        
+        if (catch.catch_sensor == 0)
+        {
+            catch.can.catch_state =   close;
+
+        }
+
+        if (left_rocker_down)
+        {
+            catch.can.catch_state =   open;
+            catch.catch_sensor == 1;
+
+        }
+
     }
-    else
-    {
-        catch.can.catch_state =   stop;
-    }
+    //else
+    //{
+        //catch.can.catch_state =   stop;
+
+    //}
     
 }
 
 //更改电机控制模式
 void catch_control(void)
 {
-
+    catch.can.left_speed = catch.motor_measure[0]->speed_rpm;   
+    catch.can.right_speed = catch.motor_measure[1]->speed_rpm;  
+    catch.can.stretch_speed = catch.motor_measure[2]->speed_rpm;
+    catch.can.catch_speed = catch.motor_measure[3]->speed_rpm; 
+    
     if (flip_state_is_stop)
     {
-        catch.can.left  =   0;
-        catch.can.right =   0;
+        catch.can.left_target  =   0;
+        catch.can.right_target =   0;
     }
 
     if (flip_state_is_forward)
     {
-        catch.can.left  =   1000;
-        catch.can.right =   -1000;
+        catch.can.left_target  =   -20 * 19;
+        catch.can.right_target =   20 * 19;
     }
 
     if (flip_state_is_reverse)
     {
-        catch.can.left  =   -1000;
-        catch.can.right =   1000;
+        catch.can.left_target  =   20 * 19;
+        catch.can.right_target =   -20 * 19;
     }
-
+    catch.can.left  = (int16_t)catch.PID_calc(&catch_PID[0],catch.can.left_speed,catch.can.left_target);
+    catch.can.right = (int16_t)catch.PID_calc(&catch_PID[1],catch.can.right_speed,catch.can.right_target);
 
     if (stretch_state_is_stop)
     {
-        catch.can.stretch   =   0;
+        catch.can.stretch_target   =   0;
     }
 
     if (stretch_state_is_out)
     {
-        catch.can.stretch   =   1000;
+        catch.can.stretch_target   =   -40 * 19;
     }
 
     if (stretch_state_is_back)
     {
-        catch.can.stretch   =   -1000;
+        catch.can.stretch_target   =   40 * 19;
     }
-
+    catch.can.stretch = (int16_t)catch.PID_calc(&catch_PID[2],catch.can.stretch_speed,catch.can.stretch_target);
 
     if (catch_state_is_stop)
     {
-        catch.can.catch   =   0;
+        catch.can.catch_target   =   0;
     }
 
     if (catch_state_is_close)
     {
-        catch.can.catch   =   1000;
+        catch.can.catch_target   =   -360 * 19;
     }
 
     if (catch_state_is_open)
     {
-        catch.can.catch    =   -1000;
+        catch.can.catch_target    =   360 * 19;
     }
+    catch.can.catch = (int16_t)catch.PID_calc(&catch_PID[3],catch.can.catch_speed,catch.can.catch_target);
+    
+    //if (catch_state_is_shut)
+    //{
+    //    catch.can.catch    =   0;
+    //}
 }
 
 //CAN协议发送
@@ -257,57 +333,130 @@ void catch_can_send(void)
     HAL_CAN_AddTxMessage(&hcan2, &can_tx_message, catch_can_send_data, &send_mail_box);
 }
 
+//夹爪空接传感器
+void catch_sensor(void)
+{
+    if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_RESET)
+    {
+        catch.catch_sensor  =   0;
+    }
+
+    if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_SET)
+    {
+        catch.catch_sensor  =   1;
+    }
+    
+}
+
+#define LimitMax(input, max)   \
+    {                          \
+        if (input > max)       \
+        {                      \
+            input = max;       \
+        }                      \
+        else if (input < -max) \
+        {                      \
+            input = -max;      \
+        }                      \
+    }
+
+fp32 catch_PID_calc(catch_pid_strt *pid, int16_t ref, int16_t set)
+{
+    if (pid == NULL)
+    {
+        return 0.0f;
+    }
+
+    pid->error[2] = pid->error[1];
+    pid->error[1] = pid->error[0];
+    pid->set = set;
+    pid->fdb = ref;
+    pid->error[0] = set - ref;
+    if (pid->mode == PID_POSITION)
+    {
+        pid->Pout = pid->Kp * pid->error[0];
+        pid->Iout += pid->Ki * pid->error[0];
+        pid->Dbuf[2] = pid->Dbuf[1];
+        pid->Dbuf[1] = pid->Dbuf[0];
+        pid->Dbuf[0] = (pid->error[0] - pid->error[1]);
+        pid->Dout = pid->Kd * pid->Dbuf[0];
+        LimitMax(pid->Iout, pid->max_iout);
+        pid->out = pid->Pout + pid->Iout + pid->Dout;
+        LimitMax(pid->out, pid->max_out);
+    }
+    else if (pid->mode == PID_DELTA)
+    {
+        pid->Pout = pid->Kp * (pid->error[0] - pid->error[1]);
+        pid->Iout = pid->Ki * pid->error[0];
+        pid->Dbuf[2] = pid->Dbuf[1];
+        pid->Dbuf[1] = pid->Dbuf[0];
+        pid->Dbuf[0] = (pid->error[0] - 2.0f * pid->error[1] + pid->error[2]);
+        pid->Dout = pid->Kd * pid->Dbuf[0];
+        pid->out += pid->Pout + pid->Iout + pid->Dout;
+        LimitMax(pid->out, pid->max_out);
+    }
+    return pid->out;
+}
+
+void catch_PID_init(void)
+{
+    catch_PID[0].mode = PID_POSITION;
+    catch_PID[0].Kp = CATCH_LEFT_KP;
+    catch_PID[0].Ki = CATCH_LEFT_KI;
+    catch_PID[0].Kd = CATCH_LEFT_KD;
+    catch_PID[0].max_out = CATCH_LEFT_MOUT;
+    catch_PID[0].max_iout = CATCH_LEFT_MIOUT;
+    catch_PID[0].Dbuf[0] = catch_PID[0].Dbuf[1] = catch_PID[0].Dbuf[2] = 0.0f;
+    catch_PID[0].error[0] = catch_PID[0].error[1] = catch_PID[0].error[2] = catch_PID[0].Pout = catch_PID[0].Iout = catch_PID[0].Dout = catch_PID[0].out = 0.0f;
+
+    catch_PID[1].mode = PID_POSITION;
+    catch_PID[1].Kp = CATCH_RIGHT_KP;
+    catch_PID[1].Ki = CATCH_RIGHT_KI;
+    catch_PID[1].Kd = CATCH_RIGHT_KD;
+    catch_PID[1].max_out = CATCH_RIGHT_MOUT;
+    catch_PID[1].max_iout = CATCH_RIGHT_MIOUT;
+    catch_PID[1].Dbuf[0] = catch_PID[1].Dbuf[1] = catch_PID[1].Dbuf[2] = 0.0f;
+    catch_PID[1].error[0] = catch_PID[1].error[1] = catch_PID[1].error[2] = catch_PID[1].Pout = catch_PID[1].Iout = catch_PID[1].Dout = catch_PID[1].out = 0.0f;
+
+    catch_PID[2].mode = PID_POSITION;
+    catch_PID[2].Kp = CATCH_STRETCH_KP;
+    catch_PID[2].Ki = CATCH_STRETCH_KI;
+    catch_PID[2].Kd = CATCH_STRETCH_KD;
+    catch_PID[2].max_out = CATCH_STRETCH_MOUT;
+    catch_PID[2].max_iout = CATCH_STRETCH_MIOUT;
+    catch_PID[2].Dbuf[0] = catch_PID[2].Dbuf[1] = catch_PID[2].Dbuf[2] = 0.0f;
+    catch_PID[2].error[0] = catch_PID[2].error[1] = catch_PID[2].error[2] = catch_PID[2].Pout = catch_PID[2].Iout = catch_PID[2].Dout = catch_PID[2].out = 0.0f;
+
+    catch_PID[3].mode = PID_POSITION;
+    catch_PID[3].Kp = CATCH_CATCH_KP;
+    catch_PID[3].Ki = CATCH_CATCH_KI;
+    catch_PID[3].Kd = CATCH_CATCH_KD;
+    catch_PID[3].max_out = CATCH_CATCH_MOUT;
+    catch_PID[3].max_iout = CATCH_CATCH_MIOUT;
+    catch_PID[3].Dbuf[0] = catch_PID[3].Dbuf[1] = catch_PID[3].Dbuf[2] = 0.0f;
+    catch_PID[3].error[0] = catch_PID[3].error[1] = catch_PID[3].error[2] = catch_PID[3].Pout = catch_PID[3].Iout = catch_PID[3].Dout = catch_PID[3].out = 0.0f;
+}
+
+
 //初始化函数指针及参数
 void catch_init(void)
 {
+    catch.sensor    =   catch_sensor;
     catch.set_mode  =   catch_set_mode;
     catch.control   =   catch_control;
     catch.can_send  =   catch_can_send;
+    catch.PID_calc  =   catch_PID_calc;
 
     catch.rc_data   =   get_remote_control_point();
+    catch_PID_init();
+
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        catch.motor_measure[i] = get_motor_measure_point(i);
+    }
 
     catch.can.flip_state =   stop;
 
 }
-
-
-
-//功能函数
-
-catch_measure_t motor_catch[2];
-
-#define get_motor_measure(ptr, data)                                   \
-{                                                                      \
-    (ptr)->last_ecd = (ptr)->ecd;                                      \
-    (ptr)->ecd = (uint16_t)((data)[0] << 8 | (data)[1]);               \
-    (ptr)->speed_rpm = (uint16_t)((data)[2] << 8 | (data)[3]);         \
-    (ptr)->given_current = (uint16_t)((data)[4] << 8 | (data)[5]);     \
-    (ptr)->temperate = (data)[6];                                      \
-}
-
-void get_catch_measure(void)
-{
-    CAN_RxHeaderTypeDef rx_header;
-    uint8_t rx_data[8];
-    HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &rx_header, rx_data);
-    switch (rx_header.StdId)
-    {
-        case motor_left_ID:
-        case motor_right_ID:
-        {
-            static uint8_t i = 0;
-            //get motor id
-            i = rx_header.StdId - motor_left_ID;
-            get_motor_measure(&motor_catch[i], rx_data);
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
- }
-
-
 
 #endif

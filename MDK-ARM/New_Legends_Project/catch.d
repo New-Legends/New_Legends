@@ -2,7 +2,8 @@ new_legends_project\catch.o: ..\APP\catch.c
 new_legends_project\catch.o: ..\APP\catch.h
 new_legends_project\catch.o: ..\APP\remote_control.h
 new_legends_project\catch.o: ..\APP\struct_typedef.h
-new_legends_project\catch.o: ..\APP\bsp_rc.h
+new_legends_project\catch.o: ..\bsp\boards\bsp_rc.h
+new_legends_project\catch.o: ..\bsp\boards\struct_typedef.h
 new_legends_project\catch.o: ../Core/Inc/can.h
 new_legends_project\catch.o: ../Core/Inc/main.h
 new_legends_project\catch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
@@ -37,3 +38,4 @@ new_legends_project\catch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_p
 new_legends_project\catch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_legends_project\catch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_legends_project\catch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+new_legends_project\catch.o: ..\APP\CAN_receive.h
