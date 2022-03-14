@@ -564,7 +564,7 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
 
 
     //功率控制
-    //chassis_power_control(chassis_move_control_loop);
+    chassis_power_control(chassis_move_control_loop);
 
 
     //赋值电流值
