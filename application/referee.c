@@ -18,10 +18,10 @@ ext_supply_projectile_booking_t supply_projectile_booking_t;
 ext_referee_warning_t referee_warning_t;
 
 
-ext_game_robot_state_t robot_state;
-ext_power_heat_data_t power_heat_data_t;
-ext_game_robot_pos_t game_robot_pos_t;
-ext_buff_musk_t buff_musk_t;
+ext_game_robot_state_t robot_state;//读裁判，机器人数据
+ext_power_heat_data_t power_heat_data_t;//机器人缓存
+ext_game_robot_pos_t game_robot_pos_t;//
+ext_buff_musk_t buff_musk_t;//增益
 aerial_robot_energy_t robot_energy_t;
 ext_robot_hurt_t robot_hurt_t;
 ext_shoot_data_t shoot_data_t;
