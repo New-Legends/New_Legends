@@ -194,7 +194,7 @@ typedef struct
     //Î¢¶¯¿ª¹Ø
     bool_t key;              
     uint8_t key_time;
-
+     
  
 } shoot_control_t;
 

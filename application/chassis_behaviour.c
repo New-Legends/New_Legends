@@ -426,7 +426,7 @@ static void chassis_infantry_follow_gimbal_yaw_control(fp32 *vx_set, fp32 *vy_se
         top_switch = 0;
     }
 
-     //遥控器拨至上 打开小陀螺
+     //遥控器拨至上 打开小陀螺  逻辑有问题
 //     if(switch_is_up(chassis_move.chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]) && top_switch == 0)
 //     {
 //         top_switch = 1;

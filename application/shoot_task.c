@@ -40,8 +40,8 @@
 #define shoot_laser_off()   laser_off()     //激光关闭宏定义
 //微动开关IO
 #define BUTTEN_TRIG_PIN HAL_GPIO_ReadPin(BUTTON_TRIG_GPIO_Port, BUTTON_TRIG_Pin)
-
-
+extern uint16_t id1_17mm_speed_limit; 
+extern fp32 bullet_speed;
 
 
 /**
@@ -306,16 +306,31 @@ void shoot_set_control(void)
     else
     {
         shoot_laser_on(); //激光开启
-        //设置摩擦轮转速
-        shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[2];
-        shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[2];
+        get_shooter_id1_17mm_speed_limit_and_bullet_speed(&id1_17mm_speed_limit, &bullet_speed); // 获取17mm枪口枪口射速上限,17mm实时射速
+        //设置摩擦轮转速  		根据机器人射速上限进行调整
+			  if(id1_17mm_speed_limit <= 15)
+			  {
+					shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[1];
+          shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[1];
+				}
+        else if(id1_17mm_speed_limit <= 18)
+			  {
+					shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[2];
+          shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[2];
+				}
+        else if(id1_17mm_speed_limit <= 30)
+			  {
+					shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[3];
+          shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[3];
+				}
+		
 			  //摩擦轮速度为0，仅播弹 
-//			  shoot_control.fric_motor[LEFT].speed_set = 0;
-//        shoot_control.fric_motor[RIGHT].speed_set = 0;
+//			  shoot_control.fric_motor[LEFT].speed_set = -shoot_fric_grade[1];
+//        shoot_control.fric_motor[RIGHT].speed_set = shoot_fric_grade[1];
 
 //        连发模式 控制17mm发射机构射速和热量控制
-//        if(shoot_control.shoot_mode == SHOOT_CONTINUE_BULLET)
-//        shoot_id1_17mm_speed_and_cooling_control(&shoot_control);
+        if(shoot_control.shoot_mode == SHOOT_CONTINUE_BULLET)
+        shoot_id1_17mm_speed_and_cooling_control(&shoot_control);
 
         //将设置的拨盘旋转角度,转化为速度,且防止卡弹
         if(shoot_control.shoot_mode == SHOOT_READY_BULLET || shoot_control.shoot_mode == SHOOT_CONTINUE_BULLET)

@@ -55,9 +55,7 @@
 
 //通过读取裁判数据,直接修改射速和射频等级
 ////射速等级  摩擦电机
-fp32 shoot_fric_grade[4] = {0, 15*FRIC_REFEREE_PARA, 18*FRIC_REFEREE_PARA, 30*FRIC_REFEREE_PARA};
-//测试用，尿弹模式
-//fp32 shoot_fric_grade[4] = {0, 7*FRIC_REFEREE_PARA, 7*FRIC_REFEREE_PARA, 10*FRIC_REFEREE_PARA};
+fp32 shoot_fric_grade[4] = {0, 17.5*FRIC_REFEREE_PARA, 19.5*FRIC_REFEREE_PARA, 29.5*FRIC_REFEREE_PARA};
 //射频等级 拨弹电机
 fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
 
@@ -70,6 +68,10 @@ uint8_t fric_speed_grade;
   * @param[in]      chassis_power_control: 底盘数据
   * @retval         none
   */
+/*
+   步兵底盘缓冲能量：60j
+	超限比例=（瞬时功率-上限功率）/上限功率
+*/
 void chassis_power_control(chassis_move_t *chassis_power_control)
 {
     fp32 chassis_power = 0.0f;
