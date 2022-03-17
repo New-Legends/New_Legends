@@ -93,7 +93,8 @@
 #define CHASSIS_BACK_KEY KEY_PRESSED_OFFSET_S
 #define CHASSIS_LEFT_KEY KEY_PRESSED_OFFSET_A
 #define CHASSIS_RIGHT_KEY KEY_PRESSED_OFFSET_D
-
+//超电按键
+//#define 
 //m3508 rmp change to chassis speed,
 //m3508转化成底盘速度(m/s)的比例，
 #define M3508_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f

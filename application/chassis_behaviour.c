@@ -146,6 +146,8 @@ bool_t top_switch = 0;
 //45度角对敌数据
 fp32 pisa_angle = 0;    //保留45度对敌前的云台相对底盘角度
 bool_t pisa_switch = 0; 
+//超电控制数据
+bool_t super_cap_switch = 1;
 
 
 
@@ -448,7 +450,15 @@ static void chassis_infantry_follow_gimbal_yaw_control(fp32 *vx_set, fp32 *vy_se
 			top_angle = 0;
 		}
 
-
+    //开启超电
+//    if (KEY_CHASSIS_SUPER_CAP && super_cap_switch == 0) //打开超电
+//    {
+//        super_cap_switch = TRUE;
+//    }
+//    else if (KEY_CHASSIS_SUPER_CAP && super_cap_switch != 0) //关闭超电
+//    {
+//        super_cap_switch = FALSE;
+//    }
 
 
     //更新上一次键盘值

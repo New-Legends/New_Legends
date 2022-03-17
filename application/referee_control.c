@@ -25,15 +25,21 @@
 #include "detect_task.h"
 
 
-
-
-#define POWER_LIMIT         80.0f
-#define WARNING_POWER       40.0f   
-#define WARNING_POWER_BUFF  50.0f   
+/* 种类         功率上限
+   初始状态      40
+	 功率优先      60/80/100
+	 血量优先      45/50/55
+							 
+*/
+extern ext_game_robot_state_t game_state; //0x0201     比赛机器人状态
+extern bool_t super_cap_switch;//超电开关
+#define POWER_LIMIT         50.0f   //默认功率限制
+#define WARNING_POWER_DISTANCE       10.0f   //距离超功率的距离
+#define WARNING_POWER_BUFF  30.0f   ////警告能量缓冲  通过计算超级电容 电压低于12v得到的值
 
 #define NO_JUDGE_TOTAL_CURRENT_LIMIT    64000.0f    //16000 * 4, 
 #define BUFFER_TOTAL_CURRENT_LIMIT      16000.0f
-#define POWER_TOTAL_CURRENT_LIMIT       20000.0f
+#define POWER_TOTAL_CURRENT_LIMIT       1822.5f
 
 
 
@@ -72,26 +78,55 @@ uint8_t fric_speed_grade;
    步兵底盘缓冲能量：60j
 	超限比例=（瞬时功率-上限功率）/上限功率
 */
+
+fp32 chassis_power = 0.0f;
+fp32 chassis_power_limit = 0.0f;
+//缓冲能量 单位为J
+fp32 chassis_power_buffer = 0.0f;  //裁判剩余缓冲能量
+fp32 chassis_power_cap_buffer = 0.0f; //电容剩余能量
+
 void chassis_power_control(chassis_move_t *chassis_power_control)
 {
     fp32 chassis_power = 0.0f;
     fp32 chassis_power_buffer = 0.0f;
+	  fp32 chassis_power_limit = 0.0f;
+	
     fp32 total_current_limit = 0.0f;
     fp32 total_current = 0.0f;
     uint8_t robot_id = get_robot_id();
-    if(toe_is_error(REFEREE_TOE))
+//    if(toe_is_error(REFEREE_TOE))
+//    {
+//        total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
+//    }
+//    else if(robot_id == RED_ENGINEER || robot_id == BLUE_ENGINEER || robot_id == 0)
+//    {
+//        total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
+//    }
+//    else
     {
-        total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
-    }
-    else if(robot_id == RED_ENGINEER || robot_id == BLUE_ENGINEER || robot_id == 0)
-    {
-        total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
-    }
-    else
-    {
-        get_chassis_power_and_buffer(&chassis_power, &chassis_power_buffer);
-        //功率超过80w 和缓冲能量小于60j,因为缓冲能量小于60意味着功率超过80w
-        if(chassis_power_buffer < WARNING_POWER_BUFF)
+        get_chassis_power_and_buffer(&chassis_power, &chassis_power_buffer);//获取底盘功率和buff
+			  cap_read_cap_buff(&chassis_power_cap_buffer);//读取电容剩余能量
+			  get_chassis_power_limit(&chassis_power_limit);//读取当前底盘功率限制
+        
+        //当超电能量低于阈值700 将超电关闭
+        if (chassis_power_cap_buffer < 700)
+        {
+            super_cap_switch = FALSE;
+        } 
+				        if (chassis_power_cap_buffer > 700)
+        {
+            super_cap_switch = TRUE;
+        } 
+        //开启超电后 对超电设置功率进行修改
+        if (super_cap_switch == TRUE)
+        {
+            CAN_cmd_super_cap((uint16_t)chassis_power_limit*100 + 1500);
+        } else if (super_cap_switch == FALSE){
+            CAN_cmd_super_cap(10000);
+        }		
+
+				//功率超过上限 和缓冲能量小于60j,因为缓冲能量小于60意味着功率超过80w
+			if(chassis_power_buffer < WARNING_POWER_BUFF)
         {
             fp32 power_scale;
             if(chassis_power_buffer > 5.0f)
@@ -110,15 +145,16 @@ void chassis_power_control(chassis_move_t *chassis_power_control)
         else
         {
             //功率大于WARNING_POWER
-            if(chassis_power > WARNING_POWER)
+            if(chassis_power > chassis_power_limit - WARNING_POWER_DISTANCE)
             {
                 fp32 power_scale;
-                //功率小于80w
-                if(chassis_power < POWER_LIMIT)
+                //功率小于上限
+                if(chassis_power < chassis_power_limit)
                 {
                     //scale down
                     //缩小
-                    power_scale = (POWER_LIMIT - chassis_power) / (POWER_LIMIT - WARNING_POWER);
+                    power_scale = (chassis_power_limit - chassis_power) / (chassis_power_limit - (chassis_power_limit - WARNING_POWER_DISTANCE));
+
                     
                 }
                 //功率大于80w
