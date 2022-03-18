@@ -34,14 +34,14 @@
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
 #define PITCH_SPEED_PID_KP        4000.0f  //2900
 #define PITCH_SPEED_PID_KI        0.0f
-#define PITCH_SPEED_PID_KD        0.0f
+#define PITCH_SPEED_PID_KD        10.0f
 #define PITCH_SPEED_PID_MAX_OUT   30000.0f
 #define PITCH_SPEED_PID_MAX_IOUT  10000.0f
 //pitch 角度环 PID参数以及 PID最大输出，积分输出        陀螺仪
 #define PITCH_GYRO_ABSOLUTE_PID_KP 15.0f   
 #define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
 #define PITCH_GYRO_ABSOLUTE_PID_KD 1.2f
-#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 6.0f//6
+#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 10.0f//6
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 2.0f
 //pitch 角度环 PID参数以及 PID最大输出，积分输出        编码值
 #define PITCH_ENCODE_RELATIVE_PID_KP 15.0f  //15
@@ -51,17 +51,17 @@
 #define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 0.0f
 
 //yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_SPEED_PID_KP        2000.0f  
-#define YAW_SPEED_PID_KI        0.2f   
-#define YAW_SPEED_PID_KD        4.0f    
+#define YAW_SPEED_PID_KP        2500.0f  
+#define YAW_SPEED_PID_KI        0.3f   
+#define YAW_SPEED_PID_KD        14.0f    
 #define YAW_SPEED_PID_MAX_OUT   30000.0f
 #define YAW_SPEED_PID_MAX_IOUT  20000.0f  
 //yaw 角度环 PID参数以及 PID最大输出，积分输出              陀螺仪
 #define YAW_GYRO_ABSOLUTE_PID_KP      8.0f // 8.0f  
-#define YAW_GYRO_ABSOLUTE_PID_KI      0.0f // 0.2f   
-#define YAW_GYRO_ABSOLUTE_PID_KD     0.9f // 280.0f   
-#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   6.0f
-#define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  2.0f
+#define YAW_GYRO_ABSOLUTE_PID_KI      0.75f // 0.2f   
+#define YAW_GYRO_ABSOLUTE_PID_KD      1.8f // 280.0f   
+#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   8.0f
+#define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 //yaw 角度环 PID参数以及 PID最大输出，积分输出       编码值
 #define YAW_ENCODE_RELATIVE_PID_KP        8.0f  //8
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
@@ -155,9 +155,9 @@
 
 
 //限幅 需要自己手动校准  云台归中编码值
-#define YAW_OFFSET         2538   //编码器
+#define YAW_OFFSET       2495   //编码器
 //电池一侧为3042   主控一侧为7060（步兵）
-#define PITCH_OFFSET     1803 //编码器
+#define PITCH_OFFSET     1733 //编码器
 //自动校准
 #define MIN_YAW         -2*PI
 #define MAX_YAW         2*PI
