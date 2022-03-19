@@ -57,11 +57,11 @@
 #define YAW_SPEED_PID_MAX_OUT   30000.0f
 #define YAW_SPEED_PID_MAX_IOUT  20000.0f  
 //yaw 角度环 PID参数以及 PID最大输出，积分输出              陀螺仪
-#define YAW_GYRO_ABSOLUTE_PID_KP      8.0f // 8.0f  
-#define YAW_GYRO_ABSOLUTE_PID_KI      0.75f // 0.2f   
-#define YAW_GYRO_ABSOLUTE_PID_KD      1.8f // 280.0f   
+#define YAW_GYRO_ABSOLUTE_PID_KP      2.4f//8.0f // 8.0f  
+#define YAW_GYRO_ABSOLUTE_PID_KI      0.01f//0.75f // 0.2f   
+#define YAW_GYRO_ABSOLUTE_PID_KD      0.0f//1.8f // 280.0f   
 #define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   8.0f
-#define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
+#define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.01f//0.0f
 //yaw 角度环 PID参数以及 PID最大输出，积分输出       编码值
 #define YAW_ENCODE_RELATIVE_PID_KP        8.0f  //8
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
