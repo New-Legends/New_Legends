@@ -83,9 +83,9 @@ void cap_read_cap_buff(float *_cap_buff)
 }
 void cap_init()
 {
-    for (uint8_t i=0; i<10; i++){
+    for (uint8_t i=0; i<5; i++){
         vTaskDelay(1);
-        CAN_cmd_super_cap(9000);
+        CAN_cmd_super_cap(4000);
     }
 }
 //Ö÷ÈÎÎñ
