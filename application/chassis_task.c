@@ -95,7 +95,7 @@ uint32_t chassis_high_water;
 
 
 //底盘运动数据
-chassis_move_t chassis_move;
+//chassis_move_t chassis_move;
 
 
 
