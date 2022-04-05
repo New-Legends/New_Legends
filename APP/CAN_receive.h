@@ -10,11 +10,15 @@ typedef enum
     CAN_3508_M2_ID = 0x202,
     CAN_3508_M3_ID = 0x203,
     CAN_3508_M4_ID = 0x204,
-
-    CAN_SAVE_ID = 0x205,
     CAN_GIMBAL_ALL_ID = 0x1FF,
 
-} can_msg_id_e;
+} can_msg_id_can2_e;
+
+typedef enum
+{
+    CAN_SAVE_ID = 0x201,
+    
+} can_msg_id_can1_e;
 
 typedef struct
 {
@@ -25,6 +29,6 @@ typedef struct
     int16_t last_ecd;
 } motor_measure_t;
 
-
+extern const motor_measure_t *get_motor_measure_point(uint8_t i);
 
 #endif

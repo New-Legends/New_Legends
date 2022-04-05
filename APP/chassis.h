@@ -9,13 +9,14 @@
 typedef struct 
 {
     const RC_ctrl_t *rc_data;
+    const motor_measure_t *motor_measure[5];
 
     void (*init)();
     void (*set_mode)();
     void (*control)();
     void (*can_send)();
     void (*measure)();
-    int16_t (*PID_calc)();
+    fp32 (*PID_calc)();
 
     struct 
     {
@@ -27,18 +28,24 @@ typedef struct
         int16_t motor2_target;
         int16_t motor3_target;
         int16_t motor4_target;
+        int16_t motor1_speed;
+        int16_t motor2_speed;
+        int16_t motor3_speed;
+        int16_t motor4_speed;
         int16_t chassis_state;
-        int16_t translation_ratio;
-        int16_t rotating_ratio;
+        float   translation_ratio;
+        float   rotating_ratio;
         int16_t vx;
         int16_t vy;
         int16_t vz;
     }can;
-    
+
     #define     RIGHT_SWITCH_UP         (chassis.rc_data->rc.s[0] == 1)
     #define     RIGHT_SWITCH_MID        (chassis.rc_data->rc.s[0] == 3)
     #define     RIGHT_SWITCH_DOWN       (chassis.rc_data->rc.s[0] == 2)
-    
+    #define     LEFT_SWITCH_UP          (chassis.rc_data->rc.s[1] == 1)
+    #define     LEFT_SWITCH_MID         (chassis.rc_data->rc.s[1] == 3)
+    #define     LEFT_SWITCH_DOWN        (chassis.rc_data->rc.s[1] == 2)
     
     #define     SHUT_DOWN               (chassis.can.chassis_state == shut)
     #define     STANDARD                (chassis.can.chassis_state == standard)
@@ -46,8 +53,6 @@ typedef struct
 
 }chassis_ctrl_t;
 chassis_ctrl_t chassis;
-
-motor_measure_t motor_chassis[5];
 
 typedef struct
 {
@@ -90,37 +95,73 @@ enum
     fast,
     crazy
 }chassis_state_type;
+//一号电机PID
+float MOTOR1_KP     =   100.0f;
+float MOTOR1_KI     =   0.0f;
+float MOTOR1_KD     =   0.0f;
+float MOTOR1_MOUT   =   16000.0f;
+float MOTOR1_MIOUT  =   1.0f;
+//二号电机PID
+float MOTOR2_KP     =   100.0f;
+float MOTOR2_KI     =   0.0f;
+float MOTOR2_KD     =   0.0f;
+float MOTOR2_MOUT   =   16000.0f;
+float MOTOR2_MIOUT  =   1.0f;
+//三号电机PID
+float MOTOR3_KP     =   100.0f;
+float MOTOR3_KI     =   0.0f;
+float MOTOR3_KD     =   0.0f;
+float MOTOR3_MOUT   =   16000.0f;
+float MOTOR3_MIOUT  =   1.0f;
+//四号电机PID
+float MOTOR4_KP     =   100.0f;
+float MOTOR4_KI     =   0.0f;
+float MOTOR4_KD     =   0.0f;
+float MOTOR4_MOUT   =   16000.0f;
+float MOTOR4_MIOUT  =   1.0f;    
 
 //速度模式设置
 void chassis_set_mode(void)
 {
-    if(RIGHT_SWITCH_MID)
+    if(LEFT_SWITCH_DOWN && RIGHT_SWITCH_DOWN)
     {
         chassis.can.chassis_state   =   shut;
-    }
-    if(!RIGHT_SWITCH_MID){
+
+    }else if(LEFT_SWITCH_DOWN && RIGHT_SWITCH_UP)
+    {
+        chassis.can.chassis_state   =   fast;
+        
+    }else{
         chassis.can.chassis_state   =   standard;
     }
-    
+
 }
 
 void chassis_control(void)
 {   
+    //初始化
+    chassis.can.motor1 = 0;
+    chassis.can.motor2 = 0;
+    chassis.can.motor3 = 0;
+    chassis.can.motor4 = 0;
+
     //灵敏度设置
     if(STANDARD)
     {
-        chassis.can.translation_ratio = 1;
-        chassis.can.rotating_ratio = 1;
+        chassis.can.translation_ratio = 0.1;
+        chassis.can.rotating_ratio = 0.1;
     }
     if(FAST)
     {
-        chassis.can.translation_ratio = 1;
-        chassis.can.rotating_ratio = 1;
+        chassis.can.translation_ratio = 0.3;
+        chassis.can.rotating_ratio = 0.3;
     }
+
     //遥控器死区
     transverse = chassis.rc_data->rc.ch[0];
     lengthways = chassis.rc_data->rc.ch[1];
     roating    = chassis.rc_data->rc.ch[2];
+
     if (lengthways > -100 && lengthways <100)
     {
         lengthways = 0;
@@ -133,6 +174,7 @@ void chassis_control(void)
     {
         roating = 0;
     }
+
     //速度倍率计算
     chassis.can.vx = chassis.can.translation_ratio * lengthways;
     chassis.can.vy = chassis.can.translation_ratio * transverse;
@@ -143,35 +185,40 @@ void chassis_control(void)
     chassis.can.motor3_target = -1*chassis.can.motor1_target;
     chassis.can.motor4_target = -1*chassis.can.motor2_target;
     //旋转角度解算
-    chassis.can.motor1_target -= chassis.can.vz;
-    chassis.can.motor2_target -= chassis.can.vz;
-    chassis.can.motor3_target -= chassis.can.vz;
-    chassis.can.motor4_target -= chassis.can.vz;
+    chassis.can.motor1_target += chassis.can.vz;
+    chassis.can.motor2_target += chassis.can.vz;
+    chassis.can.motor3_target += chassis.can.vz;
+    chassis.can.motor4_target += chassis.can.vz;
+    //读取值减速比计算
+    chassis.can.motor1_speed = chassis.motor_measure[0]->speed_rpm/19;
+    chassis.can.motor2_speed = chassis.motor_measure[1]->speed_rpm/19;
+    chassis.can.motor3_speed = chassis.motor_measure[2]->speed_rpm/19;
+    chassis.can.motor4_speed = chassis.motor_measure[3]->speed_rpm/19;
 
-
-    chassis.can.motor1_target = 0.5*chassis.can.motor1_target;
-    chassis.can.motor2_target = 0.5*chassis.can.motor2_target;
-    chassis.can.motor3_target = 0.5*chassis.can.motor3_target;
-    chassis.can.motor4_target = 0.5*chassis.can.motor4_target;
     if(SHUT_DOWN)
     {
         chassis.can.motor1_target = 0;
         chassis.can.motor2_target = 0;
         chassis.can.motor3_target = 0;
         chassis.can.motor4_target = 0;
+
+        chassis.can.motor1 = 0;
+        chassis.can.motor2 = 0;
+        chassis.can.motor3 = 0;
+        chassis.can.motor4 = 0;
+
     }
-
-    chassis.can.motor1 = chassis.PID_calc(&chassis_PID[0],motor_chassis[0].speed_rpm,chassis.can.motor1_target);
-    chassis.can.motor2 = chassis.PID_calc(&chassis_PID[1],motor_chassis[1].speed_rpm,chassis.can.motor2_target);
-    chassis.can.motor3 = chassis.PID_calc(&chassis_PID[2],motor_chassis[2].speed_rpm,chassis.can.motor3_target);
-    chassis.can.motor4 = chassis.PID_calc(&chassis_PID[3],motor_chassis[3].speed_rpm,chassis.can.motor4_target);
-
+    else{
+        chassis.can.motor1 = (int16_t)chassis.PID_calc(&chassis_PID[0],chassis.can.motor1_speed,chassis.can.motor1_target);
+        chassis.can.motor2 = (int16_t)chassis.PID_calc(&chassis_PID[1],chassis.can.motor2_speed,chassis.can.motor2_target);
+        chassis.can.motor3 = (int16_t)chassis.PID_calc(&chassis_PID[2],chassis.can.motor3_speed,chassis.can.motor3_target);
+        chassis.can.motor4 = (int16_t)chassis.PID_calc(&chassis_PID[3],chassis.can.motor4_speed,chassis.can.motor4_target);
     
-
+    }
 }
 
 static CAN_TxHeaderTypeDef  can_tx_message;
-static uint8_t              chassis_can_send_data[8];
+static int8_t               chassis_can_send_data[8];
 void chassis_can_send(void)
 {
     uint32_t send_mail_box;
@@ -204,7 +251,7 @@ void chassis_can_send(void)
         }                      \
     }
 
-int16_t chassis_PID_calc(chassis_pid_strt *pid, int16_t ref, int16_t set)
+fp32 chassis_PID_calc(chassis_pid_strt *pid, int16_t ref, int16_t set)
 {
     if (pid == NULL)
     {
@@ -244,39 +291,39 @@ int16_t chassis_PID_calc(chassis_pid_strt *pid, int16_t ref, int16_t set)
 
 void chassis_PID_init(void)
 {
-    chassis_PID[0].mode = PID_DELTA;
-    chassis_PID[0].Kp = 10.0f;
-    chassis_PID[0].Ki = 0.0f;
-    chassis_PID[0].Kd = 0.0f;
-    chassis_PID[0].max_out = 10000.0f;
-    chassis_PID[0].max_iout = 0.0f;
+    chassis_PID[0].mode = PID_POSITION;
+    chassis_PID[0].Kp = MOTOR1_KP;
+    chassis_PID[0].Ki = MOTOR1_KI;
+    chassis_PID[0].Kd = MOTOR1_KD;
+    chassis_PID[0].max_out = MOTOR1_MOUT;
+    chassis_PID[0].max_iout = MOTOR1_MIOUT;
     chassis_PID[0].Dbuf[0] = chassis_PID[0].Dbuf[1] = chassis_PID[0].Dbuf[2] = 0.0f;
     chassis_PID[0].error[0] = chassis_PID[0].error[1] = chassis_PID[0].error[2] = chassis_PID[0].Pout = chassis_PID[0].Iout = chassis_PID[0].Dout = chassis_PID[0].out = 0.0f;
 
-    chassis_PID[1].mode = PID_DELTA;
-    chassis_PID[1].Kp = 10.0f;
-    chassis_PID[1].Ki = 0.0f;
-    chassis_PID[1].Kd = 0.0f;
-    chassis_PID[1].max_out = 10000.0f;
-    chassis_PID[1].max_iout = 0.0f;
+    chassis_PID[1].mode = PID_POSITION;
+    chassis_PID[1].Kp = MOTOR2_KP;
+    chassis_PID[1].Ki = MOTOR2_KI;
+    chassis_PID[1].Kd = MOTOR2_KD;
+    chassis_PID[1].max_out = MOTOR2_MOUT;
+    chassis_PID[1].max_iout = MOTOR2_MIOUT;
     chassis_PID[1].Dbuf[0] = chassis_PID[1].Dbuf[1] = chassis_PID[1].Dbuf[2] = 0.0f;
     chassis_PID[1].error[0] = chassis_PID[1].error[1] = chassis_PID[1].error[2] = chassis_PID[1].Pout = chassis_PID[1].Iout = chassis_PID[1].Dout = chassis_PID[1].out = 0.0f;
 
-    chassis_PID[2].mode = PID_DELTA;
-    chassis_PID[2].Kp = 10.0f;
-    chassis_PID[2].Ki = 0.0f;
-    chassis_PID[2].Kd = 0.0f;
-    chassis_PID[2].max_out = 10000.0f;
-    chassis_PID[2].max_iout = 0.0f;
+    chassis_PID[2].mode = PID_POSITION;
+    chassis_PID[2].Kp = MOTOR3_KP;
+    chassis_PID[2].Ki = MOTOR3_KI;
+    chassis_PID[2].Kd = MOTOR3_KD;
+    chassis_PID[2].max_out = MOTOR3_MOUT;
+    chassis_PID[2].max_iout = MOTOR3_MIOUT;
     chassis_PID[2].Dbuf[0] = chassis_PID[2].Dbuf[1] = chassis_PID[2].Dbuf[2] = 0.0f;
     chassis_PID[2].error[0] = chassis_PID[2].error[1] = chassis_PID[2].error[2] = chassis_PID[2].Pout = chassis_PID[2].Iout = chassis_PID[2].Dout = chassis_PID[2].out = 0.0f;
 
-    chassis_PID[3].mode = PID_DELTA;
-    chassis_PID[3].Kp = 10.0f;
-    chassis_PID[3].Ki = 0.0f;
-    chassis_PID[3].Kd = 0.0f;
-    chassis_PID[3].max_out = 10000.0f;
-    chassis_PID[3].max_iout = 0.0f;
+    chassis_PID[3].mode = PID_POSITION;
+    chassis_PID[3].Kp = MOTOR4_KP;
+    chassis_PID[3].Ki = MOTOR4_KI;
+    chassis_PID[3].Kd = MOTOR4_KD;
+    chassis_PID[3].max_out = MOTOR4_MOUT;
+    chassis_PID[3].max_iout = MOTOR4_MIOUT;
     chassis_PID[3].Dbuf[0] = chassis_PID[3].Dbuf[1] = chassis_PID[3].Dbuf[2] = 0.0f;
     chassis_PID[3].error[0] = chassis_PID[3].error[1] = chassis_PID[3].error[2] = chassis_PID[3].Pout = chassis_PID[3].Iout = chassis_PID[3].Dout = chassis_PID[3].out = 0.0f;
 }
@@ -284,7 +331,11 @@ void chassis_PID_init(void)
 void chassis_init(void)
 {
     chassis.rc_data =   get_remote_control_point();
-
+    for (uint8_t i = 0; i < 5; i++)
+    {
+        chassis.motor_measure[i] = get_motor_measure_point(i);
+    }
+    
     chassis.set_mode    =   chassis_set_mode;
     chassis.control     =   chassis_control;
     chassis.PID_calc    =   chassis_PID_calc;

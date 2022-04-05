@@ -154,3 +154,10 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END StartDefaultTask */
 }
 
+/* USER CODE BEGIN Header_remote_task */
+/**
+* @brief Function implementing the remote thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_remote_task */

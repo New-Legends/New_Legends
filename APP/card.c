@@ -11,6 +11,5 @@ void card_task(void const * argument)
     card.set_mode();
     card.control();
     card.can_send();
-    vTaskDelay(10);
   }
 }

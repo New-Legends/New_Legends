@@ -10,7 +10,6 @@ void chassis_task(void const * argument)
         chassis.set_mode();
         chassis.control();
         chassis.can_send();
-        vTaskDelay(10);
     }
 }
 
