@@ -173,11 +173,19 @@ fp32 INS_angle[3] = {0.0f, 0.0f, 0.0f};      //euler angle, unit rad.Å·À­½Ç µ¥Î»
   * @retval         none
   */
 
+extern bool_t gimbal_imu_open_flag ;
+
 void INS_task(void const *pvParameters)
 {
     //wait a time
     osDelay(INS_TASK_INIT_TIME);
-
+      
+	while(1)
+	{
+		if(gimbal_imu_open_flag == 1 ) 
+			break;
+		osDelay(INS_CONTROL_TIME_MS);
+	}
     while(gimbal_cmd_to_chassis_stop())
     {
       osDelay(100);

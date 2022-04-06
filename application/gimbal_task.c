@@ -227,11 +227,14 @@ uint16_t software_reset_key_delay_time = 0;
   * @param[in]      pvParameters: 空
   * @retval         none
   */
+//为了让陀螺仪每次的初始位姿一致,等云台归中后再开启陀螺仪
+bool_t gimbal_imu_open_flag = 0;
 
 void gimbal_task(void const *pvParameters)
 {
-    //等待陀螺仪任务更新陀螺仪数据
-    vTaskDelay(GIMBAL_TASK_INIT_TIME);
+
+   vTaskDelay(GIMBAL_TASK_INIT_TIME);
+
     //云台初始化
     gimbal_init(&gimbal_control);
 
@@ -272,10 +275,7 @@ void gimbal_task(void const *pvParameters)
             }
             else
             {
-                //CAN_cmd_gimbal(0, 0, 0, 0);  //pitch轴有问题,未修复
-                CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0, 0);
-
-							
+                CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0, 0);	
             }
         }
 
@@ -551,10 +551,12 @@ static void gimbal_init(gimbal_control_t *init)
     //设置陀螺仪对应限位
     init->gimbal_pitch_motor.max_absolute_angle = MAX_ABSOULATE_PITCH;
     init->gimbal_pitch_motor.min_absolute_angle = MIN_ABSOULATE_PITCH;
-
+    
     init->gimbal_yaw_motor.max_absolute_angle = MAX_ABSOULATE_YAW;
     init->gimbal_yaw_motor.min_absolute_angle = MIN_ABSOULATE_YAW;
-
+				//云台状态机初始化
+	   gimbal_behaviour=GIMBAL_ZERO_FORCE;
+     last_gimbal_behaviour=gimbal_behaviour;
 
     static const fp32 Pitch_speed_pid[3] = {PITCH_SPEED_PID_KP, PITCH_SPEED_PID_KI, PITCH_SPEED_PID_KD};
     static const fp32 Yaw_speed_pid[3] = {YAW_SPEED_PID_KP, YAW_SPEED_PID_KI, YAW_SPEED_PID_KD};
@@ -607,6 +609,7 @@ static void gimbal_init(gimbal_control_t *init)
   */
 static void gimbal_set_mode(gimbal_control_t *set_mode)
 {
+	  last_gimbal_behaviour =gimbal_behaviour;
     if (set_mode == NULL)
     {
         return;
@@ -621,6 +624,7 @@ static void gimbal_set_mode(gimbal_control_t *set_mode)
   */
 static void gimbal_feedback_update(gimbal_control_t *feedback_update)
 {
+		 last_gimbal_behaviour=gimbal_behaviour;
     if (feedback_update == NULL)
     {
         return;
@@ -653,7 +657,10 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
 #endif
 
     feedback_update->gimbal_yaw_motor.motor_gyro = arm_cos_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_Z_ADDRESS_OFFSET))
-                                                        - arm_sin_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_X_ADDRESS_OFFSET));
+  - arm_sin_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_X_ADDRESS_OFFSET));
+   
+	 
+
 }
 
 

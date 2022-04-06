@@ -202,16 +202,6 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
 static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 
 
-/**
-  * @brief          云台进入自瞄模式无输入控制，电机是绝对角度控制，
-  * @author         RM
-  * @param[in]      yaw: yaw轴角度控制，为角度的增量 单位 rad
-  * @param[in]      pitch: pitch轴角度控制，为角度的增量 单位 rad
-  * @param[in]      gimbal_control_set:云台数据指针
-  * @retval         none
-  */
-static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
-
 //云台行为状态机
 gimbal_behaviour_e gimbal_behaviour = GIMBAL_ZERO_FORCE;
 gimbal_behaviour_e last_gimbal_behaviour = GIMBAL_ZERO_FORCE;
@@ -267,7 +257,7 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set)
     else if (gimbal_behaviour == GIMBAL_ABSOLUTE_ANGLE)
     {
         gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;
-        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;
+        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_ENCONDE;
     }
     else if (gimbal_behaviour == GIMBAL_RELATIVE_ANGLE)
     {
@@ -365,7 +355,7 @@ bool_t gimbal_cmd_to_shoot_stop(void)
 }
 
 
-
+extern bool_t gimbal_imu_open_flag ;
 /**
   * @brief          云台行为状态机设置.
   * @param[in]      gimbal_mode_set: 云台数据指针
@@ -373,6 +363,7 @@ bool_t gimbal_cmd_to_shoot_stop(void)
   */
 static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
 {
+	   
     if (gimbal_mode_set == NULL)
     {
         return;
@@ -392,12 +383,13 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
     //初始化模式判断是否到达中值位置
     if (gimbal_behaviour == GIMBAL_INIT)
     {
+			
         static uint16_t init_time = 0;
         static uint16_t init_stop_time = 0;
         init_time++;
         
         if ((fabs(gimbal_mode_set->gimbal_yaw_motor.relative_angle - INIT_YAW_SET) < GIMBAL_INIT_ANGLE_ERROR &&
-             fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) < GIMBAL_INIT_ANGLE_ERROR))
+             fabs(gimbal_mode_set->gimbal_pitch_motor.relative_angle - INIT_PITCH_SET) < GIMBAL_INIT_ANGLE_ERROR))
         {
             
             if (init_stop_time < GIMBAL_INIT_STOP_TIME)
@@ -418,12 +410,14 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         if (init_time < GIMBAL_INIT_TIME && init_stop_time < GIMBAL_INIT_STOP_TIME &&
             !switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && !toe_is_error(DBUS_TOE))
         {
+
             return;
         }
         else
         {
             init_stop_time = 0;
             init_time = 0;
+										gimbal_imu_open_flag = 1;
         }
     }
 
@@ -438,14 +432,13 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
     
     if (switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
-//        gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;
+
 		     	gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;
     }
     else if (switch_is_mid(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
 
-//         gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;
-		  	gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;       
+         gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;     
     }
     else if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
@@ -470,7 +463,7 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         {
             gimbal_behaviour = GIMBAL_INIT;
         }
-        last_gimbal_behaviour = gimbal_behaviour;
+
     }
 
    

@@ -32,55 +32,49 @@
 #include "pid.h"
 #include "remote_control.h"
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_SPEED_PID_KP        2900.0f //4000
+#define PITCH_SPEED_PID_KP        8000.0f //4000
 #define PITCH_SPEED_PID_KI        0.0f
-#define PITCH_SPEED_PID_KD        10.0f
-#define PITCH_SPEED_PID_MAX_OUT   30000.0f
-#define PITCH_SPEED_PID_MAX_IOUT  10000.0f
+#define PITCH_SPEED_PID_KD        0.0f
+#define PITCH_SPEED_PID_MAX_IOUT  25.0f
+#define PITCH_SPEED_PID_MAX_OUT   12000.0f
+
+
+// pitch 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
+#define PITCH_ENCODE_RELATIVE_PID_KP 30.0f  //15
+#define PITCH_ENCODE_RELATIVE_PID_KI 0.01f
+#define PITCH_ENCODE_RELATIVE_PID_KD 30.0f
+#define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 1.0f
+#define PITCH_ENCODE_RELATIVE_PID_MAX_OUT 160.0f
+
+
 //pitch 角度环 PID参数以及 PID最大输出，积分输出        陀螺仪
-#define PITCH_GYRO_ABSOLUTE_PID_KP 12.0f   //15.0
+#define PITCH_GYRO_ABSOLUTE_PID_KP 12.0f   
 #define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
 #define PITCH_GYRO_ABSOLUTE_PID_KD 1.6f
-#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 10.0f//6
+#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 10.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 2.0f
-//pitch 角度环 PID参数以及 PID最大输出，积分输出        编码值
-#define PITCH_ENCODE_RELATIVE_PID_KP 15.0f  //15
-#define PITCH_ENCODE_RELATIVE_PID_KI 0.0f
-#define PITCH_ENCODE_RELATIVE_PID_KD 0.0f
-#define PITCH_ENCODE_RELATIVE_PID_MAX_OUT 10.0f
-#define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 0.0f
 
-////yaw 速度环 PID参数以及 PID最大输出，积分输出
-//#define YAW_SPEED_PID_KP        2800.0f  
-//#define YAW_SPEED_PID_KI        0.8f   
-//#define YAW_SPEED_PID_KD        0.2f    
-//#define YAW_SPEED_PID_MAX_OUT   30000.0f
-//#define YAW_SPEED_PID_MAX_IOUT  20000.0f  
-////yaw 角度环 PID参数以及 PID最大输出，积分输出              陀螺仪
-//#define YAW_GYRO_ABSOLUTE_PID_KP      8.0f                   //2.4f//8.0f // 8.0f  
-//#define YAW_GYRO_ABSOLUTE_PID_KI      0.8f                   //0.01f//0.75f // 0.2f   
-//#define YAW_GYRO_ABSOLUTE_PID_KD      0.2f                   //0.0f//1.8f // 280.0f   
-//#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   8.0f
-//#define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f//0.0f
-//鼠标控制pid----灵敏度100，dpi1600
 //yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_SPEED_PID_KP        2300.0f  
-#define YAW_SPEED_PID_KI        0.4f   
-#define YAW_SPEED_PID_KD        200.0f    
-#define YAW_SPEED_PID_MAX_OUT   30000.0f
-#define YAW_SPEED_PID_MAX_IOUT  20000.0f  
-//yaw 角度环 PID参数以及 PID最大输出，积分输出              
+#define YAW_SPEED_PID_KP        4000.0f  
+#define YAW_SPEED_PID_KI        0.0f   
+#define YAW_SPEED_PID_KD        8.0f   
+#define YAW_SPEED_PID_MAX_IOUT  20.0f  
+#define YAW_SPEED_PID_MAX_OUT   10000.0f
+
+// yaw 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出  
 #define YAW_GYRO_ABSOLUTE_PID_KP      8.0f                   
-#define YAW_GYRO_ABSOLUTE_PID_KI      0.0f                    
-#define YAW_GYRO_ABSOLUTE_PID_KD      0.8f                    
-#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   20.0f
-#define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f//0.0f
-//yaw 角度环 PID参数以及 PID最大输出，积分输出       编码值
-#define YAW_ENCODE_RELATIVE_PID_KP        8.0f  //8
+#define YAW_GYRO_ABSOLUTE_PID_KI      0.1f                    
+#define YAW_GYRO_ABSOLUTE_PID_KD      30.0f  
+#define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  1.0f
+#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   100.0f
+
+// yaw 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
+#define YAW_ENCODE_RELATIVE_PID_KP        5.0f  
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
 #define YAW_ENCODE_RELATIVE_PID_KD        0.0f
-#define YAW_ENCODE_RELATIVE_PID_MAX_OUT   10.0f
-#define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  6.0f
+#define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  5.0f
+#define YAW_ENCODE_RELATIVE_PID_MAX_OUT   20.0f
+
 
 
 
@@ -107,8 +101,8 @@
 
 
 //云台 遥控器速度
-#define YAW_RC_SEN    -0.000005f  
-#define PITCH_RC_SEN  0.000006f 
+#define YAW_RC_SEN    -0.00002f  
+#define PITCH_RC_SEN  0.000016f 
 
 //云台 鼠标速度
 #define YAW_MOUSE_SEN   0.00003f
@@ -117,7 +111,7 @@
 #define YAW_ENCODE_SEN    0.01f
 #define PITCH_ENCODE_SEN  0.01f
 
-#define GIMBAL_CONTROL_TIME 1
+#define GIMBAL_CONTROL_TIME 2
 
 //test mode, 0 close, 1 open
 //云台测试模式 宏定义 0 为不使用测试模式
@@ -182,8 +176,8 @@
 #define MIN_ABSOULATE_YAW     -PI
 #define MAX_ABSOULATE_YAW     PI    
 
-#define MIN_ABSOULATE_PITCH      -0.26f
-#define MAX_ABSOULATE_PITCH      0.48f
+#define MIN_ABSOULATE_PITCH      -0.25f
+#define MAX_ABSOULATE_PITCH      0.47f
 //只有定义
 #define GIMBAL_ACCEL_YAW_NUM 0.002f
 #define GIMBAL_ACCEL_PITCH_NUM 0.002f
