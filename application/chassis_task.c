@@ -28,7 +28,7 @@
 #include "detect_task.h"
 #include "INS_task.h"
 #include "referee_control.h"
-
+#include "super_cap_task.h"
 
 
 #define rc_deadband_limit(input, output, dealine)        \
@@ -116,6 +116,8 @@ void chassis_task(void const *pvParameters)
     //chassis init
     //底盘初始化
     chassis_init(&chassis_move);
+	   //超电初始化
+	   cap_init();
     //make sure all chassis motor is online,
     //判断底盘电机是否都在线
     while (toe_is_error(CHASSIS_MOTOR1_TOE) || toe_is_error(CHASSIS_MOTOR2_TOE) || toe_is_error(CHASSIS_MOTOR3_TOE) || toe_is_error(CHASSIS_MOTOR4_TOE) || toe_is_error(DBUS_TOE))
@@ -510,15 +512,15 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
     fp32 wheel_speed[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     uint8_t i = 0;
 
-    //按下shift,提高速度,触发超级电容
-    if(IF_KEY_PRESSED_SHIFT)
-    {
-        chassis_move_control_loop->max_wheel_speed = 1.5 * MAX_WHEEL_SPEED;
-    }
-    else
-    {
-        chassis_move_control_loop->max_wheel_speed = MAX_WHEEL_SPEED;
-    }
+//    //按下shift,提高速度,触发超级电容
+//    if(IF_KEY_PRESSED_SHIFT)
+//    {
+//        chassis_move_control_loop->max_wheel_speed = 1.5 * MAX_WHEEL_SPEED;
+//    }
+//    else
+//    {
+//        chassis_move_control_loop->max_wheel_speed = MAX_WHEEL_SPEED;
+//    }
 
 
     //麦轮运动分解

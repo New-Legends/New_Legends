@@ -214,8 +214,9 @@ void get_shooter_id1_42mm_cooling_limit_and_heat(uint16_t *id1_42mm_cooling_limi
 //42mm枪口枪口射速上限,42mm实时射速
 void get_shooter_id1_42mm_speed_limit_and_bullet_speed(uint16_t *id1_42mm_speed_limit, uint16_t *bullet_speed);
 //42mm枪口热量冷却
-void get_shooter_id1_42mm_cooling_rate(uint16_t *id1_42mm_cooling_rate);;
-
+void get_shooter_id1_42mm_cooling_rate(uint16_t *id1_42mm_cooling_rate);
+//底盘输出功率上限
+void get_chassis_power_limit(fp32 *power_limit);
 
 extern void determine_ID(void);
 extern bool_t is_red_or_blue(void);

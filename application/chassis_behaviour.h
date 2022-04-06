@@ -78,8 +78,6 @@ extern bool_t top_switch;
 //45度角对敌动作开关
 extern bool_t pisa_switch;  
 extern uint16_t pisa_delay_time; 
-
-
 #define MISS_CLOSE 0
 #define MISS_BEGIN 1
 #define MISS_OVER  2

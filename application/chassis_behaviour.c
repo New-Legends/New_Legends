@@ -146,6 +146,8 @@ bool_t top_switch = 0;
 //45度角对敌数据
 fp32 pisa_angle = 0;    //保留45度对敌前的云台相对底盘角度
 bool_t pisa_switch = 0; 
+//超电控制开关 默认关闭
+bool_t super_cap_switch = 1;
 
 
 
@@ -426,7 +428,7 @@ static void chassis_infantry_follow_gimbal_yaw_control(fp32 *vx_set, fp32 *vy_se
         top_switch = 0;
     }
 
-     //遥控器拨至上 打开小陀螺
+     //遥控器拨至上 打开小陀螺  逻辑有问题
 //     if(switch_is_up(chassis_move.chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]) && top_switch == 0)
 //     {
 //         top_switch = 1;
@@ -448,7 +450,15 @@ static void chassis_infantry_follow_gimbal_yaw_control(fp32 *vx_set, fp32 *vy_se
 			top_angle = 0;
 		}
 
-
+    //开启超电
+    if (IF_KEY_PRESSED_SHIFT && super_cap_switch == 0) //打开超电
+    {
+        super_cap_switch = TRUE;
+    }
+    else if (IF_KEY_PRESSED_SHIFT && super_cap_switch != 0) //关闭超电
+    {
+        super_cap_switch = FALSE;
+    }
 
 
     //更新上一次键盘值

@@ -93,7 +93,8 @@
 #define CHASSIS_BACK_KEY KEY_PRESSED_OFFSET_S
 #define CHASSIS_LEFT_KEY KEY_PRESSED_OFFSET_A
 #define CHASSIS_RIGHT_KEY KEY_PRESSED_OFFSET_D
-
+//超电按键
+//#define 
 //m3508 rmp change to chassis speed,
 //m3508转化成底盘速度(m/s)的比例，
 #define M3508_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f
@@ -102,9 +103,9 @@
 //单个底盘电机最大速度
 #define MAX_WHEEL_SPEED 4.0f   //4
 //底盘运动过程最大前进速度
-#define NORMAL_MAX_CHASSIS_SPEED_X 2.5f  //2.0
+#define NORMAL_MAX_CHASSIS_SPEED_X 4.5f  //2.0
 //底盘运动过程最大平移速度
-#define NORMAL_MAX_CHASSIS_SPEED_Y 1.5f  //1.5
+#define NORMAL_MAX_CHASSIS_SPEED_Y 4.5f  //1.5
 
 #define CHASSIS_WZ_SET_SCALE 0.1f
 
@@ -116,25 +117,25 @@
 
 
 //原地旋转小陀螺下Z轴转速
-#define TOP_WZ_ANGLE_STAND 3.0f 
+#define TOP_WZ_ANGLE_STAND 1.1f 
 //移动状态下小陀螺转速
-#define TOP_WZ_ANGLE_MOVE 3.0f
+#define TOP_WZ_ANGLE_MOVE 0.4f
 
 
 
 //chassis motor speed PID
 //底盘电机速度环PID
-#define M3505_MOTOR_SPEED_PID_KP 6000.0f
-#define M3505_MOTOR_SPEED_PID_KI 0.0f
-#define M3505_MOTOR_SPEED_PID_KD 0.0f
+#define M3505_MOTOR_SPEED_PID_KP 3000.0f
+#define M3505_MOTOR_SPEED_PID_KI 2.0f
+#define M3505_MOTOR_SPEED_PID_KD 1.5f
 #define M3505_MOTOR_SPEED_PID_MAX_OUT  6000.0f
 #define M3505_MOTOR_SPEED_PID_MAX_IOUT 2000.0f
 
 //chassis follow angle PID
 //底盘旋转跟随PID
-#define CHASSIS_FOLLOW_GIMBAL_PID_KP 5.5f
-#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.5f
-#define CHASSIS_FOLLOW_GIMBAL_PID_KD 60.0f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KP 6.0f//5.5f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.0f//0.5f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KD 30.0f//60.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 6.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.0f
 

@@ -24,16 +24,16 @@
 #include "arm_math.h"
 #include "detect_task.h"
 
-
-
-
-#define POWER_LIMIT         80.0f
-#define WARNING_POWER       40.0f   
-#define WARNING_POWER_BUFF  50.0f   
+extern ext_game_robot_state_t robot_state; //0x0201     比赛机器人状态
+extern bool_t super_cap_switch;//超电开关
+//extern void get_chassis_power_limit(fp32 *power_limit);
+#define POWER_LIMIT         40.0f   //默认功率限制
+#define WARNING_POWER_DISTANCE       10.0f   //距离超功率的距离
+#define WARNING_POWER_BUFF  30.0f   ////警告能量缓冲 
 
 #define NO_JUDGE_TOTAL_CURRENT_LIMIT    64000.0f    //16000 * 4, 
 #define BUFFER_TOTAL_CURRENT_LIMIT      16000.0f
-#define POWER_TOTAL_CURRENT_LIMIT       20000.0f
+#define POWER_TOTAL_CURRENT_LIMIT       18225.0f   //超级电容   0.5*50*2.7*2.7*10
 
 
 
@@ -55,9 +55,7 @@
 
 //通过读取裁判数据,直接修改射速和射频等级
 ////射速等级  摩擦电机
-fp32 shoot_fric_grade[4] = {0, 15*FRIC_REFEREE_PARA, 18*FRIC_REFEREE_PARA, 30*FRIC_REFEREE_PARA};
-//测试用，尿弹模式
-//fp32 shoot_fric_grade[4] = {0, 7*FRIC_REFEREE_PARA, 7*FRIC_REFEREE_PARA, 10*FRIC_REFEREE_PARA};
+fp32 shoot_fric_grade[4] = {0, 17.5*FRIC_REFEREE_PARA, 19.5*FRIC_REFEREE_PARA, 29.5*FRIC_REFEREE_PARA};
 //射频等级 拨弹电机
 fp32 shoot_grigger_grade[6] = {0, 5.0f*GRIGGER_SPEED_TO_RADIO, 10.0f*GRIGGER_SPEED_TO_RADIO, 15.0f*GRIGGER_SPEED_TO_RADIO, 28.0f*GRIGGER_SPEED_TO_RADIO, 40.0f*GRIGGER_SPEED_TO_RADIO};
 
@@ -70,26 +68,51 @@ uint8_t fric_speed_grade;
   * @param[in]      chassis_power_control: 底盘数据
   * @retval         none
   */
+fp32 chassis_power = 0.0f;
+fp32 chassis_power_limit = 0.0f;
+////缓冲能量 单位为J
+fp32 chassis_power_buffer = 0.0f;  //裁判剩余缓冲能量
+fp32 chassis_power_cap_buffer = 0.0f; //电容剩余能量
+
 void chassis_power_control(chassis_move_t *chassis_power_control)
 {
-    fp32 chassis_power = 0.0f;
-    fp32 chassis_power_buffer = 0.0f;
     fp32 total_current_limit = 0.0f;
     fp32 total_current = 0.0f;
-    uint8_t robot_id = get_robot_id();
-    if(toe_is_error(REFEREE_TOE))
-    {
-        total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
-    }
-    else if(robot_id == RED_ENGINEER || robot_id == BLUE_ENGINEER || robot_id == 0)
-    {
-        total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
-    }
-    else
-    {
-        get_chassis_power_and_buffer(&chassis_power, &chassis_power_buffer);
-        //功率超过80w 和缓冲能量小于60j,因为缓冲能量小于60意味着功率超过80w
-        if(chassis_power_buffer < WARNING_POWER_BUFF)
+    uint8_t robot_id = 0;
+	  robot_id= get_robot_id();
+//    if(toe_is_error(REFEREE_TOE))
+//    {
+//        total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
+//    }
+//    else if(robot_id == RED_ENGINEER || robot_id == BLUE_ENGINEER || robot_id == 0)
+//    {
+//        total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
+//    }
+//    else
+//    {
+        get_chassis_power_and_buffer(&chassis_power, &chassis_power_buffer);//获取底盘瞬时功率和缓冲能量
+			  cap_read_cap_buff(&chassis_power_cap_buffer);//读取电容剩余能量
+			  get_chassis_power_limit(&chassis_power_limit);//读取当前底盘功率限制
+        
+        //当超电能量低于阈值700 将超电关闭
+        if (chassis_power_cap_buffer < 700)
+        {
+             super_cap_switch = FALSE;
+        } 
+//				        if (chassis_power_cap_buffer > 700)
+//        {
+//            super_cap_switch = TRUE;
+//        } 
+        //开启超电后 对超电设置功率进行修改 
+        if (super_cap_switch == TRUE)
+        {
+            CAN_cmd_super_cap((uint16_t)chassis_power_limit*100 + 1500);
+        } else if (super_cap_switch == FALSE){
+            CAN_cmd_super_cap(10000);
+        }		
+
+				//功率超过上限 和缓冲能量小于60j,因为缓冲能量小于60意味着功率超过上限
+			if(chassis_power_buffer < WARNING_POWER_BUFF)
         {
             fp32 power_scale;
             if(chassis_power_buffer > 5.0f)
@@ -107,17 +130,15 @@ void chassis_power_control(chassis_move_t *chassis_power_control)
         }
         else
         {
-            //功率大于WARNING_POWER
-            if(chassis_power > WARNING_POWER)
+            //大于WARNING_POWER
+            if(chassis_power > chassis_power_limit - WARNING_POWER_DISTANCE)
             {
                 fp32 power_scale;
-                //功率小于80w
-                if(chassis_power < POWER_LIMIT)
+                //功率小于上限
+                if(chassis_power < chassis_power_limit)
                 {
-                    //scale down
                     //缩小
-                    power_scale = (POWER_LIMIT - chassis_power) / (POWER_LIMIT - WARNING_POWER);
-                    
+                    power_scale = (chassis_power_limit - chassis_power) / (chassis_power_limit - (chassis_power_limit - WARNING_POWER_DISTANCE)); 
                 }
                 //功率大于80w
                 else
@@ -133,7 +154,7 @@ void chassis_power_control(chassis_move_t *chassis_power_control)
                 total_current_limit = BUFFER_TOTAL_CURRENT_LIMIT + POWER_TOTAL_CURRENT_LIMIT;
             }
         }
-    }
+//    }
 
     
     total_current = 0.0f;
