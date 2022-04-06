@@ -99,10 +99,6 @@ void chassis_power_control(chassis_move_t *chassis_power_control)
         {
              super_cap_switch = FALSE;
         } 
-//				        if (chassis_power_cap_buffer > 700)
-//        {
-//            super_cap_switch = TRUE;
-//        } 
         //开启超电后 对超电设置功率进行修改 
         if (super_cap_switch == TRUE)
         {

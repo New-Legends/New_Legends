@@ -55,16 +55,16 @@
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 2.0f
 
 //yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_SPEED_PID_KP        4000.0f  
+#define YAW_SPEED_PID_KP        2500.0f  
 #define YAW_SPEED_PID_KI        0.0f   
-#define YAW_SPEED_PID_KD        8.0f   
-#define YAW_SPEED_PID_MAX_IOUT  20.0f  
-#define YAW_SPEED_PID_MAX_OUT   10000.0f
+#define YAW_SPEED_PID_KD        100.0f   
+#define YAW_SPEED_PID_MAX_IOUT  200.0f  
+#define YAW_SPEED_PID_MAX_OUT   30000.0f
 
 // yaw 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出  
-#define YAW_GYRO_ABSOLUTE_PID_KP      8.0f                   
-#define YAW_GYRO_ABSOLUTE_PID_KI      0.1f                    
-#define YAW_GYRO_ABSOLUTE_PID_KD      30.0f  
+#define YAW_GYRO_ABSOLUTE_PID_KP      10.0f                   
+#define YAW_GYRO_ABSOLUTE_PID_KI      0.0f                    
+#define YAW_GYRO_ABSOLUTE_PID_KD      20.0f  
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  1.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   100.0f
 
@@ -101,7 +101,7 @@
 
 
 //云台 遥控器速度
-#define YAW_RC_SEN    -0.00002f  
+#define YAW_RC_SEN    -0.000015f  
 #define PITCH_RC_SEN  0.000016f 
 
 //云台 鼠标速度
