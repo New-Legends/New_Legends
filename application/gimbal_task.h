@@ -168,9 +168,9 @@
 
 
 //限幅 需要自己手动校准  云台归中编码值
-#define YAW_OFFSET       2495   //编码器
+#define YAW_OFFSET       2654   //编码器
 //电池一侧为3042   主控一侧为7060（步兵）
-#define PITCH_OFFSET     1733 //编码器
+#define PITCH_OFFSET     1728 //编码器
 //自动校准
 #define MIN_YAW         -2*PI
 #define MAX_YAW         2*PI
@@ -182,8 +182,8 @@
 #define MIN_ABSOULATE_YAW     -PI
 #define MAX_ABSOULATE_YAW     PI    
 
-#define MIN_ABSOULATE_PITCH      -0.33f
-#define MAX_ABSOULATE_PITCH      0.49f
+#define MIN_ABSOULATE_PITCH      -0.26f
+#define MAX_ABSOULATE_PITCH      0.48f
 //只有定义
 #define GIMBAL_ACCEL_YAW_NUM 0.002f
 #define GIMBAL_ACCEL_PITCH_NUM 0.002f
