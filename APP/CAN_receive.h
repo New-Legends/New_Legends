@@ -9,7 +9,9 @@ typedef enum
     CAN_FLIP_RIGHT_ID = 0x202,
     CAN_STRETCH_ID = 0x203,
     CAN_CATCH_ID = 0x204,
-
+    
+    STRETCH_SENSOR_ID = 0x205,
+    LIFT_SENSOR_ID = 0x206,
 } can_msg_id_can2_e;
 
 typedef enum
@@ -28,8 +30,22 @@ typedef struct
     int16_t given_current;
     uint8_t temperate;
     int16_t last_ecd;
+    int16_t round;
 } motor_measure_t;
+
+typedef struct
+{
+    uint8_t dis1;
+    uint16_t dis2;
+    uint8_t dis_status;
+    uint16_t signal_strength;
+    int16_t dis0;
+    float dis;
+} sensor_measure_t;
 
 extern const motor_measure_t *get_motor_measure_point(uint8_t i);
 
+extern const sensor_measure_t *get_sensor_measure_point(uint8_t i);
+
+extern void can_receive_init(void);
 #endif

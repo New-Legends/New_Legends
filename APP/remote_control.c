@@ -190,10 +190,11 @@ void USART3_IRQHandler(void)
     }
 }
 
+
 void remote_task(void const * argument)
 {   
     remote_control_init();
-    while (1)
+			while (1)
     {
       USART3_IRQHandler();
       USART1_ranging();

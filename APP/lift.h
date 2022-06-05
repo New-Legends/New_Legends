@@ -5,6 +5,7 @@
 #include "can.h"
 #include "CAN_receive.h"
 #include "struct_typedef.h"
+#include "catch_auto.h"
 
 //大结构体
 typedef struct
@@ -12,6 +13,7 @@ typedef struct
 
     const RC_ctrl_t *rc_data;
     const motor_measure_t *motor_measure[4];
+    const auto_t *auto_behave;
 
     //函数指针定义
     void (*init)();
@@ -45,6 +47,8 @@ typedef struct
             int16_t right;
             int16_t left_target;
             int16_t right_target;
+            int16_t left_speed;
+            int16_t right_speed;
             int     state;
         }ore;
 
@@ -58,6 +62,7 @@ typedef struct
 
     }sensor_data;
     
+    float lift_lenth;
 
     //遥控器状态命名
     #define left_switch_is_up           (strt.rc_data->rc.s[1] == 1)
@@ -82,6 +87,12 @@ typedef struct
     #define ore_state_is_out            (strt.can.ore.state == out)
 
 }strt_t;
+
+float lift_down = -10.0f;
+float lift_up = -520.0f;
+
+int8_t ore_flag = 0;
+int8_t ore_last_flag = 0;
 
 enum PID_MODE
 {
@@ -117,23 +128,23 @@ lift_pid_strt lift_PID[4];
 //一号电机PID
 float LIFT_LEFT_KP     =   11.0f;
 float LIFT_LEFT_KI     =   0.0f;
-float LIFT_LEFT_KD     =   0.1f;
+float LIFT_LEFT_KD     =   0.0f;
 float LIFT_LEFT_MOUT   =   16000.0f;
 float LIFT_LEFT_MIOUT  =   1.0f;
 //二号电机PID
 float LIFT_RIGHT_KP     =   11.0f;
 float LIFT_RIGHT_KI     =   0.0f;
-float LIFT_RIGHT_KD     =   0.1f;
+float LIFT_RIGHT_KD     =   0.0f;
 float LIFT_RIGHT_MOUT   =   16000.0f;
 float LIFT_RIGHT_MIOUT  =   1.0f;
 //三号电机PID
-float ORE_LEFT_KP     =   100.0f;
+float ORE_LEFT_KP     =   1.0f;
 float ORE_LEFT_KI     =   0.0f;
 float ORE_LEFT_KD     =   0.0f;
 float ORE_LEFT_MOUT   =   16000.0f;
 float ORE_LEFT_MIOUT  =   1.0f;
 //四号电机PID
-float ORE_RIGHT_KP     =   100.0f;
+float ORE_RIGHT_KP     =   1.0f;
 float ORE_RIGHT_KI     =   0.0f;
 float ORE_RIGHT_KD     =   0.0f;
 float ORE_RIGHT_MOUT   =   16000.0f;
@@ -160,57 +171,111 @@ enum
 
 strt_t    strt;
 
+int8_t lift_keyboard = 1;
 /************函数开始*************/
 void lift_set_mode(void)
 {
-    if(left_switch_is_mid && right_switch_is_mid)     
+    //计圈
+    //
+    if(lift_keyboard == 0)
     {
-        if (left_rocker_up)
+        if(left_switch_is_mid && right_switch_is_mid)     
         {
-            strt.can.lift.state = up;
-
+            if (left_rocker_up)
+            {
+                strt.can.lift.state = up;
+            }
+            else if(left_rocker_down)
+            {
+                strt.can.lift.state = down;
+            }
+            else
+            {
+                strt.can.lift.state = stop;
+            }
         }
-        else if(left_rocker_down)
+    }else{
+        if(strt.rc_data->key.v == KEY_PRESSED_OFFSET_Z)     
         {
-            strt.can.lift.state = down;
-
-        }
-        else
-        {
+            if (strt.rc_data->mouse.y < 0)
+            {
+                strt.can.lift.state = up;
+            }
+            if(strt.rc_data->mouse.y > 0)
+            {
+                strt.can.lift.state = down;
+            }
+            if(strt.rc_data->mouse.y == 0)
+            {
+                strt.can.lift.state = stop;
+            }
+        }else{
             strt.can.lift.state = stop;
-
         }
+    }
 
-    }else
+    if(strt.lift_lenth > lift_down && state_is_down)
     {
-        strt.can.lift.state = shut;
+        strt.can.lift.state = stop;
+    }
 
+    if(strt.lift_lenth < lift_up && state_is_up)
+    {
+        strt.can.lift.state = stop;
     }
 
 }
 
 void ore_set_mode(void)
 {
-    if(left_switch_is_mid && right_switch_is_up)     
+    if(lift_keyboard == 0)
     {
-       if (left_rocker_up)//strt.sensor_data.photogate_1
-       {
-           strt.can.ore.state   =   in;
-
-       }else if(left_rocker_down)//strt.sensor_data.photogate_1 == 0
-       {
-           strt.can.ore.state   =   out;
-
-       }else{
-           strt.can.ore.state   =   stop;
-
-       }
-
-    }
-    else
-    {
-        strt.can.ore.state   =  stop;
-    }
+        if(left_switch_is_mid && right_switch_is_up)     
+        {
+        if (left_rocker_up)//strt.sensor_data.photogate_1
+        {
+            strt.can.ore.state   =   in;
+        }else if(left_rocker_down)//strt.sensor_data.photogate_1 == 0
+        {
+            strt.can.ore.state   =   out;
+        }else{
+            strt.can.ore.state   =   stop;
+        }
+        }
+        else
+        {
+            strt.can.ore.state   =  stop;
+        }
+    }else{
+        if(strt.rc_data->key.v == KEY_PRESSED_OFFSET_Q)
+        {
+            if(strt.rc_data->mouse.z > 0)
+            {
+                strt.can.ore.state = out;
+            }else if(strt.rc_data->mouse.z < 0)
+            {
+                strt.can.ore.state = in;
+            }else{
+                strt.can.ore.state = stop;
+            }
+        }
+    //     ore_last_flag = ore_flag;
+    //     if(strt.rc_data->key.v == KEY_PRESSED_OFFSET_Q)
+    //     {
+    //         ore_flag = 1;
+    //     }else{
+    //         ore_flag = 0;
+    //     }
+    //     if(ore_last_flag != ore_flag && ore_flag == 1)
+    //     {
+    //         if(ore_state_is_in)
+    //         {
+    //             strt.can.ore.state = out;
+    //         }else{
+    //             strt.can.ore.state = in;
+    //         }
+    //     }
+        }
 
 }
 
@@ -218,6 +283,8 @@ void lift_control(void)
 {   
     strt.can.lift.left_speed    = strt.motor_measure[0]->speed_rpm;
     strt.can.lift.right_speed   = strt.motor_measure[1]->speed_rpm;
+    strt.can.ore.left_speed    = strt.motor_measure[2]->speed_rpm;
+    strt.can.ore.right_speed   = strt.motor_measure[3]->speed_rpm;
 
     strt.can.lift.left  = 0;
     strt.can.lift.right = 0;
@@ -227,24 +294,44 @@ void lift_control(void)
         strt.can.lift.left_target   =   -13 * 19;
         strt.can.lift.right_target  =   13 * 19;
     }
+
     if (state_is_up)
     {
-        strt.can.lift.left_target   =   -40 * 19;
-        strt.can.lift.right_target  =   40 * 19;
-        
+        strt.can.lift.left_target   =   -60 * 19;
+        strt.can.lift.right_target  =   60 * 19;
     }
+
     if (state_is_down)
     {
-        strt.can.lift.left_target   =   40 * 19;
-        strt.can.lift.right_target  =   -40 * 19;
-        
+        strt.can.lift.left_target   =   10*19;//40 * 19;
+        strt.can.lift.right_target  =   -10*19;//-40 * 19;
     }
+
     if (state_is_shut)
     {
         strt.can.lift.left_target   =   -13 * 19;
         strt.can.lift.right_target  =   13 * 19;
     }
 
+    if(strt.auto_behave->auto_mode == 1) //自动模式
+    {
+        if(strt.lift_lenth - strt.auto_behave->a_lift_target > 5.0f)
+        {
+            strt.can.lift.left_target   =   -60 * 19;
+            strt.can.lift.right_target  =   60 * 19;
+        }
+        if(strt.lift_lenth - strt.auto_behave->a_lift_target < -5.0f)
+        {
+            strt.can.lift.left_target   =   10*19;
+            strt.can.lift.right_target  =   -10*19;
+        }
+        if(strt.lift_lenth - strt.auto_behave->a_lift_target < 5.0f && strt.lift_lenth - strt.auto_behave->a_lift_target > -5.0f)
+        {
+            strt.can.lift.left_target   =   -13 * 19;
+            strt.can.lift.right_target  =   13 * 19;
+        }
+    }
+    
     strt.can.lift.left = (int16_t)strt.PID_calc(&lift_PID[0],strt.can.lift.left_speed,strt.can.lift.left_target);
     strt.can.lift.right = (int16_t)strt.PID_calc(&lift_PID[1],strt.can.lift.right_speed,strt.can.lift.right_target);
     
@@ -260,30 +347,40 @@ void ore_control(void)
 
     if (ore_state_is_in)
     {
-        strt.can.ore.left_target   =   1000;
-        strt.can.ore.right_target  =   -1000;
+        strt.can.ore.left_target   =   10000;
+        strt.can.ore.right_target  =   -10000;
     }
 
     if (ore_state_is_out)
     {
-        strt.can.ore.left_target   =   -1000;
-        strt.can.ore.right_target  =   1000;
+        strt.can.ore.left_target   =   -10000;
+        strt.can.ore.right_target  =   10000;
     }
-
+    strt.can.ore.left = (int16_t)strt.PID_calc(&lift_PID[2],strt.can.ore.left_speed,strt.can.ore.left_target);
+    strt.can.ore.right = (int16_t)strt.PID_calc(&lift_PID[3],strt.can.ore.right_speed,strt.can.ore.right_target);
 }
 
-void sensor(void)
-{
-    if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_RESET)
-    {
-        strt.sensor_data.photogate_1  =   0;
-    }
+// void sensor(void)
+// {
+//     if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_RESET)
+//     {
+//         strt.sensor_data.photogate_1  =   0;
+//     }
 
-    if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_SET)
-    {
-        strt.sensor_data.photogate_1  =   1;
-    }
+//     if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_SET)
+//     {
+//         strt.sensor_data.photogate_1  =   1;
+//     }
     
+// }
+
+void lift_auto_control(void)
+{
+    strt.can.lift.left_target = (int16_t)strt.PID_calc(&lift_PID[4],(int16_t)strt.lift_lenth,(int16_t)strt.auto_behave->a_lift_target);
+    strt.can.lift.right_target = -1*strt.can.lift.left_target;
+    
+    strt.can.lift.left = (int16_t)strt.PID_calc(&lift_PID[0],strt.can.lift.left_speed,strt.can.lift.left_target);
+    strt.can.lift.right = (int16_t)strt.PID_calc(&lift_PID[1],strt.can.lift.right_speed,strt.can.lift.right_target);
 }
 
 
@@ -407,7 +504,7 @@ void lift_init(void)
     strt.ore_set_mode   =   ore_set_mode;
     strt.ore_control    =   ore_control;
     strt.can_send       =   can_send;
-    strt.sensor         =   sensor;
+    // strt.sensor         =   sensor;
     strt.can.lift.state = stop;
     strt.can.ore.state = stop;
 
@@ -416,12 +513,14 @@ void lift_init(void)
         strt.motor_measure[i] = get_motor_measure_point(i+4);
     }
 
+    strt.auto_behave = get_auto_control_point();
 
     strt.pid_init   =   lift_PID_init;
     strt.pid_init();
     strt.PID_calc   =   lift_PID_calc;
 
     strt.sensor_data.photogate_1  =   0;
+    strt.lift_lenth = 0.0f;
 }
 
 #endif

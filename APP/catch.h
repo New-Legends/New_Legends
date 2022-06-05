@@ -14,14 +14,17 @@
 #include "struct_typedef.h"
 #include "can.h"
 #include "CAN_receive.h"
-
+#include "gpio.h"
+#include "tim.h"
+#include "catch_auto.h"
 //大结构体
 typedef struct
 {
     //遥控器指针
     const RC_ctrl_t *rc_data;
     const motor_measure_t *motor_measure[4];
-
+    const sensor_measure_t *sensor_measure[2];
+    const auto_t *auto_behave;
     //函数指针定义
     void (*init)();
     void (*sensor)();
@@ -30,8 +33,6 @@ typedef struct
     void (*can_send)();
     fp32 (*PID_calc)();
 
-    int16_t  catch_sensor;
-
     //电机电流、电机状态存储
     struct
     {
@@ -39,20 +40,28 @@ typedef struct
         int16_t right;  //翻转右
         int16_t stretch;//出矿
         int16_t catch;  //夹紧
+        int16_t left_speed_target;   
+        int16_t right_speed_target;
         int16_t left_target;   
-        int16_t right_target;  
+        int16_t right_target;   
         int16_t stretch_target;
+        fp32    stretch_lenth;
         int16_t catch_target;
         int16_t left_speed;   
         int16_t right_speed;  
         int16_t stretch_speed;
         int16_t catch_speed;  
-        int     flip_state;
-        int     stretch_state;
-        int     catch_state;
+        int8_t     flip_state;
+        int8_t     last_flip_state;
+        int8_t     stretch_state;
+        int8_t     catch_state;
     }can;
-    
+    int8_t catch_sensor;//光电门
 
+    float flip_angle;
+    float flip_stay_angle;
+    float stretch_lenth;
+    
     //遥控器状态命名
     #define left_switch_is_up           (catch.rc_data->rc.s[1] == 1)
     #define left_switch_is_mid          (catch.rc_data->rc.s[1] == 3)
@@ -76,13 +85,23 @@ typedef struct
     #define stretch_state_is_back       (catch.can.stretch_state == stretch_back)
 
     #define catch_state_is_stop         (catch.can.catch_state == stop)
-    #define catch_state_is_open         (catch.can.catch_state == close)
-    #define catch_state_is_close        (catch.can.catch_state == open)
+    #define catch_state_is_close        (catch.can.catch_state == close)
+    #define catch_state_is_open         (catch.can.catch_state == open)
     #define catch_state_is_shut         (catch.can.catch_state == shut)
 
     #define catch_sensor_0              (catch.catch_sensor == 0)
     #define catch_sensor_1              (catch.catch_sensor == 1)
 }catch_ctrl_t;
+
+
+fp32 flip_angle_up = 250.0f;
+fp32 flip_angle_down = -5.0f;
+fp32 stretch_out_lenth = 1050.0f;
+fp32 stretch_back_lenth = 70.0f;
+
+int8_t oreflip_flag;
+int8_t oreflip_last_flag;
+int16_t servo_data;
 
 enum PID_MODE
 {
@@ -103,6 +122,7 @@ enum
 }catch_state;
 
 catch_ctrl_t catch;
+
 
 typedef struct
 {
@@ -125,124 +145,213 @@ typedef struct
     fp32 Dbuf[3];  //微分项 0最新 1上一次 2上上次
     fp32 error[3]; //误差项 0最新 1上一次 2上上次
 
-} catch_pid_strt;
-catch_pid_strt catch_PID[4];
+} pid_strt;
+pid_strt catch_PID[6];
 
 //一号电机PID
-float CATCH_LEFT_KP     =   23.0f;
+float CATCH_LEFT_KP     =   20.0f;
 float CATCH_LEFT_KI     =   0.0f;
-float CATCH_LEFT_KD     =   0.0f;
+float CATCH_LEFT_KD     =   200.0f;
 float CATCH_LEFT_MOUT   =   16000.0f;
 float CATCH_LEFT_MIOUT  =   1.0f;
 //二号电机PID
-float CATCH_RIGHT_KP     =   23.0f;
+float CATCH_RIGHT_KP     =   20.0f;
 float CATCH_RIGHT_KI     =   0.0f;
-float CATCH_RIGHT_KD     =   0.0f;
+float CATCH_RIGHT_KD     =   200.0f;
 float CATCH_RIGHT_MOUT   =   16000.0f;
 float CATCH_RIGHT_MIOUT  =   1.0f;
 //三号电机PID
 float CATCH_STRETCH_KP     =   10.0f;
 float CATCH_STRETCH_KI     =   0.0f;
 float CATCH_STRETCH_KD     =   0.0f;
-float CATCH_STRETCH_MOUT   =   16000.0f;
+float CATCH_STRETCH_MOUT   =   2000.0f;
 float CATCH_STRETCH_MIOUT  =   1.0f;
 //四号电机PID
 float CATCH_CATCH_KP     =   10.0f;
 float CATCH_CATCH_KI     =   0.0f;
 float CATCH_CATCH_KD     =   0.0f;
-float CATCH_CATCH_MOUT   =   10000.0f;
+float CATCH_CATCH_MOUT   =   4000.0f;
 float CATCH_CATCH_MIOUT  =   1.0f;    
-
+//翻爪角度环
+float CATCH_ANGLE_KP     =   60.0f;
+float CATCH_ANGLE_KI     =   0.0f;
+float CATCH_ANGLE_KD     =   5.0f;
+float CATCH_ANGLE_MOUT   =   400.0f;
+float CATCH_ANGLE_MIOUT  =   1.0f;
 //框架函数
 
+int8_t  auto_get;//取矿
+int8_t  auto_in;//收矿
+int8_t  auto_out;//出矿
+int8_t  auto_ec;//换矿
+//自动模式
+void auto_ore(void)
+{
+    auto_get = 0;
+    auto_in = 0;
+    auto_out = 0;
+    auto_ec = 0;
+}
+
+// 0为遥控器模式，1为键盘模式
+int8_t catch_keyboard = 1;
+int8_t catch_catch_flag = 0;
+int8_t catch_catch_last_flag = 0;
 //更改遥控器控制模式
 void catch_set_mode(void)
 {
-    //翻转
-    if (left_switch_is_up && right_switch_is_down)
+    //角度计圈
+    //翻转 C键
+    catch.can.last_flip_state = catch.can.flip_state;
+    if(catch_keyboard == 0)
     {
-        if (left_rocker_up)
+        if (left_switch_is_up && right_switch_is_down)
         {
-            catch.can.flip_state =   forward;
-        }
+            if (left_rocker_up)
+            {
+                catch.can.flip_state =   forward;
+            }
 
-        if (left_rocker_down)
-        {
-            catch.can.flip_state =   reverse;
-        }
+            if (left_rocker_down)
+            {
+                catch.can.flip_state =   reverse;
+            }
 
-        if (left_rocker_mid)
+            if (left_rocker_mid)
+            {
+                catch.can.flip_state =   stop;
+            }
+
+        }
+    }else{
+        if (catch.rc_data->key.v == KEY_PRESSED_OFFSET_C)
         {
+            if (catch.rc_data->mouse.y < 0)
+            {
+                catch.can.flip_state =   forward;
+            }else if(catch.rc_data->mouse.y > 0)
+            {
+                catch.can.flip_state =   reverse;
+            }else{
+                catch.can.flip_state =   stop;
+            }
+
+        }else{
             catch.can.flip_state =   stop;
-        }
-
+        }   
     }
-    else
+    // 电控限位
+    if(catch.flip_angle >= flip_angle_up && flip_state_is_forward)
     {
-        catch.can.flip_state =   shut;
-        
+        catch.can.flip_state =   stop;
+    }
+    if(catch.flip_angle <= flip_angle_down && flip_state_is_reverse)
+    {
+        catch.can.flip_state =   stop;
+    }
+    if(catch.can.last_flip_state != catch.can.flip_state)
+    {
+        catch.flip_stay_angle = catch.flip_angle;
     }
 
-    //出爪
-    if (left_switch_is_up && right_switch_is_mid)
+    //出爪 X键
+    
+    if(catch_keyboard == 0)
     {
-        if (left_rocker_up)
+        // 遥控器模式
+        if (left_switch_is_up && right_switch_is_mid)
         {
-            catch.can.stretch_state =   stretch_out;
+            //起始赋值
+            if(left_rocker_up)
+            {
+                catch.can.stretch_state = stretch_out;
+            }
+            if(left_rocker_down)
+            {
+                catch.can.stretch_state = stretch_back;
+            }
+            if(left_rocker_mid)
+            {
+                catch.can.stretch_state = stop;
+            }
         }
-
-        if (left_rocker_down)
-        {
-            catch.can.stretch_state =   stretch_back;
-        }
-        
-        if (left_rocker_mid)
+        else
         {
             catch.can.stretch_state =   stop;
         }
-        
-        
+    }else{
+        // 键盘模式
+        if (catch.rc_data->key.v == KEY_PRESSED_OFFSET_X)
+        {
+            //起始赋值
+            if(catch.rc_data->mouse.y < 0)
+            {
+                catch.can.stretch_state = stretch_out;
+            }
+            if(catch.rc_data->mouse.y > 0)
+            {
+                catch.can.stretch_state = stretch_back;
+            }
+            if(catch.rc_data->mouse.y == 0)
+            {
+                catch.can.stretch_state = stop;
+            }
+        }
+        else
+        {
+            catch.can.stretch_state =   stop;
+        }
     }
-    else
+    // 电控限位
+    if(catch.stretch_lenth < stretch_back_lenth && stretch_state_is_back)
+    {
+        catch.can.stretch_state =   stop;
+    }
+    if(catch.stretch_lenth > stretch_out_lenth && stretch_state_is_out)
     {
         catch.can.stretch_state =   stop;
     }
 
     //夹紧
-    if (left_switch_is_up && right_switch_is_up)
+    if(catch_keyboard == 0)
     {
-        if (left_rocker_up)
+        if (left_switch_is_up && right_switch_is_up)
         {
-            catch.can.catch_state =   close;
-
+            if (left_rocker_up)
+            {
+                catch.can.catch_state =   close;
+            }
+            if (left_rocker_down)
+            {
+                catch.can.catch_state =   open;
+            }
         }
-        
-        if (left_rocker_mid)
+    }else{
+        catch_catch_last_flag = catch_catch_flag;
+        if (catch.rc_data->key.v == KEY_PRESSED_OFFSET_B)
         {
-            catch.can.catch_state =   stop;
-
+            catch_catch_flag = 1;
+        }else{
+            catch_catch_flag = 0;
         }
-        
+        if(catch_catch_last_flag != catch_catch_flag && catch_catch_flag == 1)
+        {
+            if(catch_state_is_open)
+            {
+                catch.can.catch_state =   close;
+            }else{
+                catch.can.catch_state =   open;
+            }
+        }
+    }
+    
+    /*空接
         if (catch.catch_sensor == 0)
         {
             catch.can.catch_state =   close;
 
-        }
+        }*/
 
-        if (left_rocker_down)
-        {
-            catch.can.catch_state =   open;
-            catch.catch_sensor == 1;
-
-        }
-
-    }
-    //else
-    //{
-        //catch.can.catch_state =   stop;
-
-    //}
-    
 }
 
 //更改电机控制模式
@@ -252,64 +361,129 @@ void catch_control(void)
     catch.can.right_speed = catch.motor_measure[1]->speed_rpm;  
     catch.can.stretch_speed = catch.motor_measure[2]->speed_rpm;
     catch.can.catch_speed = catch.motor_measure[3]->speed_rpm; 
-    
+    catch.can.stretch_lenth = catch.sensor_measure[0]->dis;
+
+    // 翻爪
     if (flip_state_is_stop)
     {
-        catch.can.left_target  =   0;
-        catch.can.right_target =   0;
+        // catch.can.left_speed_target  =   0;
+        // catch.can.right_speed_target =   0;
+        catch.can.left_speed_target  =   1*(int16_t)catch.PID_calc(&catch_PID[4],(int16_t)catch.flip_angle,(int16_t)catch.flip_stay_angle);
+        catch.can.right_speed_target =   -1*catch.can.left_speed_target;
+
     }
 
     if (flip_state_is_forward)
     {
-        catch.can.left_target  =   -20 * 19;
-        catch.can.right_target =   20 * 19;
+        catch.can.left_speed_target  =   20 * 19;
+        catch.can.right_speed_target =   -20 * 19;
     }
 
     if (flip_state_is_reverse)
     {
-        catch.can.left_target  =   20 * 19;
-        catch.can.right_target =   -20 * 19;
+        catch.can.left_speed_target  =   -20 * 19;
+        catch.can.right_speed_target =   20 * 19;
     }
-    catch.can.left  = (int16_t)catch.PID_calc(&catch_PID[0],catch.can.left_speed,catch.can.left_target);
-    catch.can.right = (int16_t)catch.PID_calc(&catch_PID[1],catch.can.right_speed,catch.can.right_target);
 
+    if(catch.auto_behave->auto_mode == 1)  //自动模式
+    {
+        catch.can.left_speed_target  =   1*(int16_t)catch.PID_calc(&catch_PID[4],(int16_t)catch.flip_angle,(int16_t)catch.auto_behave->a_flip_target);
+        catch.can.right_speed_target =   -1*catch.can.left_speed_target;
+    
+        catch.flip_stay_angle = catch.auto_behave->a_flip_target;
+    }   
+
+    catch.can.left  = (int16_t)catch.PID_calc(&catch_PID[0],catch.can.left_speed,catch.can.left_speed_target);
+    catch.can.right = (int16_t)catch.PID_calc(&catch_PID[1],catch.can.right_speed,catch.can.right_speed_target);
+
+    // 出抓
     if (stretch_state_is_stop)
     {
         catch.can.stretch_target   =   0;
     }
 
     if (stretch_state_is_out)
-    {
-        catch.can.stretch_target   =   -40 * 19;
+    {   
+        catch.can.stretch_target   =   160 * 19;
     }
-
     if (stretch_state_is_back)
     {
-        catch.can.stretch_target   =   40 * 19;
+        catch.can.stretch_target   =   -160 * 19;
+    }
+
+    if(catch.auto_behave->auto_mode == 1) //自动模式
+    {
+        if(catch.stretch_lenth - catch.auto_behave->a_stretch_target < -5.0f)
+        {
+            catch.can.stretch_target   =   160 * 19;
+        }
+        if(catch.stretch_lenth - catch.auto_behave->a_stretch_target > 5.0f)
+        {
+            catch.can.stretch_target   =   -160 * 19;
+        }
     }
     catch.can.stretch = (int16_t)catch.PID_calc(&catch_PID[2],catch.can.stretch_speed,catch.can.stretch_target);
 
-    if (catch_state_is_stop)
-    {
-        catch.can.catch_target   =   0;
-    }
-
-    if (catch_state_is_close)
-    {
-        catch.can.catch_target   =   -360 * 19;
-    }
-
+    // 夹爪
     if (catch_state_is_open)
     {
-        catch.can.catch_target    =   360 * 19;
+        catch.can.catch_target = -360 * 19;//-360 * 19;
+        catch.can.catch = -4500;
+        servo_data = 1500;
     }
-    catch.can.catch = (int16_t)catch.PID_calc(&catch_PID[3],catch.can.catch_speed,catch.can.catch_target);
+    if (catch_state_is_close)
+    {
+        catch.can.catch = 4500;
+    } 
+    if(catch.auto_behave->auto_mode == 1)   //自动模式
+    {
+        if(catch.auto_behave->a_catch_target == 1)
+        {
+            if(catch.motor_measure[3]->speed_rpm < 60 && catch.motor_measure[3]->speed_rpm > -60)
+            {
+                catch.can.catch = 4500;
+            }else{
+                catch.can.catch = 10000;
+            }
+            
+        }else{
+            if(catch.motor_measure[3]->speed_rpm < 60 && catch.motor_measure[3]->speed_rpm > -60)
+            {
+                catch.can.catch = -4500;
+            }else{
+                catch.can.catch = -10000;
+            }
+
+        }
+    }
+    //catch.can.catch = (int16_t)catch.PID_calc(&catch_PID[3],catch.can.catch_speed,catch.can.catch_target);
     
     //if (catch_state_is_shut)
     //{
     //    catch.can.catch    =   0;
     //}
 }
+
+
+// void catch_auto_control(void)
+// {
+//     // 翻爪
+//     catch.can.left_speed_target  =   1*(int16_t)catch.PID_calc(&catch_PID[4],(int16_t)catch.flip_angle,(int16_t)catch.auto_behave->a_flip_target);
+//     catch.can.right_speed_target =   -1*catch.can.left_speed_target;
+//     catch.can.left  = (int16_t)catch.PID_calc(&catch_PID[0],catch.can.left_speed,catch.can.left_speed_target);
+//     catch.can.right = (int16_t)catch.PID_calc(&catch_PID[1],catch.can.right_speed,catch.can.right_speed_target);
+
+//     // 出抓
+//     catch.can.stretch = (int16_t)catch.PID_calc(&catch_PID[2],catch.can.stretch_speed,catch.can.stretch_target);
+
+//     if(catch.auto_behave->a_catch_target == 1)
+//     {
+//         catch.can.catch = -4500;
+//     }else{
+//         catch.can.catch = 4500;
+//     }
+
+// }
 
 //CAN协议发送
 static CAN_TxHeaderTypeDef  can_tx_message;
@@ -336,7 +510,55 @@ void catch_can_send(void)
 //夹爪空接传感器
 void catch_sensor(void)
 {
-    catch.catch_sensor  =   HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin);
+    if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_RESET)
+    {
+        catch.catch_sensor  =   0;
+    }
+    if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_SET)
+    {
+        catch.catch_sensor  =   1;
+    }
+
+    catch.flip_angle = 1.0*(catch.motor_measure[0]->round*360)/19+1.0*(catch.motor_measure[0]->ecd*360)/19/8192;
+    catch.stretch_lenth = 1.0*(catch.motor_measure[2]->round*360)/19+1.0*(catch.motor_measure[2]->ecd*360)/19/8192;
+}
+
+void oreflip_servo(void)
+{
+    oreflip_last_flag = oreflip_flag;
+    // if(catch.rc_data->mouse.z > 0)
+    // {
+    //     oreflip_flag = 1;
+    // }
+    // if(catch.rc_data->mouse.z == 0)
+    // {
+    //     oreflip_flag = 0;
+    // }
+    // if(catch.rc_data->mouse.z < 0)
+    // {
+    //     oreflip_flag = -1;
+    // }
+    oreflip_flag = catch.rc_data->mouse.z;
+    if(catch.rc_data->key.v == KEY_PRESSED_OFFSET_E)
+    {
+        if(catch.rc_data->mouse.z > 0 && oreflip_last_flag != oreflip_flag)
+        {
+            servo_data += 200;
+        }
+        if(catch.rc_data->mouse.z < 0 && oreflip_last_flag != oreflip_flag)
+        {
+            servo_data -= 200;
+        }
+        if(servo_data > 2500)
+        {
+            servo_data = 2500;
+        }
+        if(servo_data < 500)
+        {
+            servo_data = 500;
+        }
+    }
+    __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, servo_data);
 }
 
 #define LimitMax(input, max)   \
@@ -351,7 +573,7 @@ void catch_sensor(void)
         }                      \
     }
 
-fp32 catch_PID_calc(catch_pid_strt *pid, int16_t ref, int16_t set)
+fp32 PID_calc(pid_strt *pid, int16_t ref, int16_t set)
 {
     if (pid == NULL)
     {
@@ -387,6 +609,19 @@ fp32 catch_PID_calc(catch_pid_strt *pid, int16_t ref, int16_t set)
         LimitMax(pid->out, pid->max_out);
     }
     return pid->out;
+}
+
+int16_t electromagnet_v;
+void electromagnet_control(void)
+{
+    if (left_switch_is_mid && right_switch_is_mid)
+    {
+        electromagnet_v = 1;
+    }else{
+        electromagnet_v = 0;
+    }
+
+    HAL_GPIO_WritePin( GPIOB, GPIO_PIN_14, electromagnet_v);
 }
 
 void catch_PID_init(void)
@@ -426,6 +661,15 @@ void catch_PID_init(void)
     catch_PID[3].max_iout = CATCH_CATCH_MIOUT;
     catch_PID[3].Dbuf[0] = catch_PID[3].Dbuf[1] = catch_PID[3].Dbuf[2] = 0.0f;
     catch_PID[3].error[0] = catch_PID[3].error[1] = catch_PID[3].error[2] = catch_PID[3].Pout = catch_PID[3].Iout = catch_PID[3].Dout = catch_PID[3].out = 0.0f;
+
+    catch_PID[4].mode = PID_POSITION;
+    catch_PID[4].Kp = CATCH_ANGLE_KP;
+    catch_PID[4].Ki = CATCH_ANGLE_KI;
+    catch_PID[4].Kd = CATCH_ANGLE_KD;
+    catch_PID[4].max_out = CATCH_ANGLE_MOUT;
+    catch_PID[4].max_iout = CATCH_ANGLE_MIOUT;
+    catch_PID[4].Dbuf[0] = catch_PID[4].Dbuf[1] = catch_PID[4].Dbuf[2] = 0.0f;
+    catch_PID[4].error[0] = catch_PID[4].error[1] = catch_PID[4].error[2] = catch_PID[4].Pout = catch_PID[4].Iout = catch_PID[4].Dout = catch_PID[4].out = 0.0f;
 }
 
 
@@ -436,18 +680,30 @@ void catch_init(void)
     catch.set_mode  =   catch_set_mode;
     catch.control   =   catch_control;
     catch.can_send  =   catch_can_send;
-    catch.PID_calc  =   catch_PID_calc;
+    catch.PID_calc  =   PID_calc;
 
     catch.rc_data   =   get_remote_control_point();
+    catch.auto_behave = get_auto_control_point();
+
     catch_PID_init();
 
     for (uint8_t i = 0; i < 4; i++)
     {
         catch.motor_measure[i] = get_motor_measure_point(i);
     }
-
     catch.can.flip_state =   stop;
+    catch.can.stretch_state =   stop;
+    catch.can.catch_state =   close;
+    catch.flip_angle = 0.0f;
+    catch.stretch_lenth = 0.0f;
+    catch_catch_flag = 0;
+    catch.flip_stay_angle = catch.flip_angle;
+    servo_data = 1500;
+}
 
+const catch_ctrl_t *get_catch_control_point(void)
+{
+    return &catch;
 }
 
 #endif
