@@ -120,31 +120,34 @@ float MOTOR4_KD     =   0.0f;
 float MOTOR4_MOUT   =   16000.0f;
 float MOTOR4_MIOUT  =   1.0f;    
 
+int key_board = 1;
+int speed_mode = 0;
 //速度模式设置
 void chassis_set_mode(void)
 {
-    if(LEFT_SWITCH_DOWN && RIGHT_SWITCH_DOWN)
+    if(RIGHT_SWITCH_DOWN&&LEFT_SWITCH_DOWN)
     {
-        chassis.can.chassis_state   =   shut;
-
-    }else if(LEFT_SWITCH_DOWN && RIGHT_SWITCH_UP)
+        chassis.can.chassis_state = shut;
+    }
+    if(key_board == 0)
     {
-        chassis.can.chassis_state   =   fast;
-        
-    }else{
-        chassis.can.chassis_state   =   standard;
+        chassis.can.chassis_state = standard;
     }
 
+    if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_SHIFT&&speed_mode == 0)
+    {
+        chassis.can.chassis_state = fast;
+        speed_mode = 1;
+    }
+    if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_CTRL&&speed_mode == 1)
+    {
+        chassis.can.chassis_state = standard;
+        speed_mode = 0;
+    }
 }
 
 void chassis_control(void)
 {   
-    //初始化
-    chassis.can.motor1 = 0;
-    chassis.can.motor2 = 0;
-    chassis.can.motor3 = 0;
-    chassis.can.motor4 = 0;
-
     //灵敏度设置
     if(STANDARD)
     {
@@ -153,32 +156,58 @@ void chassis_control(void)
     }
     if(FAST)
     {
-        chassis.can.translation_ratio = 0.3;
-        chassis.can.rotating_ratio = 0.3;
+        chassis.can.translation_ratio = 0.2;
+        chassis.can.rotating_ratio = 0.2;
     }
-
-    //遥控器死区
-    transverse = chassis.rc_data->rc.ch[0];
-    lengthways = chassis.rc_data->rc.ch[1];
-    roating    = chassis.rc_data->rc.ch[2];
-
-    if (lengthways > -100 && lengthways <100)
+    
+    if(key_board == 0)
     {
-        lengthways = 0;
-    }
-    if (transverse >= -100 && transverse <= 100)
-    {
-        transverse = 0;
-    }
-    if (roating >= -100 && roating <= 100)
-    {
-        roating = 0;
-    }
+        //遥控器死区
+        transverse = chassis.rc_data->rc.ch[0];
+        lengthways = chassis.rc_data->rc.ch[1];
+        roating    = chassis.rc_data->rc.ch[2];
 
-    //速度倍率计算
-    chassis.can.vx = chassis.can.translation_ratio * lengthways;
-    chassis.can.vy = chassis.can.translation_ratio * transverse;
-    chassis.can.vz = chassis.can.rotating_ratio * roating;
+        if (lengthways > -100 && lengthways <100)
+        {
+            lengthways = 0;
+        }
+        if (transverse >= -100 && transverse <= 100)
+        {
+            transverse = 0;
+        }
+        if (roating >= -100 && roating <= 100)
+        {
+            roating = 0;
+        }
+        //速度倍率计算
+        chassis.can.vx = chassis.can.translation_ratio * lengthways;
+        chassis.can.vy = chassis.can.translation_ratio * transverse;
+        chassis.can.vz = chassis.can.rotating_ratio * roating;
+    }else
+    {
+        chassis.can.vx = 0;
+        chassis.can.vy = 0;
+        chassis.can.vz = 0;
+        //键盘模式
+        if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_W)
+        {
+            chassis.can.vx += 660*chassis.can.translation_ratio;
+        }
+        if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_S)
+        {
+            chassis.can.vx -= 660*chassis.can.translation_ratio;
+        }
+        if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_A)
+        {
+            chassis.can.vy -= 660*chassis.can.translation_ratio;
+        }
+        if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_D)
+        {
+            chassis.can.vy += 660*chassis.can.translation_ratio;
+        }
+        chassis.can.vz += chassis.rc_data->mouse.x*chassis.can.rotating_ratio;
+    }
+    
     //平移运动解算
     chassis.can.motor1_target = chassis.can.vy + chassis.can.vx;
     chassis.can.motor2_target = chassis.can.vy - chassis.can.vx;
@@ -215,6 +244,7 @@ void chassis_control(void)
         chassis.can.motor4 = (int16_t)chassis.PID_calc(&chassis_PID[3],chassis.can.motor4_speed,chassis.can.motor4_target);
     
     }
+
 }
 
 static CAN_TxHeaderTypeDef  can_tx_message;
@@ -341,7 +371,15 @@ void chassis_init(void)
     chassis.PID_calc    =   chassis_PID_calc;
     chassis.can_send    =   chassis_can_send;
     chassis_PID_init();
-    chassis.can.chassis_state   =   shut;
+
+    if(key_board == 0)
+    {
+        chassis.can.chassis_state   =   shut;
+    }else
+    {
+        chassis.can.chassis_state   =   standard;
+    }
+
 }
 //PID计算
 

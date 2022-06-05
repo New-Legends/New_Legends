@@ -84,7 +84,7 @@ card_pid_strt card_pid;
 float CARD_KP     =   11.0f;
 float CARD_KI     =   0.0f;
 float CARD_KD     =   0.1f;
-float CARD_MOUT   =   10000.0f;
+float CARD_MOUT   =   4000.0f;
 float CARD_MIOUT  =   1.0f;
 
 card_ctrl_t card;
@@ -104,10 +104,18 @@ void card_set_mode(void)
         {
             card.can.state  =   reverse;
         }
+    }else if(card.rc_data->key.v == KEY_PRESSED_OFFSET_V){
+        if(card.rc_data->mouse.z > 0)
+        {
+            card.can.state  =   forward;
+        }
+        if(card.rc_data->mouse.z < 0)
+        {
+            card.can.state  =   reverse;
+        }
     }else{
-        card.can.state  =   shut;
+        card.can.state  =   stop;
     }
-
 }
 
 void card_control(void)
@@ -120,11 +128,11 @@ void card_control(void)
     }
     if(card_state_forward)
     {
-        card.can.card_target   =   20 * 36;
+        card.can.card_target   =   -20 * 36;
     }
     if(card_state_reverse)
     {
-        card.can.card_target   =   -20 * 36;
+        card.can.card_target   =   10 * 36;
     }
     card.can.card = (int16_t)card.PID_calc(&card_pid,card.can.card_speed,card.can.card_target) - 1000;
 
@@ -140,14 +148,20 @@ static uint8_t              card_can_send_data[8];
 void card_can_send(void)
 {
     uint32_t send_mail_box;
-    can_tx_message.StdId = 0x200;
+    can_tx_message.StdId = 0x1FF;
     can_tx_message.IDE = CAN_ID_STD;
     can_tx_message.RTR = CAN_RTR_DATA;
     can_tx_message.DLC = 0x08;
     card_can_send_data[0] = card.can.card >> 8;
     card_can_send_data[1] = card.can.card;
+    card_can_send_data[2] = 0 >> 8;
+    card_can_send_data[3] = 0;
+    card_can_send_data[4] = 0 >> 8;
+    card_can_send_data[5] = 0;
+    card_can_send_data[6] = 0 >> 8;
+    card_can_send_data[7] = 0;
 
-    HAL_CAN_AddTxMessage(&hcan1, &can_tx_message, card_can_send_data, &send_mail_box);
+    HAL_CAN_AddTxMessage(&hcan2, &can_tx_message, card_can_send_data, &send_mail_box);
 }
 
 #define LimitMax(input, max)   \

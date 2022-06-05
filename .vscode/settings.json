@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "chassis.h": "c",
-        "main.h": "c",
-        "can_receive.h": "c"
-    }
-}
