@@ -10,19 +10,26 @@ typedef struct
     const motor_measure_t *motor[9];
 
     int16_t auto_mode;
+    int16_t target_mode;
     int16_t press_flag;
     int16_t last_press_flag;
-    int8_t photogate_1;
+    int16_t photogate_1;
     //0为停，1为上，2为下
     int16_t a_catch_mode;
     int16_t a_takein_mode;
     int16_t a_takeout_mode;
+    int16_t a_push_mode;
     int16_t a_exchange_mode;
+
+    int16_t a_push_flag;
+    int16_t a_takein_flag;
 
     float a_lift_target;
     float a_stretch_target;
     int16_t a_flip_target;
     int16_t a_catch_target;
+
+    int16_t arrive;
 
     float   a_flip_angle;
     float   a_lift_angle;

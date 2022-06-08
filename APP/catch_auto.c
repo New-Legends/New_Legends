@@ -2,6 +2,39 @@
 #include "gpio.h"
 
 auto_t auto_ctrl;
+int16_t delay_i;
+
+int16_t close_to(void)
+{
+    int16_t lift_judge = 0;
+    int16_t flip_judge = 0;
+    int16_t stretch_judge = 0;
+    int16_t catch_judge = 0;
+
+    if(auto_ctrl.a_flip_target - (int16_t)auto_ctrl.a_flip_angle < 7 && (int16_t)auto_ctrl.a_flip_angle - auto_ctrl.a_flip_target < 7)
+    {
+        flip_judge = 1;
+    }
+    if(auto_ctrl.a_lift_target - auto_ctrl.a_lift_angle < 5.0f && auto_ctrl.a_lift_angle - auto_ctrl.a_lift_target < 5.0f)
+    {
+        lift_judge = 1;
+    }
+    if(auto_ctrl.a_stretch_target - auto_ctrl.a_stretch_angle < 5.0f && auto_ctrl.a_stretch_angle - auto_ctrl.a_stretch_target < 5.0f)
+    {
+        stretch_judge = 1;
+    }
+    if(auto_ctrl.motor[3]->speed_rpm < 30)
+    {
+        catch_judge = 1;
+    }
+
+    if(lift_judge && flip_judge && stretch_judge)
+    {
+        return 1;
+    }else{
+        return 0;
+    }
+}       
 
 void catch_auto_init(void)
 {
@@ -61,6 +94,13 @@ void auto_set_mode(void)
         if(auto_ctrl.auto_mode == 1)
         {
             auto_ctrl.auto_mode = 0;
+
+            auto_ctrl.a_catch_target = 1;
+            auto_ctrl.a_catch_mode = 0;
+            auto_ctrl.a_takein_mode = 0;
+            auto_ctrl.a_takeout_mode = 0;
+            auto_ctrl.a_push_mode = 0;
+            auto_ctrl.a_exchange_mode = 0;
         }else{
             auto_ctrl.auto_mode = 1;
         }
@@ -71,7 +111,7 @@ void auto_set_mode(void)
         // 自动取矿
         if(auto_ctrl.rc_data->key.v == KEY_PRESSED_OFFSET_Z)
         {
-            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0 && auto_ctrl.a_exchange_mode == 0)
+            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0)
             {
                 auto_ctrl.a_catch_mode = 1;
             }
@@ -79,33 +119,46 @@ void auto_set_mode(void)
         // 自动收纳
         if(auto_ctrl.rc_data->key.v == KEY_PRESSED_OFFSET_X)
         {
-            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0 && auto_ctrl.a_exchange_mode == 0)
+            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0)
             {
                 auto_ctrl.a_takein_mode = 1;
+                auto_ctrl.a_takein_flag = 1;
             }
         }
-        // 自动取出
+        // 自动放置
         if(auto_ctrl.rc_data->key.v == KEY_PRESSED_OFFSET_C)
         {
-            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0 && auto_ctrl.a_exchange_mode == 0)
+            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0)
             {
                 auto_ctrl.a_takeout_mode = 1;
             }
         }
-        // 自动兑换
+        if(auto_ctrl.rc_data->key.v == KEY_PRESSED_OFFSET_V)
+        {
+            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0)
+            {
+                auto_ctrl.a_push_mode = 1;
+                auto_ctrl.a_push_flag = 0;
+            }
+        }
+        // 自动归位
         if(auto_ctrl.rc_data->key.v == KEY_PRESSED_OFFSET_B)
         {
-            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0 && auto_ctrl.a_exchange_mode == 0)
+            if(auto_ctrl.a_catch_mode == 0 && auto_ctrl.a_takein_mode == 0 && auto_ctrl.a_takeout_mode == 0)
             {
                 auto_ctrl.a_exchange_mode = 1;
             }
         }
     }else{
+        auto_ctrl.a_catch_target = 1;//夹爪夹紧
 
-        auto_ctrl.a_catch_mode = 0;
+        auto_ctrl.a_catch_mode = 0;//模式初始化
         auto_ctrl.a_takein_mode = 0;
         auto_ctrl.a_takeout_mode = 0;
+        auto_ctrl.a_push_mode = 0;
         auto_ctrl.a_exchange_mode = 0;
+
+        auto_ctrl.target_mode = 0;
     }
 }
 
@@ -114,9 +167,21 @@ void auto_control(void)
     // 自动取矿
     if(auto_ctrl.a_catch_mode == 1)
     {
-        auto_ctrl.a_lift_target = -200.0f;
-        auto_ctrl.a_stretch_target = 700.0f;
-        auto_ctrl.a_flip_target = 95;
+        auto_ctrl.target_mode = 1;
+
+        auto_ctrl.a_lift_target = -120.0f;
+        auto_ctrl.a_stretch_target = 1050.0f;
+        auto_ctrl.a_flip_target = 90;
+        auto_ctrl.a_catch_target = 0;
+       
+        auto_ctrl.arrive = close_to(); 
+        if(auto_ctrl.arrive == 1)
+        {
+            auto_ctrl.a_catch_mode = 0;
+        }
+    }
+    if(auto_ctrl.a_lift_target == -120.0f && auto_ctrl.a_stretch_target == 1050.0f && auto_ctrl.a_flip_target == 90 && auto_ctrl.a_catch_target == 0)
+    {
         if(auto_ctrl.photogate_1 == 0)
         {
             auto_ctrl.a_catch_target = 1;
@@ -126,67 +191,96 @@ void auto_control(void)
     }
     // 自动收纳
     if(auto_ctrl.a_takein_mode == 1)
-    {
+    {   
+        auto_ctrl.target_mode = 1;
+
+        auto_ctrl.a_catch_target = 1;
+
+        if(auto_ctrl.motor[3]->given_current > 4000 && (auto_ctrl.motor[3]->speed_rpm < 5 && auto_ctrl.motor[3]->speed_rpm > -5))
+        {
+            auto_ctrl.a_takein_flag = 1;
+        }
+        if(auto_ctrl.a_takein_flag == 1)
+        {
+            auto_ctrl.a_catch_target = 1;
+            auto_ctrl.a_takein_mode = 0;
+            if(close_to())
+            {
+                auto_ctrl.a_catch_target = 1;
+                auto_ctrl.a_stretch_target = 280.0f;
+                auto_ctrl.a_flip_target = 245;
+                auto_ctrl.a_takein_mode = 0;
+            }
+                // if(delay_i == 5000)
+                // {
+                //     delay_i = 0;
+                //     auto_ctrl.a_stretch_target = 85.0f;
+                //     if(280.0f - auto_ctrl.a_stretch_target < 1.0f && auto_ctrl.a_flip_target - 280.0f < 1.0f)
+                //     {
+                //         auto_ctrl.a_flip_target = 190;
+                //         auto_ctrl.a_takein_mode = 0;
+                //     }
+                // }
+        }
         // auto_ctrl.a_lift_target = 0;
         // auto_ctrl.a_stretch_target = 0;
         // auto_ctrl.a_flip_target = 0;
         // auto_ctrl.a_catch_target = 0;
     }
-    // 自动取出
+    // 自动放置
     if(auto_ctrl.a_takeout_mode == 1)
     {
-        // auto_ctrl.a_lift_target = 0;
-        // auto_ctrl.a_stretch_target = 0;
-        // auto_ctrl.a_flip_target = 0;
+        auto_ctrl.target_mode = 1;
+
+        auto_ctrl.a_lift_target = -400.0f;
+        auto_ctrl.a_flip_target = 110;
+        auto_ctrl.a_catch_target = 1;
+
+        if(close_to())
+        {
+            auto_ctrl.a_catch_target = 0;
+            auto_ctrl.a_takeout_mode = 0;
+        }
         // auto_ctrl.a_catch_target = 0;
     }
-    // 自动兑换
+    // 自动推进
+    if(auto_ctrl.a_push_mode == 1)
+    {   
+        auto_ctrl.target_mode = 1;
+
+        if(auto_ctrl.a_push_flag == 0)
+        {
+            auto_ctrl.a_flip_target = 90;
+            auto_ctrl.a_stretch_target = 0.0f;
+            auto_ctrl.a_catch_target = 0;
+        }
+        if(auto_ctrl.a_push_flag == 1)
+        {
+            auto_ctrl.a_catch_target = 1;
+            auto_ctrl.a_stretch_target = 1050.0f;
+            auto_ctrl.a_push_mode = 0;
+        }
+        if(close_to())
+        {
+            auto_ctrl.a_push_flag = 1;
+        }
+    }
+    // 自动归位
     if(auto_ctrl.a_exchange_mode == 1)
     {
-        // auto_ctrl.a_lift_target = 0;
-        // auto_ctrl.a_stretch_target = 0;
-        // auto_ctrl.a_flip_target = 0;
+        auto_ctrl.target_mode = 1;
+
+        auto_ctrl.a_catch_target = 1;
+        auto_ctrl.a_lift_target = 0;
+        auto_ctrl.a_stretch_target = 0;
+        auto_ctrl.a_flip_target = 0;
+        if(close_to())
+        {
+            auto_ctrl.a_exchange_mode = 0;
+        }
         // auto_ctrl.a_catch_target = 0;
+        
     }
-}
-
-void auto_set_angle(void)
-{
-    // if(auto_ctrl.a_catch_mode == 1)
-    // {
-    //     auto_ctrl.a_lift_target = 0;
-    //     auto_ctrl.a_stretch_target = 0;
-    //     auto_ctrl.a_flip_target = 0;
-    //     auto_ctrl.a_catch_target = 0;
-    //     if(auto_ctrl.photogate_1 == 0)
-    //     {
-    //         auto_ctrl.a_catch_target = 1;
-    //     }
-    // }
-
-    // if(auto_ctrl.a_takein_mode == 1)
-    // {
-    //     auto_ctrl.a_lift_target = 0;
-    //     auto_ctrl.a_stretch_target = 0;
-    //     auto_ctrl.a_flip_target = 0;
-    //     auto_ctrl.a_catch_target = 0;
-    // }
-
-    // if(auto_ctrl.a_takeout_mode == 1)
-    // {
-    //     auto_ctrl.a_lift_target = 0;
-    //     auto_ctrl.a_stretch_target = 0;
-    //     auto_ctrl.a_flip_target = 0;
-    //     auto_ctrl.a_catch_target = 0;
-    // }
-
-    // if(auto_ctrl.a_exchange_mode == 1)
-    // {
-    //     auto_ctrl.a_lift_target = 0;
-    //     auto_ctrl.a_stretch_target = 0;
-    //     auto_ctrl.a_flip_target = 0;
-    //     auto_ctrl.a_catch_target = 0;
-    // }
 }
 
 const auto_t *get_auto_control_point(void)

@@ -3,12 +3,21 @@
 
 #include "struct_typedef.h"
 
+typedef struct 
+{
+    int16_t Reset_key;
+    int16_t Reset_last_key;
+    int16_t Reset_flag;
+    int16_t Reset_last_flag;
+}reset_t;
+
+
 typedef enum
 {
-    CAN_FLIP_LEFT_ID = 0x201,
-    CAN_FLIP_RIGHT_ID = 0x202,
-    CAN_STRETCH_ID = 0x203,
-    CAN_CATCH_ID = 0x204,
+    CAN_FLIP_LEFT_ID = 0x201,//[0]
+    CAN_FLIP_RIGHT_ID = 0x202,//[1]
+    CAN_STRETCH_ID = 0x203,//[2]
+    CAN_CATCH_ID = 0x204,//[3]
     
     STRETCH_SENSOR_ID = 0x205,
     LIFT_SENSOR_ID = 0x206,
@@ -16,10 +25,10 @@ typedef enum
 
 typedef enum
 {
-    CAN_LIFT_LEFT_ID = 0x201,
-    CAN_LIFT_RIGHT_ID = 0x202,
-    CAN_ORE_LEFT_ID = 0x203,
-    CAN_ORE_RIGHT_ID = 0x204,
+    CAN_LIFT_LEFT_ID = 0x201,//[4]
+    CAN_LIFT_RIGHT_ID = 0x202,//[5]
+    CAN_ORE_LEFT_ID = 0x203,//[6]
+    CAN_ORE_RIGHT_ID = 0x204,//[7]
 
 } can_msg_id_can1_e;
 
@@ -44,7 +53,7 @@ typedef struct
 } sensor_measure_t;
 
 extern const motor_measure_t *get_motor_measure_point(uint8_t i);
-
+extern const reset_t *get_reset_point(void);
 extern const sensor_measure_t *get_sensor_measure_point(uint8_t i);
 
 extern void can_receive_init(void);

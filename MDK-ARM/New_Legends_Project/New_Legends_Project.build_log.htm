@@ -22,17 +22,19 @@ Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 D:\GitHub\project\New_Legends_Project\MDK-ARM\New_Legends_Project.uvprojx
-Project File Date:  06/04/2022
+Project File Date:  06/08/2022
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\keil\ARM\ARMCC\Bin'
 Build target 'New_Legends_Project'
 compiling catch_auto.c...
-compiling CAN_receive.c...
+..\APP\catch_auto.c(12): warning:  #550-D: variable "catch_judge"  was set but never used
+      int16_t catch_judge = 0;
+..\APP\catch_auto.c: 1 warning, 0 errors
 linking...
-Program Size: Code=21836 RO-data=604 RW-data=388 ZI-data=19740  
+Program Size: Code=22568 RO-data=604 RW-data=404 ZI-data=19756  
 FromELF: creating hex file...
-"New_Legends_Project\New_Legends_Project.axf" - 0 Error(s), 0 Warning(s).
+"New_Legends_Project\New_Legends_Project.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 

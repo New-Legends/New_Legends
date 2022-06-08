@@ -14,6 +14,7 @@ typedef struct
     const RC_ctrl_t *rc_data;
     const motor_measure_t *motor_measure[4];
     const auto_t *auto_behave;
+    const reset_t *reset_key;
 
     //函数指针定义
     void (*init)();
@@ -91,6 +92,7 @@ typedef struct
 float lift_down = -10.0f;
 float lift_up = -520.0f;
 
+
 int8_t ore_flag = 0;
 int8_t ore_last_flag = 0;
 
@@ -150,6 +152,7 @@ float ORE_RIGHT_KD     =   0.0f;
 float ORE_RIGHT_MOUT   =   16000.0f;
 float ORE_RIGHT_MIOUT  =   1.0f;    
 
+int16_t *lift_Reset_key;
 
 enum
 {
@@ -171,10 +174,16 @@ enum
 
 strt_t    strt;
 
-int8_t lift_keyboard = 1;
+int8_t lift_keyboard = 0;
 /************函数开始*************/
 void lift_set_mode(void)
 {
+    if(left_switch_is_down&&right_switch_is_up)
+    {
+        lift_keyboard = 1;
+    }else{
+        lift_keyboard = 0;
+    }
     //计圈
     //
     if(lift_keyboard == 0)
@@ -213,15 +222,16 @@ void lift_set_mode(void)
             strt.can.lift.state = stop;
         }
     }
-
-    if(strt.lift_lenth > lift_down && state_is_down)
+    if(strt.reset_key->Reset_key == 0)
     {
-        strt.can.lift.state = stop;
-    }
-
-    if(strt.lift_lenth < lift_up && state_is_up)
-    {
-        strt.can.lift.state = stop;
+        if(strt.lift_lenth > lift_down && state_is_down) //电控限位
+        {
+            strt.can.lift.state = stop;
+        }   
+        if(strt.lift_lenth < lift_up && state_is_up)
+        {
+            strt.can.lift.state = stop;
+        }
     }
 
 }
@@ -275,7 +285,7 @@ void ore_set_mode(void)
     //             strt.can.ore.state = in;
     //         }
     //     }
-        }
+    }
 
 }
 
@@ -313,7 +323,7 @@ void lift_control(void)
         strt.can.lift.right_target  =   13 * 19;
     }
 
-    if(strt.auto_behave->auto_mode == 1) //自动模式
+    if(strt.auto_behave->target_mode == 1 /*&& strt.auto_behave->a_takein_mode == 0*/ ) //自动模式
     {
         if(strt.lift_lenth - strt.auto_behave->a_lift_target > 5.0f)
         {
@@ -514,6 +524,7 @@ void lift_init(void)
     }
 
     strt.auto_behave = get_auto_control_point();
+    strt.reset_key = get_reset_point();
 
     strt.pid_init   =   lift_PID_init;
     strt.pid_init();

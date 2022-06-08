@@ -25,6 +25,7 @@ typedef struct
     const motor_measure_t *motor_measure[4];
     const sensor_measure_t *sensor_measure[2];
     const auto_t *auto_behave;
+    const reset_t *reset_key;
     //函数指针定义
     void (*init)();
     void (*sensor)();
@@ -61,7 +62,7 @@ typedef struct
     float flip_angle;
     float flip_stay_angle;
     float stretch_lenth;
-    
+
     //遥控器状态命名
     #define left_switch_is_up           (catch.rc_data->rc.s[1] == 1)
     #define left_switch_is_mid          (catch.rc_data->rc.s[1] == 3)
@@ -200,6 +201,12 @@ int8_t catch_catch_last_flag = 0;
 //更改遥控器控制模式
 void catch_set_mode(void)
 {
+    if(left_switch_is_down&&right_switch_is_up)
+    {
+        catch_keyboard = 1;
+    }else{
+        catch_keyboard = 0;
+    }
     //角度计圈
     //翻转 C键
     catch.can.last_flip_state = catch.can.flip_state;
@@ -240,18 +247,21 @@ void catch_set_mode(void)
             catch.can.flip_state =   stop;
         }   
     }
-    // 电控限位
-    if(catch.flip_angle >= flip_angle_up && flip_state_is_forward)
+    // 
+    if(catch.reset_key->Reset_flag == 0)
     {
-        catch.can.flip_state =   stop;
-    }
-    if(catch.flip_angle <= flip_angle_down && flip_state_is_reverse)
-    {
-        catch.can.flip_state =   stop;
-    }
-    if(catch.can.last_flip_state != catch.can.flip_state)
-    {
-        catch.flip_stay_angle = catch.flip_angle;
+        if(catch.flip_angle >= flip_angle_up && flip_state_is_forward)
+        {
+            catch.can.flip_state =   stop;
+        }
+        if(catch.flip_angle <= flip_angle_down && flip_state_is_reverse)
+        {
+            catch.can.flip_state =   stop;
+        }
+        if(catch.can.last_flip_state != catch.can.flip_state)
+        {
+            catch.flip_stay_angle = catch.flip_angle;
+        }
     }
 
     //出爪 X键
@@ -303,13 +313,16 @@ void catch_set_mode(void)
         }
     }
     // 电控限位
-    if(catch.stretch_lenth < stretch_back_lenth && stretch_state_is_back)
+    if(catch.reset_key->Reset_flag == 0)
     {
-        catch.can.stretch_state =   stop;
-    }
-    if(catch.stretch_lenth > stretch_out_lenth && stretch_state_is_out)
-    {
-        catch.can.stretch_state =   stop;
+        if(catch.stretch_lenth < stretch_back_lenth && stretch_state_is_back)
+        {
+            catch.can.stretch_state =   stop;
+        }
+        if(catch.stretch_lenth > stretch_out_lenth && stretch_state_is_out)
+        {
+            catch.can.stretch_state =   stop;
+        }
     }
 
     //夹紧
@@ -385,7 +398,7 @@ void catch_control(void)
         catch.can.right_speed_target =   20 * 19;
     }
 
-    if(catch.auto_behave->auto_mode == 1)  //自动模式
+    if(catch.auto_behave->target_mode == 1)  //自动模式
     {
         catch.can.left_speed_target  =   1*(int16_t)catch.PID_calc(&catch_PID[4],(int16_t)catch.flip_angle,(int16_t)catch.auto_behave->a_flip_target);
         catch.can.right_speed_target =   -1*catch.can.left_speed_target;
@@ -411,7 +424,7 @@ void catch_control(void)
         catch.can.stretch_target   =   -160 * 19;
     }
 
-    if(catch.auto_behave->auto_mode == 1) //自动模式
+    if(catch.auto_behave->target_mode == 1) //自动模式
     {
         if(catch.stretch_lenth - catch.auto_behave->a_stretch_target < -5.0f)
         {
@@ -445,7 +458,7 @@ void catch_control(void)
             }else{
                 catch.can.catch = 10000;
             }
-            
+            catch.can.catch_state = close;
         }else{
             if(catch.motor_measure[3]->speed_rpm < 60 && catch.motor_measure[3]->speed_rpm > -60)
             {
@@ -453,7 +466,7 @@ void catch_control(void)
             }else{
                 catch.can.catch = -10000;
             }
-
+            catch.can.catch_state = open;
         }
     }
     //catch.can.catch = (int16_t)catch.PID_calc(&catch_PID[3],catch.can.catch_speed,catch.can.catch_target);
@@ -684,6 +697,7 @@ void catch_init(void)
 
     catch.rc_data   =   get_remote_control_point();
     catch.auto_behave = get_auto_control_point();
+    catch.reset_key = get_reset_point();
 
     catch_PID_init();
 

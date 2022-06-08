@@ -35,3 +35,6 @@ new_legends_project\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx
 new_legends_project\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_legends_project\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_legends_project\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+new_legends_project\can_receive.o: ..\APP\remote_control.h
+new_legends_project\can_receive.o: ../bsp/boards/bsp_rc.h
+new_legends_project\can_receive.o: ../bsp/boards/struct_typedef.h
