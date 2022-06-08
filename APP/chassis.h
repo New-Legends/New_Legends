@@ -120,11 +120,20 @@ float MOTOR4_KD     =   0.0f;
 float MOTOR4_MOUT   =   16000.0f;
 float MOTOR4_MIOUT  =   1.0f;    
 
-int key_board = 1;
+int key_board = 0;
 int speed_mode = 0;
+int chassis_flag = 0;
+int chassis_last_flag = 0;
 //速度模式设置
 void chassis_set_mode(void)
 {
+    if(LEFT_SWITCH_DOWN&&RIGHT_SWITCH_UP)
+    {
+        key_board = 1;
+    }else{
+        key_board = 0;
+    }
+
     if(RIGHT_SWITCH_DOWN&&LEFT_SWITCH_DOWN)
     {
         chassis.can.chassis_state = shut;
@@ -134,15 +143,21 @@ void chassis_set_mode(void)
         chassis.can.chassis_state = standard;
     }
 
-    if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_SHIFT&&speed_mode == 0)
+    chassis_last_flag = chassis_flag;
+    if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_SHIFT)
     {
-        chassis.can.chassis_state = fast;
-        speed_mode = 1;
+        chassis_flag = 1;
+    }else{
+        chassis_flag = 0;
     }
-    if(chassis.rc_data->key.v == KEY_PRESSED_OFFSET_CTRL&&speed_mode == 1)
+    if(chassis_last_flag != chassis_flag && chassis_flag == 1)
     {
-        chassis.can.chassis_state = standard;
-        speed_mode = 0;
+        if(chassis.can.chassis_state == fast)
+        {
+            chassis.can.chassis_state = standard;
+        }else{
+            chassis.can.chassis_state = fast;
+        }
     }
 }
 

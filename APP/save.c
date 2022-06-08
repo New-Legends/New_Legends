@@ -26,10 +26,16 @@ void save_task(void const * argument)
 {
 	save_init();
 	gimbal_init();
-	__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 2100);
-	__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 1600);
+	__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 2500);
+	__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 500);
 	while (1)
 	{
+		if(LEFT_SWITCH_DOWN&&RIGHT_SWITCH_UP)
+		{
+			save_key_board = 1;
+		}else{
+			save_key_board = 0;
+		}
 		//地矿
 		ore_last_data = ore_data_1;
 		if(save.rc_data->key.v == KEY_PRESSED_OFFSET_G)
@@ -63,14 +69,14 @@ void save_task(void const * argument)
 			{
 				if (LEFT_CH_DOWN)
 				{
-					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 1500);
-					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 2200);
+					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 970);
+					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 2030);
 					//HAL_GPIO_WritePin(SERVO_GPIO_Port, SERVO_Pin, GPIO_PIN_RESET);
 				}
 				else if(LEFT_CH_UP)
 				{
-					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 2100);
-					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 1600);
+					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 2500);
+					__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 500);
 					//HAL_GPIO_WritePin(SERVO_GPIO_Port, SERVO_Pin, GPIO_PIN_SET);
 				}
 			}
@@ -86,12 +92,12 @@ void save_task(void const * argument)
 			}
 			if (save_data == 0)
 			{
-				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 2000);
-				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 1600);
+				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 2500);
+				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 500);
 			}else
 			{
-				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 1280);//1450
-				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 2470);//2300
+				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 1030);//1450
+				__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 1980);//2300
 			}
 		}
 		
