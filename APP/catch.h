@@ -532,7 +532,7 @@ void catch_sensor(void)
         catch.catch_sensor  =   1;
     }
 
-    catch.flip_angle = 1.0*(catch.motor_measure[0]->round*360)/19+1.0*(catch.motor_measure[0]->ecd*360)/19/8192;
+    catch.flip_angle = 1.0*(catch.motor_measure[0]->round*360)/19+1.0*(catch.motor_measure[0]->ecd*360)/19/8192 - catch.auto_behave->flip_reset_angle;
     catch.stretch_lenth = 1.0*(catch.motor_measure[2]->round*360)/19+1.0*(catch.motor_measure[2]->ecd*360)/19/8192;
 }
 

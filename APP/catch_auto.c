@@ -53,6 +53,8 @@ void catch_auto_init(void)
     // auto_ctrl.a_flip_target = 0.0f;
     auto_ctrl.a_catch_target = 0;
 
+    auto_ctrl.flip_reset_angle = 0.0;
+
     for (int i = 0; i < 8; i++)
     {
         auto_ctrl.motor[i] = get_motor_measure_point(i);
@@ -74,13 +76,18 @@ void sensor(void)
 
 void measure(void)
 {   
-    auto_ctrl.a_flip_angle = 1.0*(auto_ctrl.motor[0]->round*360)/19+1.0*(auto_ctrl.motor[0]->ecd*360)/19/8192;
+    auto_ctrl.a_flip_angle = 1.0*(auto_ctrl.motor[0]->round*360)/19+1.0*(auto_ctrl.motor[0]->ecd*360)/19/8192 - auto_ctrl.flip_reset_angle;
     auto_ctrl.a_stretch_angle = 1.0*(auto_ctrl.motor[2]->round*360)/19+1.0*(auto_ctrl.motor[2]->ecd*360)/19/8192;
     auto_ctrl.a_lift_angle = 1.0*(auto_ctrl.motor[4]->round*360)/19+1.0*(auto_ctrl.motor[4]->ecd*360)/19/8192;
 }
 
 void auto_set_mode(void)
 {
+    if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) == GPIO_PIN_RESET)
+    {
+        auto_ctrl.flip_reset_angle = auto_ctrl.a_flip_angle;        
+    }
+
     auto_ctrl.last_press_flag = auto_ctrl.press_flag;
     if(auto_ctrl.rc_data->key.v == KEY_PRESSED_OFFSET_R)
     {
