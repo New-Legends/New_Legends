@@ -76,18 +76,25 @@ void sensor(void)
 
 void measure(void)
 {   
-    auto_ctrl.a_flip_angle = 1.0*(auto_ctrl.motor[0]->round*360)/19+1.0*(auto_ctrl.motor[0]->ecd*360)/19/8192 - auto_ctrl.flip_reset_angle;
+    auto_ctrl.flip_reset_flag = auto_ctrl.flip_reset_last_flag;
+    if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) == GPIO_PIN_RESET)
+    {
+        auto_ctrl.flip_reset_flag = 1;        
+    }else{
+        auto_ctrl.flip_reset_flag = 0;   
+    }
+    if(auto_ctrl.flip_reset_flag != auto_ctrl.flip_reset_last_flag)
+    {
+        auto_ctrl.flip_reset_angle = auto_ctrl.a_flip_angle;
+    }
+    
+    auto_ctrl.a_flip_angle = 1.0*(auto_ctrl.motor[0]->round*360)/19+1.0*(auto_ctrl.motor[0]->ecd*360)/19/8192;
     auto_ctrl.a_stretch_angle = 1.0*(auto_ctrl.motor[2]->round*360)/19+1.0*(auto_ctrl.motor[2]->ecd*360)/19/8192;
     auto_ctrl.a_lift_angle = 1.0*(auto_ctrl.motor[4]->round*360)/19+1.0*(auto_ctrl.motor[4]->ecd*360)/19/8192;
 }
 
 void auto_set_mode(void)
 {
-    if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) == GPIO_PIN_RESET)
-    {
-        auto_ctrl.flip_reset_angle = auto_ctrl.a_flip_angle;        
-    }
-
     auto_ctrl.last_press_flag = auto_ctrl.press_flag;
     if(auto_ctrl.rc_data->key.v == KEY_PRESSED_OFFSET_R)
     {
@@ -178,7 +185,7 @@ void auto_control(void)
 
         auto_ctrl.a_lift_target = -120.0f;
         auto_ctrl.a_stretch_target = 1050.0f;
-        auto_ctrl.a_flip_target = 90;
+        auto_ctrl.a_flip_target = 90 + (int16_t)auto_ctrl.flip_reset_angle;
         auto_ctrl.a_catch_target = 0;
        
         auto_ctrl.arrive = close_to(); 
@@ -187,7 +194,7 @@ void auto_control(void)
             auto_ctrl.a_catch_mode = 0;
         }
     }
-    if(auto_ctrl.a_lift_target == -120.0f && auto_ctrl.a_stretch_target == 1050.0f && auto_ctrl.a_flip_target == 90 && auto_ctrl.a_catch_target == 0)
+    if(auto_ctrl.a_lift_target == -120.0f && auto_ctrl.a_stretch_target == 1050.0f && auto_ctrl.a_flip_target == 90 + (int16_t)auto_ctrl.flip_reset_angle && auto_ctrl.a_catch_target == 0)
     {
         if(auto_ctrl.photogate_1 == 0)
         {
@@ -215,7 +222,7 @@ void auto_control(void)
             {
                 auto_ctrl.a_catch_target = 1;
                 auto_ctrl.a_stretch_target = 280.0f;
-                auto_ctrl.a_flip_target = 245;
+                auto_ctrl.a_flip_target = 245 + (int16_t)auto_ctrl.flip_reset_angle;
                 auto_ctrl.a_takein_mode = 0;
             }
                 // if(delay_i == 5000)
@@ -240,7 +247,7 @@ void auto_control(void)
         auto_ctrl.target_mode = 1;
 
         auto_ctrl.a_lift_target = -400.0f;
-        auto_ctrl.a_flip_target = 110;
+        auto_ctrl.a_flip_target = 110 + (int16_t)auto_ctrl.flip_reset_angle;
         auto_ctrl.a_catch_target = 1;
 
         if(close_to())
@@ -257,7 +264,7 @@ void auto_control(void)
 
         if(auto_ctrl.a_push_flag == 0)
         {
-            auto_ctrl.a_flip_target = 90;
+            auto_ctrl.a_flip_target = 90 + (int16_t)auto_ctrl.flip_reset_angle;
             auto_ctrl.a_stretch_target = 0.0f;
             auto_ctrl.a_catch_target = 0;
         }
@@ -278,9 +285,9 @@ void auto_control(void)
         auto_ctrl.target_mode = 1;
 
         auto_ctrl.a_catch_target = 1;
-        auto_ctrl.a_lift_target = 0;
-        auto_ctrl.a_stretch_target = 0;
-        auto_ctrl.a_flip_target = 0;
+        auto_ctrl.a_lift_target = 0.0;
+        auto_ctrl.a_stretch_target = 0.0;
+        auto_ctrl.a_flip_target = 0 + (int16_t)auto_ctrl.flip_reset_angle;
         if(close_to())
         {
             auto_ctrl.a_exchange_mode = 0;

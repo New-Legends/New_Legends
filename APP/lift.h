@@ -128,13 +128,13 @@ typedef struct
 lift_pid_strt lift_PID[4];
 
 //一号电机PID
-float LIFT_LEFT_KP     =   11.0f;
+float LIFT_LEFT_KP     =   13.0f;
 float LIFT_LEFT_KI     =   0.0f;
 float LIFT_LEFT_KD     =   0.0f;
 float LIFT_LEFT_MOUT   =   16000.0f;
 float LIFT_LEFT_MIOUT  =   1.0f;
 //二号电机PID
-float LIFT_RIGHT_KP     =   11.0f;
+float LIFT_RIGHT_KP     =   12.0f;
 float LIFT_RIGHT_KI     =   0.0f;
 float LIFT_RIGHT_KD     =   0.0f;
 float LIFT_RIGHT_MOUT   =   16000.0f;
@@ -323,7 +323,7 @@ void lift_control(void)
         strt.can.lift.right_target  =   13 * 19;
     }
 
-    if(strt.auto_behave->target_mode == 1 /*&& strt.auto_behave->a_takein_mode == 0*/ ) //自动模式
+    if(strt.auto_behave->target_mode == 1 && lift_keyboard == 1/*&& strt.auto_behave->a_takein_mode == 0*/ ) //自动模式
     {
         if(strt.lift_lenth - strt.auto_behave->a_lift_target > 5.0f)
         {

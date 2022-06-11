@@ -15,6 +15,8 @@ typedef struct
     int16_t last_press_flag;
     int16_t photogate_1;
     float flip_reset_angle;
+    int16_t flip_reset_flag;
+    int16_t flip_reset_last_flag;
     //0为停，1为上，2为下
     int16_t a_catch_mode;
     int16_t a_takein_mode;

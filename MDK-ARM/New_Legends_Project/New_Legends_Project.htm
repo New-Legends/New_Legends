@@ -3,7 +3,7 @@
 <title>Static Call Graph - [New_Legends_Project\New_Legends_Project.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image New_Legends_Project\New_Legends_Project.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Jun 09 02:13:39 2022
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Jun 11 10:12:53 2022
 <BR><P>
 <H3>Maximum Stack Usage =        288 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -153,8 +153,8 @@ Function Pointers
 Global Symbols
 </H3>
 <P><STRONG><a name="[77]"></a>__main</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, __main.o(!!!main))
-<BR><BR>[Calls]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry
-<LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
+<BR><BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry
 </UL>
 
 <P><STRONG><a name="[78]"></a>__scatterload</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __scatter.o(!!!scatter))
@@ -244,8 +244,8 @@ Global Symbols
 <P><STRONG><a name="[14c]"></a>__rt_lib_shutdown_user_alloc_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000E))
 
 <P><STRONG><a name="[79]"></a>__rt_entry</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry.o(.ARM.Collect$$rtentry$$00000000))
-<BR><BR>[Called By]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_rt2
+<BR><BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_rt2
+<LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
 </UL>
 
 <P><STRONG><a name="[14d]"></a>__rt_entry_presh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000002))
@@ -840,9 +840,11 @@ Global Symbols
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
 </UL>
 
-<P><STRONG><a name="[fd]"></a>HAL_GPIO_ReadPin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f4xx_hal_gpio.o(i.HAL_GPIO_ReadPin))
+<P><STRONG><a name="[fa]"></a>HAL_GPIO_ReadPin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f4xx_hal_gpio.o(i.HAL_GPIO_ReadPin))
 <BR><BR>[Called By]<UL><LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sensor
+<LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;measure
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;catch_sensor
+<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;catch_control
 </UL>
 
 <P><STRONG><a name="[da]"></a>HAL_GPIO_WritePin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f4xx_hal_gpio.o(i.HAL_GPIO_WritePin))
@@ -1139,7 +1141,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[d9]"></a>MX_GPIO_Init</STRONG> (Thumb, 280 bytes, Stack size 48 bytes, gpio.o(i.MX_GPIO_Init))
+<P><STRONG><a name="[d9]"></a>MX_GPIO_Init</STRONG> (Thumb, 294 bytes, Stack size 48 bytes, gpio.o(i.MX_GPIO_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = MX_GPIO_Init &rArr; HAL_GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -1305,7 +1307,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[e4]"></a>auto_control</STRONG> (Thumb, 308 bytes, Stack size 20 bytes, catch_auto.o(i.auto_control))
+<P><STRONG><a name="[e4]"></a>auto_control</STRONG> (Thumb, 418 bytes, Stack size 20 bytes, catch_auto.o(i.auto_control))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = auto_control &rArr; close_to
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;close_to
@@ -1313,7 +1315,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>
 
-<P><STRONG><a name="[e5]"></a>auto_set_mode</STRONG> (Thumb, 244 bytes, Stack size 16 bytes, catch_auto.o(i.auto_set_mode))
+<P><STRONG><a name="[e5]"></a>auto_set_mode</STRONG> (Thumb, 270 bytes, Stack size 16 bytes, catch_auto.o(i.auto_set_mode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = auto_set_mode
 </UL>
 <BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
@@ -1340,11 +1342,11 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> lift.o(i.lift_init)
 </UL>
-<P><STRONG><a name="[fc]"></a>catch_PID_init</STRONG> (Thumb, 432 bytes, Stack size 0 bytes, catch.o(i.catch_PID_init))
+<P><STRONG><a name="[fd]"></a>catch_PID_init</STRONG> (Thumb, 432 bytes, Stack size 0 bytes, catch.o(i.catch_PID_init))
 <BR><BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;catch_init
 </UL>
 
-<P><STRONG><a name="[e1]"></a>catch_auto_init</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, catch_auto.o(i.catch_auto_init))
+<P><STRONG><a name="[e1]"></a>catch_auto_init</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, catch_auto.o(i.catch_auto_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = catch_auto_init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_motor_measure_point
@@ -1360,17 +1362,19 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> catch.o(i.catch_init)
 </UL>
-<P><STRONG><a name="[66]"></a>catch_control</STRONG> (Thumb, 512 bytes, Stack size 16 bytes, catch.o(i.catch_control))
+<P><STRONG><a name="[66]"></a>catch_control</STRONG> (Thumb, 544 bytes, Stack size 16 bytes, catch.o(i.catch_control))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = catch_control
+</UL>
+<BR>[Calls]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> catch.o(i.catch_init)
 </UL>
 <P><STRONG><a name="[69]"></a>catch_init</STRONG> (Thumb, 112 bytes, Stack size 16 bytes, catch.o(i.catch_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = catch_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_auto_control_point
-<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;catch_PID_init
-<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_reset_point
+<BR>[Calls]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_auto_control_point
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;catch_PID_init
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_reset_point
 <LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_motor_measure_point
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_remote_control_point
 </UL>
@@ -1378,10 +1382,10 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> catch.o(i.catch_task)
 </UL>
-<P><STRONG><a name="[64]"></a>catch_sensor</STRONG> (Thumb, 200 bytes, Stack size 40 bytes, catch.o(i.catch_sensor))
-<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = catch_sensor &rArr; __aeabi_dmul
+<P><STRONG><a name="[64]"></a>catch_sensor</STRONG> (Thumb, 268 bytes, Stack size 48 bytes, catch.o(i.catch_sensor))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = catch_sensor &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
+<BR>[Calls]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
 <LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
@@ -1417,7 +1421,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;catch_task
 </UL>
 
-<P><STRONG><a name="[fa]"></a>get_auto_control_point</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, catch_auto.o(i.get_auto_control_point))
+<P><STRONG><a name="[fb]"></a>get_auto_control_point</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, catch_auto.o(i.get_auto_control_point))
 <BR><BR>[Called By]<UL><LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lift_init
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;catch_init
 </UL>
@@ -1435,7 +1439,7 @@ Global Symbols
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_CAN_RxFifo0MsgPendingCallback
 </UL>
 
-<P><STRONG><a name="[fb]"></a>get_reset_point</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, can_receive.o(i.get_reset_point))
+<P><STRONG><a name="[fc]"></a>get_reset_point</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, can_receive.o(i.get_reset_point))
 <BR><BR>[Called By]<UL><LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lift_init
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;catch_init
 </UL>
@@ -1448,7 +1452,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> lift.o(i.lift_init)
 </UL>
-<P><STRONG><a name="[6b]"></a>lift_control</STRONG> (Thumb, 264 bytes, Stack size 32 bytes, lift.o(i.lift_control))
+<P><STRONG><a name="[6b]"></a>lift_control</STRONG> (Thumb, 272 bytes, Stack size 32 bytes, lift.o(i.lift_control))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = lift_control
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> lift.o(i.lift_init)
@@ -1457,8 +1461,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = lift_init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lift_PID_init
-<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_auto_control_point
-<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_reset_point
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_auto_control_point
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_reset_point
 <LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_motor_measure_point
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_remote_control_point
 </UL>
@@ -1495,10 +1499,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[e3]"></a>measure</STRONG> (Thumb, 232 bytes, Stack size 40 bytes, catch_auto.o(i.measure))
+<P><STRONG><a name="[e3]"></a>measure</STRONG> (Thumb, 276 bytes, Stack size 40 bytes, catch_auto.o(i.measure))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = measure &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<BR>[Calls]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
+<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
@@ -1535,9 +1540,9 @@ Global Symbols
 <P><STRONG><a name="[d8]"></a>osThreadCreate</STRONG> (Thumb, 84 bytes, Stack size 32 bytes, cmsis_os.o(i.osThreadCreate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 168<LI>Call Chain = osThreadCreate &rArr; xTaskCreate &rArr; pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;makeFreeRtosPriority
-<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreateStatic
+<BR>[Calls]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreateStatic
 <LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreate
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;makeFreeRtosPriority
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_FREERTOS_Init
 </UL>
@@ -1580,7 +1585,7 @@ Global Symbols
 <P><STRONG><a name="[e2]"></a>sensor</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, catch_auto.o(i.sensor))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = sensor
 </UL>
-<BR>[Calls]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
+<BR>[Calls]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>

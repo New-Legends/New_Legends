@@ -63,6 +63,10 @@ typedef struct
     float flip_stay_angle;
     float stretch_lenth;
 
+    float flip_reset_angle;
+    int16_t reset_flag;
+    int64_t reset_last_flag;
+
     //遥控器状态命名
     #define left_switch_is_up           (catch.rc_data->rc.s[1] == 1)
     #define left_switch_is_mid          (catch.rc_data->rc.s[1] == 3)
@@ -398,7 +402,7 @@ void catch_control(void)
         catch.can.right_speed_target =   20 * 19;
     }
 
-    if(catch.auto_behave->target_mode == 1)  //自动模式
+    if(catch.auto_behave->target_mode == 1 && catch_keyboard == 1)  //自动模式
     {
         catch.can.left_speed_target  =   1*(int16_t)catch.PID_calc(&catch_PID[4],(int16_t)catch.flip_angle,(int16_t)catch.auto_behave->a_flip_target);
         catch.can.right_speed_target =   -1*catch.can.left_speed_target;
@@ -408,6 +412,12 @@ void catch_control(void)
 
     catch.can.left  = (int16_t)catch.PID_calc(&catch_PID[0],catch.can.left_speed,catch.can.left_speed_target);
     catch.can.right = (int16_t)catch.PID_calc(&catch_PID[1],catch.can.right_speed,catch.can.right_speed_target);
+
+    if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) == GPIO_PIN_RESET)
+    {
+        catch.can.left = 0;
+        catch.can.right = 0;
+    }
 
     // 出抓
     if (stretch_state_is_stop)
@@ -424,7 +434,7 @@ void catch_control(void)
         catch.can.stretch_target   =   -160 * 19;
     }
 
-    if(catch.auto_behave->target_mode == 1) //自动模式
+    if(catch.auto_behave->target_mode == 1 && catch_keyboard == 1) //自动模式
     {
         if(catch.stretch_lenth - catch.auto_behave->a_stretch_target < -5.0f)
         {
@@ -448,7 +458,7 @@ void catch_control(void)
     {
         catch.can.catch = 4500;
     } 
-    if(catch.auto_behave->auto_mode == 1)   //自动模式
+    if(catch.auto_behave->auto_mode == 1 && catch_keyboard == 1)   //自动模式
     {
         if(catch.auto_behave->a_catch_target == 1)
         {
@@ -532,7 +542,20 @@ void catch_sensor(void)
         catch.catch_sensor  =   1;
     }
 
-    catch.flip_angle = 1.0*(catch.motor_measure[0]->round*360)/19+1.0*(catch.motor_measure[0]->ecd*360)/19/8192 - catch.auto_behave->flip_reset_angle;
+    catch.reset_last_flag = catch.reset_flag;
+    if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) == GPIO_PIN_RESET)
+    {
+        catch.reset_flag = 1;
+        //catch.flip_reset_angle = catch.flip_angle;        
+    }else{
+        catch.reset_flag = 0;
+    }
+    if(catch.reset_last_flag != catch.reset_flag && catch.reset_flag == 0)
+    {
+        catch.flip_reset_angle = catch.flip_angle;
+    }
+
+    catch.flip_angle = 1.0*(catch.motor_measure[0]->round*360)/19+1.0*(catch.motor_measure[0]->ecd*360)/19/8192;
     catch.stretch_lenth = 1.0*(catch.motor_measure[2]->round*360)/19+1.0*(catch.motor_measure[2]->ecd*360)/19/8192;
 }
 
