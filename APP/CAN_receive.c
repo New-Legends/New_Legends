@@ -55,34 +55,34 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     CAN_RxHeaderTypeDef rx_header;
     uint8_t rx_data[8];
 
-    if(rc_flag == 0)
-    {
-        c_rc_data = get_remote_control_point();
-        rc_flag = 1;
-        Reset_s.Reset_key = 0;
-    }
+    // if(rc_flag == 0)
+    // {
+    //     c_rc_data = get_remote_control_point();
+    //     rc_flag = 1;
+    //     Reset_s.Reset_key = 0;
+    // }
 
-    //重新计圈
-    Reset_s.Reset_last_flag = Reset_s.Reset_flag;
-    if(c_rc_data->key.v == KEY_PRESSED_OFFSET_CTRL)
-    {
-        Reset_s.Reset_flag = 1;
-    }else{
-        Reset_s.Reset_flag = 0;
-    }
-    Reset_s.Reset_last_key = Reset_s.Reset_key;
-    if(Reset_s.Reset_flag != Reset_s.Reset_last_flag && Reset_s.Reset_flag == 1)
-    {
-        if(Reset_s.Reset_key == 0)
-        {
-            Reset_s.Reset_key = 1;
-        }
-    }else{
-        if(Reset_s.Reset_key == 1)
-        {
-            Reset_s.Reset_key = 0;
-        }
-    }
+    // //重新计圈
+    // Reset_s.Reset_last_flag = Reset_s.Reset_flag;
+    // if(c_rc_data->key.v == KEY_PRESSED_OFFSET_CTRL)
+    // {
+    //     Reset_s.Reset_flag = 1;
+    // }else{
+    //     Reset_s.Reset_flag = 0;
+    // }
+    // Reset_s.Reset_last_key = Reset_s.Reset_key;
+    // if(Reset_s.Reset_flag != Reset_s.Reset_last_flag && Reset_s.Reset_flag == 1)
+    // {
+    //     if(Reset_s.Reset_key == 0)
+    //     {
+    //         Reset_s.Reset_key = 1;
+    //     }
+    // }else{
+    //     if(Reset_s.Reset_key == 1)
+    //     {
+    //         Reset_s.Reset_key = 0;
+    //     }
+    // }
 
     if(Reset_s.Reset_last_key != Reset_s.Reset_key && Reset_s.Reset_last_key == 1)
     {
