@@ -1,3 +1,7 @@
+/*
+    不同类型的新的命名方式，可以直观地了解到当前类型占用多少位
+*/
+
 #ifndef STRUCT_TYPEDEF_H
 #define STRUCT_TYPEDEF_H
 

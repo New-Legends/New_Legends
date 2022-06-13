@@ -1,3 +1,9 @@
+/*
+    自动模式，包含自动夹矿，自动收纳，自动放置，自动推入，自动归位五个功能
+    自动模式对于操作手而言非常重要，工程一定要有这个功能！！！！！！！！！
+    如果让操作手手动夹矿，小组赛都不可能出线，太慢了
+*/
+
 #include "catch_auto.h"
 #include "gpio.h"
 
@@ -61,7 +67,8 @@ void catch_auto_init(void)
     }
 
 }
-
+// 空接广电，但后来发现这样子做的话空接太慢，大约慢0.2秒，对于单片机来说已经是非常慢了
+// 后来打比赛的时候就用来自动夹取，操作手只要打开自动夹矿，对准之后怼上去就能夹到
 void sensor(void)
 {
     if (HAL_GPIO_ReadPin(Photogate_GPIO_Port, Photogate_Pin) == GPIO_PIN_RESET)

@@ -1,3 +1,9 @@
+/*
+    抬升任务
+    使用函数指针方式书写
+    宁波工程学院 机器人学院 电气201张超 于RMUC2022赛季书写
+*/
+
 #ifndef LIFT_H
 #define LIFT_H
 
@@ -88,7 +94,7 @@ typedef struct
     #define ore_state_is_out            (strt.can.ore.state == out)
 
 }strt_t;
-
+// 电控限位值
 float lift_down = -10.0f;
 float lift_up = -520.0f;
 
@@ -162,6 +168,7 @@ enum
     ore_motor_right_ID = 0x204,
 }motor_ID;
 
+// 各种档位的赋值，方便模式设置
 enum
 {
     stop    =   0,
@@ -173,9 +180,10 @@ enum
 }state_type;
 
 strt_t    strt;
-
+// 键盘模式值
 int8_t lift_keyboard = 0;
 /************函数开始*************/
+// 这里使用了define判断的方式让条件更加易懂，其中switch为遥控器的左右三档开关，rocker为左右的拨杆
 void lift_set_mode(void)
 {
     if(left_switch_is_down&&right_switch_is_up)
@@ -383,7 +391,7 @@ void ore_control(void)
 //     }
     
 // }
-
+// 自动模式使用位置环和速度环来控制
 void lift_auto_control(void)
 {
     strt.can.lift.left_target = (int16_t)strt.PID_calc(&lift_PID[4],(int16_t)strt.lift_lenth,(int16_t)strt.auto_behave->a_lift_target);
@@ -393,7 +401,7 @@ void lift_auto_control(void)
     strt.can.lift.right = (int16_t)strt.PID_calc(&lift_PID[1],strt.can.lift.right_speed,strt.can.lift.right_target);
 }
 
-
+// can发送电流值
 static CAN_TxHeaderTypeDef  can_tx_message;
 static uint8_t              lift_can_send_data[8];
 void can_send(void)
@@ -415,6 +423,7 @@ void can_send(void)
     HAL_CAN_AddTxMessage(&hcan1, &can_tx_message, lift_can_send_data, &send_mail_box);
 }
 
+// PID数组的赋值，即pid初始化
 void lift_PID_init(void)
 {
     lift_PID[0].mode = PID_POSITION;
@@ -502,8 +511,8 @@ fp32 lift_PID_calc(lift_pid_strt *pid, int16_t ref, int16_t set)
     }
     return pid->out;
 }
-
 //万恶的PID至此结束
+
 void lift_init(void)
 {
     strt.rc_data    =   get_remote_control_point();
